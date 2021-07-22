@@ -21,7 +21,7 @@ MrUDP has many benefits when compared to TCP:
 git clone https://github.com/timprepscius/mrudp
 mkdir mrudp/build
 cd mrudp/build
-cmake ..
+cmake .. -DUSE_BOOST=/where/ever/you/have/boost/boost
 make
 ```
 
