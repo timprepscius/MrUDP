@@ -154,6 +154,7 @@
 		F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMrUDP-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StandaloneCore.cpp; sourceTree = "<group>"; };
 		F6FB586526AA093A00C24EAA /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		F6FB586626AA0D6E00C24EAA /* Base.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Base.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,6 +240,7 @@
 				F6915A2826A4E128001C2E1E /* sender */,
 				F6915A4326A4E128001C2E1E /* socket */,
 				F6915A4526A4E128001C2E1E /* Base.h */,
+				F6FB586626AA0D6E00C24EAA /* Base.cpp */,
 				F676C51C26A6FBDE001559F4 /* Config.h */,
 				F6915A4126A4E128001C2E1E /* Connection.cpp */,
 				F6915A1E26A4E128001C2E1E /* Connection.h */,

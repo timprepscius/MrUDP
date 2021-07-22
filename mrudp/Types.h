@@ -24,34 +24,12 @@ enum TypeID : uint8_t {
 
 typedef __uint128_t LongConnectionID;
 
-LongConnectionID copyLongConnectionIDFrom(const char *);
-size_t copyLongConnectionIDTo(char *, LongConnectionID);
-
 const size_t MAX_PACKET_SIZE = MRUDP_MAX_PACKET_SIZE;
 const VersionID MRUDP_VERSION = 1;
 
 typedef mrudp_addr_t Address;
 
 String toString(const Address &addr);
-
-void trace_char_(char c);
-void trace_char_(const String &c);
-
-inline
-void trace_char(char c)
-{
-#ifdef MRUDP_SINGLE_CHAR_TRACE
-	trace_char_(c);
-#endif
-}
-
-inline
-void trace_char(const String &c)
-{
-#ifdef MRUDP_SINGLE_CHAR_TRACE
-	trace_char_(c);
-#endif
-}
 
 } // namespace
 } // namespace

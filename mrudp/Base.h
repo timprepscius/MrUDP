@@ -55,6 +55,26 @@ template<typename V>
 using Function = std::function<V>;
 using String = std::string;
 
+
+void trace_char_(char c);
+void trace_char_(const String &c);
+
+inline
+void trace_char(char c)
+{
+#ifdef MRUDP_SINGLE_CHAR_TRACE
+	trace_char_(c);
+#endif
+}
+
+inline
+void trace_char(const String &c)
+{
+#ifdef MRUDP_SINGLE_CHAR_TRACE
+	trace_char_(c);
+#endif
+}
+
 } // namespace
 } // namespace
 

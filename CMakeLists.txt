@@ -30,6 +30,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #Generate the static library from the library sources
 add_library(MrUDP STATIC 
     mrudp/mrudp.cpp
+    mrudp/Base.cpp
     mrudp/Connection.cpp
     mrudp/Packet.cpp
     mrudp/Service.cpp
