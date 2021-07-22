@@ -1,0 +1,38 @@
+include $(MAKEDIR)/Makefile.base
+
+PROJECTS := .
+	
+INCPATH := \
+	$(timprepscius.mrudp.include) \
+	$(timprepscius.core.include) \
+	$(timprepscius.base.include) \
+	$(timprepscius.com.include) \
+	$(timprepscius.libraries.cpp.include)
+	
+LDPATH := $(timprepscius.libraries.cpp.link)
+
+EXEFILE := mrudp-tests.exe
+
+LIBS := \
+	-lMrUDP \
+	-lCom \
+	-lCore \
+
+LIBS += \
+	-lboost-system \
+	-lboost-thread \
+	-lminizip \
+	-lz
+
+
+ifeq (OSX,$(SYSNAME))
+	LIBS += -framework OpenCl -lc++
+endif
+
+ifeq (LINUX,$(SYSNAME))
+	LIBS += -lm -lstdc++ -pthread
+endif
+
+include $(MAKEDIR)/Makefile.bin
+
+

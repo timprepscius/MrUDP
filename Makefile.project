@@ -1,0 +1,16 @@
+include $(MAKEDIR)/Makefile.base
+
+PROJECTS := \
+	mrudp \
+	mrudp/receiver \
+	mrudp/connection \
+	mrudp/sender \
+	mrudp/socket \
+	mrudp/imp
+
+INCPATH := $(timprepscius.libraries.cpp.include) $(timprepscius.core.include) $(timprepscius.base.include)
+LIBFILE := libMrUDP.a
+
+COPYTO := $(LIBRARIES)/project
+
+include $(MAKEDIR)/Makefile.lib

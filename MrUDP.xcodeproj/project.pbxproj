@@ -1,0 +1,764 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634A8EB26A613AC00869A6F /* Connections.cpp */; };
+		F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2626A4E128001C2E1E /* Socket.cpp */; };
+		F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3426A4E128001C2E1E /* Packet.cpp */; };
+		F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3326A4E128001C2E1E /* mrudp.cpp */; };
+		F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3E26A4E128001C2E1E /* Asio.cpp */; };
+		F64AC0E926A63FA5001829A0 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2026A4E128001C2E1E /* Types.cpp */; };
+		F64AC0EA26A63FA5001829A0 /* Service.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3726A4E128001C2E1E /* Service.cpp */; };
+		F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4126A4E128001C2E1E /* Connection.cpp */; };
+		F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
+		F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
+		F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3126A4E128001C2E1E /* SendQueue.cpp */; };
+		F64AC0F126A63FAE001829A0 /* SendIDGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */; };
+		F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3A26A4E128001C2E1E /* Receiver.cpp */; };
+		F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */; };
+		F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2226A4E128001C2E1E /* Probe.cpp */; };
+		F6915A4D26A4E128001C2E1E /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1E26A4E128001C2E1E /* Connection.h */; };
+		F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1F26A4E128001C2E1E /* mrudp.h */; };
+		F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2026A4E128001C2E1E /* Types.cpp */; };
+		F6915A5026A4E128001C2E1E /* Probe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2226A4E128001C2E1E /* Probe.cpp */; };
+		F6915A5126A4E128001C2E1E /* Probe.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2326A4E128001C2E1E /* Probe.h */; };
+		F6915A5226A4E128001C2E1E /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2426A4E128001C2E1E /* Types.h */; };
+		F6915A5326A4E128001C2E1E /* Service.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2526A4E128001C2E1E /* Service.h */; };
+		F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2626A4E128001C2E1E /* Socket.cpp */; };
+		F6915A5526A4E128001C2E1E /* UVW.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2726A4E128001C2E1E /* UVW.h */; };
+		F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
+		F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
+		F6915A5826A4E128001C2E1E /* SendQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2B26A4E128001C2E1E /* SendQueue.h */; };
+		F6915A5926A4E128001C2E1E /* SendIDGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */; };
+		F6915A5A26A4E128001C2E1E /* RTT.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2D26A4E128001C2E1E /* RTT.h */; };
+		F6915A5B26A4E128001C2E1E /* Sender.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2E26A4E128001C2E1E /* Sender.h */; };
+		F6915A5C26A4E129001C2E1E /* Retrier.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2F26A4E128001C2E1E /* Retrier.h */; };
+		F6915A5D26A4E129001C2E1E /* SendIDGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3026A4E128001C2E1E /* SendIDGenerator.h */; };
+		F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3126A4E128001C2E1E /* SendQueue.cpp */; };
+		F6915A5F26A4E129001C2E1E /* WindowSize.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3226A4E128001C2E1E /* WindowSize.h */; };
+		F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3326A4E128001C2E1E /* mrudp.cpp */; };
+		F6915A6126A4E129001C2E1E /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3426A4E128001C2E1E /* Packet.cpp */; };
+		F6915A6226A4E129001C2E1E /* Implementation.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3526A4E128001C2E1E /* Implementation.h */; };
+		F6915A6326A4E129001C2E1E /* Service.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3726A4E128001C2E1E /* Service.cpp */; };
+		F6915A6426A4E129001C2E1E /* Packet.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3826A4E128001C2E1E /* Packet.h */; };
+		F6915A6526A4E129001C2E1E /* Receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3A26A4E128001C2E1E /* Receiver.cpp */; };
+		F6915A6626A4E129001C2E1E /* Receiver.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3B26A4E128001C2E1E /* Receiver.h */; };
+		F6915A6726A4E129001C2E1E /* ReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */; };
+		F6915A6826A4E129001C2E1E /* ReceiveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3D26A4E128001C2E1E /* ReceiveQueue.h */; };
+		F6915A6926A4E129001C2E1E /* Asio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3E26A4E128001C2E1E /* Asio.cpp */; };
+		F6915A6A26A4E129001C2E1E /* Asio.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A4026A4E128001C2E1E /* Asio.h */; };
+		F6915A6B26A4E129001C2E1E /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4126A4E128001C2E1E /* Connection.cpp */; };
+		F6915A6C26A4E129001C2E1E /* Socket.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A4226A4E128001C2E1E /* Socket.h */; };
+		F6915A6D26A4E129001C2E1E /* Drop.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A4426A4E128001C2E1E /* Drop.h */; };
+		F6915A6E26A4E129001C2E1E /* Base.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A4526A4E128001C2E1E /* Base.h */; };
+		F6915A7126A4E129001C2E1E /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A4A26A4E128001C2E1E /* Common.h */; };
+		F6915A8326A4E288001C2E1E /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
+		F6915A8426A4E2B3001C2E1E /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4826A4E128001C2E1E /* Run.cpp */; };
+		F6915A8526A4E2B3001C2E1E /* MaximumTransferRate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4C26A4E128001C2E1E /* MaximumTransferRate.cpp */; };
+		F6915A8626A4E2B3001C2E1E /* Basics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4726A4E128001C2E1E /* Basics.cpp */; };
+		F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4B26A4E128001C2E1E /* PacketID.cpp */; };
+		F6FB582E26A9F6EB00C24EAA /* StandaloneCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F6915A8026A4E27F001C2E1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6915A1426A4E107001C2E1E;
+			remoteInfo = MrUDP;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F6915A7726A4E277001C2E1E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		F6915A9626A4E346001C2E1E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
+		F676C51C26A6FBDE001559F4 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		F676C52226A78AC8001559F4 /* BoostAsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoostAsio.h; sourceTree = "<group>"; };
+		F676C52426A78DAA001559F4 /* Ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Ptr.h; sourceTree = "<group>"; };
+		F676C52626A7938A001559F4 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
+		F676C52726A793CF001559F4 /* Mutex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
+		F676C52826A7943F001559F4 /* Linux.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Linux.h; sourceTree = "<group>"; };
+		F676C52926A794C1001559F4 /* Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
+		F676C55526A79EAE001559F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F6915A1526A4E107001C2E1E /* libMrUDP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMrUDP.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6915A1C26A4E128001C2E1E /* Makefile.project */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
+		F6915A1E26A4E128001C2E1E /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
+		F6915A1F26A4E128001C2E1E /* mrudp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mrudp.h; sourceTree = "<group>"; };
+		F6915A2026A4E128001C2E1E /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cpp; sourceTree = "<group>"; };
+		F6915A2226A4E128001C2E1E /* Probe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Probe.cpp; sourceTree = "<group>"; };
+		F6915A2326A4E128001C2E1E /* Probe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Probe.h; sourceTree = "<group>"; };
+		F6915A2426A4E128001C2E1E /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		F6915A2526A4E128001C2E1E /* Service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Service.h; sourceTree = "<group>"; };
+		F6915A2626A4E128001C2E1E /* Socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Socket.cpp; sourceTree = "<group>"; };
+		F6915A2726A4E128001C2E1E /* UVW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UVW.h; sourceTree = "<group>"; };
+		F6915A2926A4E128001C2E1E /* Sender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sender.cpp; sourceTree = "<group>"; };
+		F6915A2A26A4E128001C2E1E /* Retrier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Retrier.cpp; sourceTree = "<group>"; };
+		F6915A2B26A4E128001C2E1E /* SendQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendQueue.h; sourceTree = "<group>"; };
+		F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SendIDGenerator.cpp; sourceTree = "<group>"; };
+		F6915A2D26A4E128001C2E1E /* RTT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTT.h; sourceTree = "<group>"; };
+		F6915A2E26A4E128001C2E1E /* Sender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sender.h; sourceTree = "<group>"; };
+		F6915A2F26A4E128001C2E1E /* Retrier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Retrier.h; sourceTree = "<group>"; };
+		F6915A3026A4E128001C2E1E /* SendIDGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendIDGenerator.h; sourceTree = "<group>"; };
+		F6915A3126A4E128001C2E1E /* SendQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SendQueue.cpp; sourceTree = "<group>"; };
+		F6915A3226A4E128001C2E1E /* WindowSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowSize.h; sourceTree = "<group>"; };
+		F6915A3326A4E128001C2E1E /* mrudp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mrudp.cpp; sourceTree = "<group>"; };
+		F6915A3426A4E128001C2E1E /* Packet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Packet.cpp; sourceTree = "<group>"; };
+		F6915A3526A4E128001C2E1E /* Implementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Implementation.h; sourceTree = "<group>"; };
+		F6915A3726A4E128001C2E1E /* Service.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Service.cpp; sourceTree = "<group>"; };
+		F6915A3826A4E128001C2E1E /* Packet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
+		F6915A3A26A4E128001C2E1E /* Receiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Receiver.cpp; sourceTree = "<group>"; };
+		F6915A3B26A4E128001C2E1E /* Receiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Receiver.h; sourceTree = "<group>"; };
+		F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReceiveQueue.cpp; sourceTree = "<group>"; };
+		F6915A3D26A4E128001C2E1E /* ReceiveQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiveQueue.h; sourceTree = "<group>"; };
+		F6915A3E26A4E128001C2E1E /* Asio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Asio.cpp; sourceTree = "<group>"; };
+		F6915A3F26A4E128001C2E1E /* Packet.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Packet.inl; sourceTree = "<group>"; };
+		F6915A4026A4E128001C2E1E /* Asio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Asio.h; sourceTree = "<group>"; };
+		F6915A4126A4E128001C2E1E /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		F6915A4226A4E128001C2E1E /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
+		F6915A4426A4E128001C2E1E /* Drop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Drop.h; sourceTree = "<group>"; };
+		F6915A4526A4E128001C2E1E /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
+		F6915A4726A4E128001C2E1E /* Basics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Basics.cpp; sourceTree = "<group>"; };
+		F6915A4826A4E128001C2E1E /* Run.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Run.cpp; sourceTree = "<group>"; };
+		F6915A4926A4E128001C2E1E /* Makefile.project */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
+		F6915A4A26A4E128001C2E1E /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		F6915A4B26A4E128001C2E1E /* PacketID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PacketID.cpp; sourceTree = "<group>"; };
+		F6915A4C26A4E128001C2E1E /* MaximumTransferRate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaximumTransferRate.cpp; sourceTree = "<group>"; };
+		F6915A7426A4E181001C2E1E /* Makefile.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.def; sourceTree = "<group>"; };
+		F6915A7926A4E277001C2E1E /* MrUDP-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMrUDP-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StandaloneCore.cpp; sourceTree = "<group>"; };
+		F6FB586526AA093A00C24EAA /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F6915A1326A4E107001C2E1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6915A7626A4E277001C2E1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6915A8326A4E288001C2E1E /* libMrUDP.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6915A9526A4E346001C2E1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F676C52326A78AE3001559F4 /* imp */ = {
+			isa = PBXGroup;
+			children = (
+				F676C52226A78AC8001559F4 /* BoostAsio.h */,
+				F6915A3E26A4E128001C2E1E /* Asio.cpp */,
+				F6915A4026A4E128001C2E1E /* Asio.h */,
+				F6915A2726A4E128001C2E1E /* UVW.h */,
+			);
+			path = imp;
+			sourceTree = "<group>";
+		};
+		F676C52526A79378001559F4 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				F676C52826A7943F001559F4 /* Linux.h */,
+				F676C52626A7938A001559F4 /* Random.h */,
+				F676C52726A793CF001559F4 /* Mutex.h */,
+				F676C52926A794C1001559F4 /* Core.h */,
+				F676C52426A78DAA001559F4 /* Ptr.h */,
+			);
+			path = base;
+			sourceTree = "<group>";
+		};
+		F6915A0C26A4E107001C2E1E = {
+			isa = PBXGroup;
+			children = (
+				F6FB586526AA093A00C24EAA /* CMakeLists.txt */,
+				F676C55526A79EAE001559F4 /* README.md */,
+				F6915A7426A4E181001C2E1E /* Makefile.def */,
+				F6915A1C26A4E128001C2E1E /* Makefile.project */,
+				F6915A1D26A4E128001C2E1E /* mrudp */,
+				F6915A4626A4E128001C2E1E /* tests */,
+				F6915A1626A4E107001C2E1E /* Products */,
+				F6915A8226A4E288001C2E1E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		F6915A1626A4E107001C2E1E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6915A1526A4E107001C2E1E /* libMrUDP.a */,
+				F6915A7926A4E277001C2E1E /* MrUDP-Tests */,
+				F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F6915A1D26A4E128001C2E1E /* mrudp */ = {
+			isa = PBXGroup;
+			children = (
+				F676C52526A79378001559F4 /* base */,
+				F6915A2126A4E128001C2E1E /* connection */,
+				F676C52326A78AE3001559F4 /* imp */,
+				F6915A3926A4E128001C2E1E /* receiver */,
+				F6915A2826A4E128001C2E1E /* sender */,
+				F6915A4326A4E128001C2E1E /* socket */,
+				F6915A4526A4E128001C2E1E /* Base.h */,
+				F676C51C26A6FBDE001559F4 /* Config.h */,
+				F6915A4126A4E128001C2E1E /* Connection.cpp */,
+				F6915A1E26A4E128001C2E1E /* Connection.h */,
+				F6915A3526A4E128001C2E1E /* Implementation.h */,
+				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
+				F6915A1F26A4E128001C2E1E /* mrudp.h */,
+				F6915A3426A4E128001C2E1E /* Packet.cpp */,
+				F6915A3826A4E128001C2E1E /* Packet.h */,
+				F6915A3F26A4E128001C2E1E /* Packet.inl */,
+				F6915A3726A4E128001C2E1E /* Service.cpp */,
+				F6915A2526A4E128001C2E1E /* Service.h */,
+				F6915A2626A4E128001C2E1E /* Socket.cpp */,
+				F6915A4226A4E128001C2E1E /* Socket.h */,
+				F6915A2026A4E128001C2E1E /* Types.cpp */,
+				F6915A2426A4E128001C2E1E /* Types.h */,
+			);
+			path = mrudp;
+			sourceTree = "<group>";
+		};
+		F6915A2126A4E128001C2E1E /* connection */ = {
+			isa = PBXGroup;
+			children = (
+				F6915A2226A4E128001C2E1E /* Probe.cpp */,
+				F6915A2326A4E128001C2E1E /* Probe.h */,
+			);
+			path = connection;
+			sourceTree = "<group>";
+		};
+		F6915A2826A4E128001C2E1E /* sender */ = {
+			isa = PBXGroup;
+			children = (
+				F6915A2A26A4E128001C2E1E /* Retrier.cpp */,
+				F6915A2F26A4E128001C2E1E /* Retrier.h */,
+				F6915A2D26A4E128001C2E1E /* RTT.h */,
+				F6915A2926A4E128001C2E1E /* Sender.cpp */,
+				F6915A2E26A4E128001C2E1E /* Sender.h */,
+				F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */,
+				F6915A3026A4E128001C2E1E /* SendIDGenerator.h */,
+				F6915A3126A4E128001C2E1E /* SendQueue.cpp */,
+				F6915A2B26A4E128001C2E1E /* SendQueue.h */,
+				F6915A3226A4E128001C2E1E /* WindowSize.h */,
+			);
+			path = sender;
+			sourceTree = "<group>";
+		};
+		F6915A3926A4E128001C2E1E /* receiver */ = {
+			isa = PBXGroup;
+			children = (
+				F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */,
+				F6915A3D26A4E128001C2E1E /* ReceiveQueue.h */,
+				F6915A3A26A4E128001C2E1E /* Receiver.cpp */,
+				F6915A3B26A4E128001C2E1E /* Receiver.h */,
+			);
+			path = receiver;
+			sourceTree = "<group>";
+		};
+		F6915A4326A4E128001C2E1E /* socket */ = {
+			isa = PBXGroup;
+			children = (
+				F6915A4426A4E128001C2E1E /* Drop.h */,
+			);
+			path = socket;
+			sourceTree = "<group>";
+		};
+		F6915A4626A4E128001C2E1E /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */,
+				F6915A4726A4E128001C2E1E /* Basics.cpp */,
+				F634A8EB26A613AC00869A6F /* Connections.cpp */,
+				F6915A4826A4E128001C2E1E /* Run.cpp */,
+				F6915A4926A4E128001C2E1E /* Makefile.project */,
+				F6915A4A26A4E128001C2E1E /* Common.h */,
+				F6915A4B26A4E128001C2E1E /* PacketID.cpp */,
+				F6915A4C26A4E128001C2E1E /* MaximumTransferRate.cpp */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
+		F6915A8226A4E288001C2E1E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		F6915A1126A4E107001C2E1E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6915A6D26A4E129001C2E1E /* Drop.h in Headers */,
+				F6915A5B26A4E128001C2E1E /* Sender.h in Headers */,
+				F6915A7126A4E129001C2E1E /* Common.h in Headers */,
+				F6915A5F26A4E129001C2E1E /* WindowSize.h in Headers */,
+				F6915A5326A4E128001C2E1E /* Service.h in Headers */,
+				F6915A5526A4E128001C2E1E /* UVW.h in Headers */,
+				F6915A5126A4E128001C2E1E /* Probe.h in Headers */,
+				F6915A4D26A4E128001C2E1E /* Connection.h in Headers */,
+				F6915A5226A4E128001C2E1E /* Types.h in Headers */,
+				F6915A6C26A4E129001C2E1E /* Socket.h in Headers */,
+				F6915A5D26A4E129001C2E1E /* SendIDGenerator.h in Headers */,
+				F6915A5A26A4E128001C2E1E /* RTT.h in Headers */,
+				F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */,
+				F6915A6426A4E129001C2E1E /* Packet.h in Headers */,
+				F6915A5C26A4E129001C2E1E /* Retrier.h in Headers */,
+				F6915A6826A4E129001C2E1E /* ReceiveQueue.h in Headers */,
+				F6915A6E26A4E129001C2E1E /* Base.h in Headers */,
+				F6915A5826A4E128001C2E1E /* SendQueue.h in Headers */,
+				F6915A6626A4E129001C2E1E /* Receiver.h in Headers */,
+				F6915A6226A4E129001C2E1E /* Implementation.h in Headers */,
+				F6915A6A26A4E129001C2E1E /* Asio.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F6915A1426A4E107001C2E1E /* MrUDP */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6915A1926A4E107001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP" */;
+			buildPhases = (
+				F6915A1126A4E107001C2E1E /* Headers */,
+				F6915A1226A4E107001C2E1E /* Sources */,
+				F6915A1326A4E107001C2E1E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MrUDP;
+			productName = MrUDP;
+			productReference = F6915A1526A4E107001C2E1E /* libMrUDP.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F6915A7826A4E277001C2E1E /* MrUDP-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6915A7D26A4E277001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP-Tests" */;
+			buildPhases = (
+				F6915A7526A4E277001C2E1E /* Sources */,
+				F6915A7626A4E277001C2E1E /* Frameworks */,
+				F6915A7726A4E277001C2E1E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F6915A8126A4E27F001C2E1E /* PBXTargetDependency */,
+			);
+			name = "MrUDP-Tests";
+			productName = "MrUDP-Tests";
+			productReference = F6915A7926A4E277001C2E1E /* MrUDP-Tests */;
+			productType = "com.apple.product-type.tool";
+		};
+		F6915A9726A4E346001C2E1E /* MrUDP-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6915A9C26A4E346001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP-iOS" */;
+			buildPhases = (
+				F6915A9426A4E346001C2E1E /* Sources */,
+				F6915A9526A4E346001C2E1E /* Frameworks */,
+				F6915A9626A4E346001C2E1E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MrUDP-iOS";
+			productName = "MrUDP-iOS";
+			productReference = F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6915A0D26A4E107001C2E1E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1250;
+				TargetAttributes = {
+					F6915A1426A4E107001C2E1E = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
+					F6915A7826A4E277001C2E1E = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
+					F6915A9726A4E346001C2E1E = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
+				};
+			};
+			buildConfigurationList = F6915A1026A4E107001C2E1E /* Build configuration list for PBXProject "MrUDP" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F6915A0C26A4E107001C2E1E;
+			productRefGroup = F6915A1626A4E107001C2E1E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6915A1426A4E107001C2E1E /* MrUDP */,
+				F6915A9726A4E346001C2E1E /* MrUDP-iOS */,
+				F6915A7826A4E277001C2E1E /* MrUDP-Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F6915A1226A4E107001C2E1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6915A5926A4E128001C2E1E /* SendIDGenerator.cpp in Sources */,
+				F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */,
+				F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */,
+				F6915A6126A4E129001C2E1E /* Packet.cpp in Sources */,
+				F6915A5026A4E128001C2E1E /* Probe.cpp in Sources */,
+				F6915A6726A4E129001C2E1E /* ReceiveQueue.cpp in Sources */,
+				F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */,
+				F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */,
+				F6915A6326A4E129001C2E1E /* Service.cpp in Sources */,
+				F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */,
+				F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */,
+				F6915A6B26A4E129001C2E1E /* Connection.cpp in Sources */,
+				F6915A6926A4E129001C2E1E /* Asio.cpp in Sources */,
+				F6915A6526A4E129001C2E1E /* Receiver.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6915A7526A4E277001C2E1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6FB582E26A9F6EB00C24EAA /* StandaloneCore.cpp in Sources */,
+				F6915A8626A4E2B3001C2E1E /* Basics.cpp in Sources */,
+				F6915A8426A4E2B3001C2E1E /* Run.cpp in Sources */,
+				F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */,
+				F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */,
+				F6915A8526A4E2B3001C2E1E /* MaximumTransferRate.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6915A9426A4E346001C2E1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F64AC0F126A63FAE001829A0 /* SendIDGenerator.cpp in Sources */,
+				F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */,
+				F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */,
+				F64AC0EA26A63FA5001829A0 /* Service.cpp in Sources */,
+				F64AC0E926A63FA5001829A0 /* Types.cpp in Sources */,
+				F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */,
+				F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */,
+				F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */,
+				F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */,
+				F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */,
+				F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */,
+				F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */,
+				F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */,
+				F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F6915A8126A4E27F001C2E1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6915A1426A4E107001C2E1E /* MrUDP */;
+			targetProxy = F6915A8026A4E27F001C2E1E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F6915A1726A4E107001C2E1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Core,
+					../Base,
+					../Libraries/sdk/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../Libraries/sdk/lib/Debug.osx;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F6915A1826A4E107001C2E1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Core,
+					../Base,
+					../Libraries/sdk/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../Libraries/sdk/lib/Release.osx;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F6915A1A26A4E107001C2E1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		F6915A1B26A4E107001C2E1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		F6915A7E26A4E277001C2E1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F6915A7F26A4E277001C2E1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F6915A9D26A4E346001C2E1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F6915A9E26A4E346001C2E1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F6915A1026A4E107001C2E1E /* Build configuration list for PBXProject "MrUDP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6915A1726A4E107001C2E1E /* Debug */,
+				F6915A1826A4E107001C2E1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6915A1926A4E107001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6915A1A26A4E107001C2E1E /* Debug */,
+				F6915A1B26A4E107001C2E1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6915A7D26A4E277001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6915A7E26A4E277001C2E1E /* Debug */,
+				F6915A7F26A4E277001C2E1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6915A9C26A4E346001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6915A9D26A4E346001C2E1E /* Debug */,
+				F6915A9E26A4E346001C2E1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F6915A0D26A4E107001C2E1E /* Project object */;
+}

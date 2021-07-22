@@ -1,0 +1,249 @@
+#include "Connection.h"
+#include "Implementation.h"
+
+#include <iostream>
+
+namespace timprepscius {
+namespace mrudp {
+
+static std::atomic<size_t> NumConnection = 0;
+
+Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_, ShortConnectionID remoteID_) :
+	socket(socket_),
+	id(id_),
+	localID(localID_),
+	remoteID(remoteID_),
+	remoteAddress(remoteAddress_),
+	sender(this),
+	receiver(this),
+	probe(this)
+{
+	sLogDebug("mrudp::life_cycle", logOfThis(this) << ++NumConnection);
+	xLogDebug(logOfThis(this) << logLabel("socket connection") << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)));
+}
+
+Connection::~Connection ()
+{
+	xLogDebug(logOfThis(this));
+	sLogDebug("mrudp::life_cycle", logOfThis(this) << --NumConnection);
+	
+	imp = nullptr;
+}
+
+void Connection::setHandlers(void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_)
+{
+	auto lock = lock_of(userDataMutex);
+	
+	userData = userData_;
+	receiveHandler = receiveHandler_;
+	closeHandler = closeHandler_;
+}
+
+void Connection::open ()
+{
+	imp = strong_thread(strong<imp::ConnectionImp>(strong_this(this)));
+	imp->open();
+	
+	probe.onStart(socket->service->clock.now());
+}
+
+void Connection::close()
+{
+	xLogDebug(logOfThis(this));
+
+	sender.close();
+	receiver.close();
+	possiblyClose();
+}
+
+void Connection::possiblyClose ()
+{
+	if (closed)
+		return;
+
+	if (sender.status == Sender::CLOSED)
+	if (receiver.status == Receiver::CLOSED)
+	if (sender.empty())
+	{
+		close(closeReason);
+	}
+}
+
+void Connection::fail (mrudp_event_t event)
+{
+	trace_char('!');
+
+	closeReason = event;
+
+	probe.close();
+	receiver.fail();
+	sender.fail();
+	
+	possiblyClose();
+}
+
+void Connection::close (mrudp_event_t event)
+{
+	trace_char('#');
+
+	xLogDebug(logOfThis(this) << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) logVar(closeHandler) << logVar(userData));
+
+	auto expected = false;
+	if (closed.compare_exchange_strong(expected, true))
+	{
+		mrudp_close_callback_fn closeHandler_ = nullptr;
+		void *userData_ = nullptr;
+
+		{
+			auto lock = lock_of(userDataMutex);
+			closeHandler_ = std::move(closeHandler);
+			userData_ = std::move(userData);
+				
+			userData = nullptr;
+			closeHandler = nullptr;
+			receiveHandler = nullptr;
+		}
+
+		if (closeHandler_)
+		{
+			trace_char('*');
+			closeHandler_(userData_, event);
+		}
+			
+		finishWhenReady();
+	}
+}
+
+void Connection::finishWhenReady()
+{
+	auto interval = toDuration(sender.rtt.duration * 3);
+	imp->setTimeout(
+		"finish",
+		socket->service->clock.now() + interval,
+		[this, self_=weak_this(this)]() {
+			if (auto self = strong(self_))
+			{
+				finish();
+			}
+		}
+	);
+}
+
+void Connection::finish ()
+{
+	socket->erase(this);
+}
+
+void Connection::receive(Packet &packet)
+{
+	trace_char((char)std::tolower((char)packet.header.type));
+
+	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
+
+	xLogDebug(logOfThis(this) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id));
+
+	// TODO: this is a security concern
+	if (packet.header.type == SYN || packet.header.type == SYN_ACK)
+	{
+		peekData(packet, remoteID);
+		xDebugLine();
+	}
+
+	auto now = socket->service->clock.now();
+	probe.onReceive(now);
+	
+	sender.onPacket(packet);
+	receiver.onPacket(packet);
+}
+
+void Connection::send(const PacketPtr &packet)
+{
+	trace_char((char)packet->header.type);
+
+	packet->header.connection = remoteID;
+	
+	if (packet->header.connection == 0)
+	{
+		auto packet_ = strong<Packet>();
+		*packet_ = *packet;
+		pushData(*packet_, id);
+		
+		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet_->header.connection) << logVar(packet_->header.type) << logVar(packet_->header.id) << logVar(packet_->dataSize) << " with long ID");
+
+		socket->send(packet_, remoteAddress, this);
+	}
+	else
+	{
+		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logVar(packet->dataSize));
+
+		socket->send(packet, remoteAddress, this);
+	}
+
+	probe.onSend(socket->service->clock.now());
+}
+
+void Connection::send(const char *buffer, int size, int reliable)
+{
+	xLogDebug(logOfThis(this));
+
+	if (sender.isUninitialized())
+		sender.open();
+
+	if (reliable)
+	{
+		auto packet = strong<Packet>();
+		packet->header.type = DATA;
+		
+		packet->dataSize = size;
+		memcpy(packet->data, buffer, size);
+
+		sender.send(packet);
+	}
+	else
+	{
+		auto packet = strong<Packet>();
+		packet->header.type = DATA_UNRELIABLE;
+		packet->header.id = 0;
+		
+		packet->dataSize = size;
+		memcpy(packet->data, buffer, size);
+		send(packet);
+	}
+}
+
+// -----------------------
+
+ConnectionHandle newHandle(const StrongPtr<Connection> &connection)
+{
+	return (ConnectionHandle) new StrongPtr<Connection>(connection);
+}
+
+StrongPtr<Connection> toNative(ConnectionHandle handle_)
+{
+	if (!handle_)
+		return nullptr;
+		
+	auto handle = (StrongPtr<Connection> *)handle_;
+	return *handle;
+}
+
+StrongPtr<Connection> closeHandle (ConnectionHandle handle_)
+{
+	if (!handle_)
+		return nullptr;
+		
+	StrongPtr<Connection> result;
+	auto handle = (StrongPtr<Connection> *)handle_;
+	std::swap(result, *handle);
+	
+	return result;
+}
+
+void deleteHandle (ConnectionHandle handle_)
+{
+	auto handle = (StrongPtr<Connection> *)handle_;
+	delete handle;
+}
+
+} // namespace
+} // namespace
