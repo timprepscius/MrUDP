@@ -12,9 +12,9 @@ SCENARIO("mrudp packet transmission rate")
 	auto X = 256;
 	auto Y = 128;
 
-//	LogActivateStory(LogAllStories);
-//	LogActivateStory("mrudp::retry");
-//	LogActivateStory("mrudp::life_cycle");
+//	xLogActivateStory(LogAllStories);
+//	xLogActivateStory("mrudp::retry");
+//	xLogActivateStory("mrudp::life_cycle");
 
     GIVEN( "mrudp service, remote socket" )
     {

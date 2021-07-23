@@ -2,4 +2,4 @@
 
 //#define MRUDP_SINGLE_CHAR_TRACE
 
-// #define MRUDP_HAS_CORE
+#define MRUDP_HAS_CORE

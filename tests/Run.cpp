@@ -12,10 +12,10 @@ int main( int argc, char* argv[] )
 {
 	xLogInitialize("mrudp-test.log");
 	
-	//LogActivateStory(LogAllStories);
-//	LogActivateStory("mrudp::send");
-//	LogActivateStory("mrudp::receive");
-//	LogActivateStory("mrudp::retry");
+	//xLogActivateStory(LogAllStories);
+//	xLogActivateStory("mrudp::send");
+//	xLogActivateStory("mrudp::receive");
+//	xLogActivateStory("mrudp::retry");
 	
 	using namespace Catch::clara;
 

@@ -9,7 +9,7 @@ namespace tests {
 
 SCENARIO("connections")
 {
-//	LogActivateStory(LogAllStories);
+//	xLogActivateStory(LogAllStories);
 	
     GIVEN( "mrudp service, remote socket" )
     {
