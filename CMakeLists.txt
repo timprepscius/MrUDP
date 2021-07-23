@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MrUDP)
 
+add_definitions(-DMRUDP_NO_CORE)
+
 if(USE_BOOST)
     include_directories(PRIVATE ${USE_BOOST})
 else()
