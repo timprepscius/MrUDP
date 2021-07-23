@@ -17,7 +17,7 @@ void Sender::processSendQueue()
 {
 	xLogDebug(logOfThis(this));
 	
-	if (connection->sender.status <= Sender::SYN_SENT)
+	if (status <= Sender::SYN_SENT)
 		return;
 
 	bool sentPacket;
