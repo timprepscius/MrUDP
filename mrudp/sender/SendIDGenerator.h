@@ -13,7 +13,7 @@ namespace mrudp {
 
 struct SendIDGenerator
 {
-	std::atomic<PacketID> nextID_;
+	Atomic<PacketID> nextID_;
 	
 	SendIDGenerator ();
 	PacketID nextID();
