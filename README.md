@@ -8,7 +8,7 @@ It is cross-platform, written in C++ and designed to be a general purpose commun
 
 MrUDP has many benefits when compared to TCP:
 
-  * Parallel streams of (reliable and unreliable) application data.
+  * Parallel streams of reliable and unreliable application data.
   * Survives a change in the clients' IP address or port.
   * Connection RTT (round trip time) measurements in realtime.
   * Single ports can have infinite connections to and from other ports.
@@ -39,7 +39,7 @@ Acks and sends will need more metadata, as to "time within coalescing queue" so 
 
   * Encryption
   
-I plan to implement an RSA handshake transferring SHA keys.  All packets except for handshake should be encrypted past a session identifier.
+I plan to implement an RSA handshake transferring AES keys.  All packets except for handshake should be encrypted past a session identifier.
 
   * Handles
   
