@@ -21,6 +21,9 @@
 namespace timprepscius {
 namespace mrudp {
 
+using u8 = uint8_t;
+using u16 = uint16_t;
+
 template<typename V>
 using List = std::list<V>;
 
@@ -55,25 +58,18 @@ template<typename V>
 using Function = std::function<V>;
 using String = std::string;
 
-
-void trace_char_(char c);
-void trace_char_(const String &c);
-
-inline
-void trace_char(char c)
-{
 #ifdef MRUDP_SINGLE_CHAR_TRACE
-	trace_char_(c);
-#endif
-}
 
-inline
-void trace_char(const String &c)
-{
-#ifdef MRUDP_SINGLE_CHAR_TRACE
-	trace_char_(c);
+void xTraceChar_(char c);
+void xTraceChar_(const String &c);
+
+#define xTraceChar(x) xTraceChar_(x)
+
+#else
+
+#define xTraceChar(...)
+
 #endif
-}
 
 } // namespace
 } // namespace

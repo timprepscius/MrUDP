@@ -18,6 +18,10 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 	receiver(this),
 	probe(this)
 {
+	#ifdef MRUDP_ENABLE_CRYPTO
+		crypto = strong<ConnectionCrypto>(socket->service->crypto);
+	#endif
+
 	sLogDebug("mrudp::life_cycle", logOfThis(this) << ++NumConnection);
 	xLogDebug(logOfThis(this) << logLabel("socket connection") << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)));
 }
@@ -71,7 +75,7 @@ void Connection::possiblyClose ()
 
 void Connection::fail (mrudp_event_t event)
 {
-	trace_char('!');
+	xTraceChar('!');
 
 	closeReason = event;
 
@@ -84,7 +88,7 @@ void Connection::fail (mrudp_event_t event)
 
 void Connection::close (mrudp_event_t event)
 {
-	trace_char('#');
+	xTraceChar('#');
 
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) logVar(closeHandler) << logVar(userData));
 
@@ -106,7 +110,7 @@ void Connection::close (mrudp_event_t event)
 
 		if (closeHandler_)
 		{
-			trace_char('*');
+			xTraceChar('*');
 			closeHandler_(userData_, event);
 		}
 			
@@ -136,11 +140,23 @@ void Connection::finish ()
 
 void Connection::receive(Packet &packet)
 {
-	trace_char((char)std::tolower((char)packet.header.type));
+	xTraceChar((char)std::tolower((char)packet.header.type));
 
 	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 
-	xLogDebug(logOfThis(this) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id));
+#ifdef MRUDP_ENABLE_CRYPTO
+	if (!crypto->decrypt(packet))
+	{
+		sLogDebug("mrudp::receive", "decryption failed");
+
+		xDebugLine();
+		return ;
+	}
+
+	xTraceChar((char)std::tolower((char)packet.header.type));
+
+	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
+#endif
 
 	// TODO: this is a security concern
 	if (packet.header.type == SYN || packet.header.type == SYN_ACK)
@@ -156,10 +172,17 @@ void Connection::receive(Packet &packet)
 	receiver.onPacket(packet);
 }
 
-void Connection::send(const PacketPtr &packet)
+bool Connection::canSend ()
 {
-	trace_char((char)packet->header.type);
+#ifdef MRUDP_ENABLE_CRYPTO
+	return crypto->canEncrypt();
+#else
+	return true;
+#endif
+}
 
+void Connection::send_(const PacketPtr &packet)
+{
 	packet->header.connection = remoteID;
 	
 	if (packet->header.connection == 0)
@@ -180,6 +203,29 @@ void Connection::send(const PacketPtr &packet)
 	}
 
 	probe.onSend(socket->service->clock.now());
+}
+
+void Connection::send(const PacketPtr &packet)
+{
+	xTraceChar((char)packet->header.type);
+
+#ifdef MRUDP_ENABLE_CRYPTO
+	if (!crypto->encrypt(*packet))
+	{
+		sLogDebug("mrudp::send", "encryption failed");
+		
+		xDebugLine();
+		return;
+	}
+#endif
+
+	send_(packet);
+}
+
+void Connection::resend(const PacketPtr &packet)
+{
+	xTraceChar((char)packet->header.type);
+	send_(packet);
 }
 
 void Connection::send(const char *buffer, int size, int reliable)

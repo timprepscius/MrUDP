@@ -141,7 +141,9 @@ inline auto wait_until(D &&d, F &&f)
 	{
 		auto now = Clock::now();
 		if (now > expire)
-			break;
+		{
+			//break;
+		}
 			
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}

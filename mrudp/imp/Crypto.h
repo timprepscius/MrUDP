@@ -1,31 +1,106 @@
 #pragma once
 
 #include "../Packet.h"
+#include <random>
 
 namespace timprepscius {
 namespace mrudp {
-namespace crypto {
+namespace imp {
 
-struct PublicKey;
-struct PrivateKey;
-struct ShaKey;
-
-struct Crypto
+struct SecureRandom
 {
-	StrongPtr<PrivateKey> localPrivateKey;
-	StrongPtr<PublicKey> localPublicKey;
-	StrongPtr<PublicKey> remotePublicKey;
+	struct I;
+	I *i;
 	
-	StrongPtr<ShaKey> localShaKey;
-	StrongPtr<ShaKey> remoteShaKey;
+	SecureRandom(const SecureRandom &) = delete;
 
-	bool canEncrypt ();
-	void canDecrypt ();
+	SecureRandom();
+	~SecureRandom();
+	
+	bool generate(u8 *, size_t size);
+} ;
 
-	void decrypt (Packet &packet);
-	void encrypt (Packet &packet);
-}
+template<int N>
+struct AESKey;
+
+template<int N>
+struct RSAKey
+{
+	static const int BitSize = N;
+
+	struct I;
+	I *i = nullptr;
+
+	RSAKey(const RSAKey &) = delete;
+	
+	RSAKey(RSAKey &&v)
+	{
+		std::swap(i, v.i);
+	}
+	
+	RSAKey () {}
+	~RSAKey ();
+
+	bool encrypt(Packet &packet, size_t maxPadTo, SecureRandom &random);
+	bool decrypt(Packet &packet);
+	
+	template<int KN>
+	bool encrypt(const AESKey<KN> &in, Vector<u8> &out, SecureRandom &random);
+
+	template<int KN>
+	bool decrypt(const Vector<u8> &in, AESKey<KN> &out);
+} ;
+
+template<int N>
+struct AESIV
+{
+	static const int BitSize = N;
+	static const int ByteSize = BitSize / 8;
+
+	u8 data[ByteSize];
+} ;
+
+template<int N>
+struct AESKey
+{
+	static const int BitSize = N;
+	static const int ByteSize = BitSize / 8;
+	
+	u8 data[ByteSize];
+	
+	bool encrypt(Packet &packet, size_t maxPadTo, SecureRandom &random);
+	bool decrypt(Packet &packet);
+} ;
+
+const int DefaultRSAKeySize = 2048;
+const int DefaultAESKeySize = 256;
+
+using RSAKeyDefault = RSAKey<DefaultRSAKeySize>;
+using AESKeyDefault = AESKey<DefaultAESKeySize>;
+
+} // namespace
+
+struct RSAPublicKey : imp::RSAKeyDefault {};
+struct RSAPrivateKey : imp::RSAKeyDefault {};
+struct AESKey : imp::AESKeyDefault {};
+struct SecureRandom : imp::SecureRandom {};
+
+template<>
+bool pushData(Packet &packet, const RSAPublicKey &publicKey);
+
+template<>
+bool popData(Packet &packet, RSAPublicKey &publicKey);
+
+struct RSAPrivatePublicKeyPair
+{
+	StrongPtr<RSAPrivateKey> private_;
+	StrongPtr<RSAPublicKey> public_;
+} ;
+
+RSAPrivatePublicKeyPair generateRSAPrivatePublicKeyPair(SecureRandom &random);
+StrongPtr<AESKey> generateAESKey (SecureRandom &random);
 
 } // namespace
 } // namespace
-} // namespace
+
+#include "Crypto.inl"

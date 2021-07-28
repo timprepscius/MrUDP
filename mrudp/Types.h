@@ -19,7 +19,9 @@ enum TypeID : uint8_t {
 	SYN_ACK = 'Y',
 	CLOSE_READ = 'R',
 	CLOSE_WRITE = 'W',
-	PROBE = 'P'
+	PROBE = 'P',
+	ENCRYPTED_VIA_PUBLIC_KEY = 'X',
+	ENCRYPTED_VIA_AES = 'E',
 } ;
 
 typedef __uint128_t LongConnectionID;

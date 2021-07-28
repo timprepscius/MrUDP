@@ -19,7 +19,7 @@ struct ReceiveQueue
 {
 	PacketID expectedID;
 	
-	typedef std::map<PacketID, Packet> Queue;
+	typedef OrderedMap<PacketID, Packet> Queue;
 	Queue queue;
 	
 	// enqueues an out of order packet

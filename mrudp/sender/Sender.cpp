@@ -20,6 +20,9 @@ void Sender::processSendQueue()
 	if (status <= Sender::SYN_SENT)
 		return;
 
+	if (!connection->canSend())
+		return;
+
 	bool sentPacket;
 	
 	do

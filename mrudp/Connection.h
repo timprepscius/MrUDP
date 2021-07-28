@@ -3,6 +3,7 @@
 #include "sender/Sender.h"
 #include "receiver/Receiver.h"
 #include "connection/Probe.h"
+#include "Crypto.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -38,6 +39,10 @@ struct Connection : StrongThis<Connection>
 	Sender sender;
 	Receiver receiver;
 	Probe probe;
+	
+#ifdef MRUDP_ENABLE_CRYPTO
+	StrongPtr<ConnectionCrypto> crypto;
+#endif
 
 	// data for callbacks
 	Mutex userDataMutex;
@@ -61,9 +66,12 @@ struct Connection : StrongThis<Connection>
 	void setHandlers(void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_);
 
 	void open ();
-	
+
+	bool canSend ();
 	void send(const char *buffer, int size, int reliable);
+	void send_(const PacketPtr &packet);
 	void send(const PacketPtr &packet);
+	void resend(const PacketPtr &packet);
 	
 	void receive(Packet &p);
 	

@@ -413,7 +413,7 @@ void SocketImp::sendDirect(const Address &addr, const PacketPtr &packet, Connect
 	
 	if (!handle.is_open())
 	{
-		trace_char('$');
+		xTraceChar('$');
 		return;
 	}
 	
@@ -456,7 +456,7 @@ void SocketImp::doSend(const StrongPtr<SocketNative> &socket)
 	
 	if (!handle.is_open())
 	{
-		trace_char('$');
+		xTraceChar('$');
 		return;
 	}
 	
@@ -501,7 +501,8 @@ void SocketImp::close ()
 
 mrudp_addr_t SocketImp::getLocalAddress ()
 {
-	auto endpoint = socket->handle.local_endpoint();
+	boost::system::error_code ec;
+	auto endpoint = socket->handle.local_endpoint(ec);
 	return toAddr(endpoint);
 }
 

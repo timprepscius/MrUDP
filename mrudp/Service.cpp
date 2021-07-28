@@ -12,6 +12,10 @@ void Service::open ()
 {
 	imp = strong_thread(strong<imp::ServiceImp>(this));
 	imp->start();
+
+#ifdef MRUDP_ENABLE_CRYPTO
+	crypto = strong<HostCrypto>();
+#endif
 }
 
 Service::~Service ()

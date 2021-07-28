@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "mrudp.h"
+#include "Crypto.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -39,7 +40,10 @@ struct Service : StrongThis<Service>
 	Clock clock;
 	Random random;
 	StrongPtr<imp::ServiceImp> imp;	
-	
+
+#ifdef MRUDP_ENABLE_CRYPTO
+	StrongPtr<HostCrypto> crypto;
+#endif
 } ;
 
 // --------------------------------------------------------

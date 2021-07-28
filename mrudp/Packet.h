@@ -29,26 +29,47 @@ struct Header {
 // --------------------------------------------------------------------------------
 struct Packet
 {
+	typedef char Data[MAX_PACKET_SIZE];
+	typedef uint16_t Size;
+	
 	Header header;
-	char data[MAX_PACKET_SIZE];
-	uint16_t dataSize = 0;
+	Data data;
+	Size dataSize = 0;
 } __attribute__ ((packed));
 
 typedef StrongPtr<Packet> PacketPtr;
+
+bool operator==(const Packet &lhs, const Packet &rhs);
 
 // returns whether or not the lhs is greater than the rhs
 // when the packet number wraps around (u32), packet id is greater will still
 // function correctly
 bool packet_id_greater_than(PacketID lhs, PacketID rhs);
 
+bool popData(Packet &packet, u8 *data, size_t size);
+
 template<typename T>
 bool popData(Packet &packet, T &t);
+
+template<>
+bool popData(Packet &packet, Vector<u8> &data);
 
 template<typename T>
 bool peekData(Packet &packet, T &t);
 
+bool pushData(Packet &packet, const u8 *data, size_t size);
+
 template<typename T>
 bool pushData(Packet &packet, const T &);
+
+template<>
+bool pushData(Packet &packet, const Vector<u8> &data);
+
+template<typename T>
+size_t pushSize(const T &);
+
+template<>
+size_t pushSize(const Vector<u8> &data);
 
 } // namespace
 } // namespace

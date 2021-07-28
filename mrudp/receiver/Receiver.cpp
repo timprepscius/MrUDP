@@ -21,10 +21,13 @@ void Receiver::close ()
 {
 	if (status < CLOSED)
 	{
-		auto packet = strong<Packet>();
-		packet->header.type = CLOSE_READ;
-	
-		connection->sender.sendImmediately(packet);
+		if (connection->canSend())
+		{
+			auto packet = strong<Packet>();
+			packet->header.type = CLOSE_READ;
+		
+			connection->sender.sendImmediately(packet);
+		}
 		status = CLOSED;
 	}
 }
