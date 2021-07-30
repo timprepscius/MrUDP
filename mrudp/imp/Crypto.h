@@ -72,11 +72,12 @@ struct AESKey
 	bool decrypt(Packet &packet);
 } ;
 
-const int DefaultRSAKeySize = 2048;
+const int DefaultRSAKeySize = 1024;
 const int DefaultAESKeySize = 256;
 
 using RSAKeyDefault = RSAKey<DefaultRSAKeySize>;
 using AESKeyDefault = AESKey<DefaultAESKeySize>;
+using AESIVDefault = AESIV<DefaultAESKeySize>;
 
 } // namespace
 

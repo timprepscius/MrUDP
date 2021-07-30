@@ -8,62 +8,58 @@ HostCrypto::HostCrypto()
 {
 	random = strong<SecureRandom>();
 	auto keyPair = generateRSAPrivatePublicKeyPair(*random);
-	localRSAPrivateKey = keyPair.private_;
-	localRSAPublicKey = keyPair.public_;
+	privateKey = keyPair.private_;
+	publicKey = keyPair.public_;
 }
 
 ConnectionCrypto::ConnectionCrypto(const StrongPtr<HostCrypto> &host_) :
 	host(host_)
 {
-	localAESKey = generateAESKey(*host->random);
+	localSessionKey = generateAESKey(*host->random);
 }
 
 bool ConnectionCrypto::canEncrypt ()
 {
-	return (bool)remoteAESKey;
+	return (bool)remoteSessionKey;
 }
 	
 bool ConnectionCrypto::decrypt (Packet &packet)
 {
-	if (packet.header.type == SYN)
+	auto &type = packet.header.type;
+	
+	if (type == ENCRYPTED_VIA_PUBLIC_KEY)
 	{
-		RSAPublicKey remoteRSAPublicKey_;
-		if (!popData(packet, remoteRSAPublicKey_))
+		if (!host->privateKey || !host->privateKey->decrypt(packet))
+			return false;
+	}
+	else
+	if (type == ENCRYPTED_VIA_AES)
+	{
+		if (!localSessionKey->decrypt(packet))
+			return false;
+	}
+
+	if (type == H0_CLIENT_PUBLIC_KEY || type == H1_CLIENT_PUBLIC_KEY)
+	{
+		RSAPublicKey remotePublicKey_;
+		if (!popData(packet, remotePublicKey_))
 			return false;
 			
-		if (!remoteRSAPublicKey)
+		if (!remotePublicKey)
 		{
-			remoteRSAPublicKey = strong<RSAPublicKey>(std::move(remoteRSAPublicKey_));
+			remotePublicKey = strong<RSAPublicKey>(std::move(remotePublicKey_));
 		}
 	}
 	else
+	if (type == H2_SESSION_KEY || type == H3_SESSION_KEY)
 	{
-		if (packet.header.type == ENCRYPTED_VIA_PUBLIC_KEY)
-		{
-			if (!host->localRSAPrivateKey->decrypt(packet))
-				return false;
-		}
-		else
-		if (packet.header.type == ENCRYPTED_VIA_AES)
-		{
-			if (!localAESKey->decrypt(packet))
-				return false;
-		}
-		else
-		{
+		AESKey remoteSessionKey_;
+		if (!popData(packet, remoteSessionKey_))
 			return false;
-		}
-
-		if (packet.header.type == SYN_ACK)
+			
+		if (!remoteSessionKey)
 		{
-			AESKey remoteAESKey_;
-			if (!popData(packet, remoteAESKey_))
-				return false;
-				
-			if (!remoteAESKey)
-			{
-				remoteAESKey = strong<AESKey>(remoteAESKey_);
-			}
+			remoteSessionKey = strong<AESKey>(remoteSessionKey_);
 		}
 	}
 	
@@ -72,35 +68,31 @@ bool ConnectionCrypto::decrypt (Packet &packet)
 
 bool ConnectionCrypto::encrypt (Packet &packet)
 {
-	if (packet.header.type == SYN)
+	auto &type = packet.header.type;
+
+	if (type == H0_CLIENT_PUBLIC_KEY || type == H1_CLIENT_PUBLIC_KEY)
 	{
-		if (!pushData(packet, *host->localRSAPublicKey))
+		if (!pushData(packet, *host->publicKey))
 			return false;
-		
-		return true;
 	}
 	else
+	if (type == H2_SESSION_KEY || type == H3_SESSION_KEY)
 	{
-		if (packet.header.type == SYN_ACK)
-		{
-			if (!pushData(packet, *localAESKey))
-				return false;
-		}
-	
-		if (remoteAESKey)
-		{
-			return remoteAESKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
-		}
-		else
-		if (remoteRSAPublicKey)
-		{
-			return remoteRSAPublicKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
-		}
-		else
-		{
+		if (!pushData(packet, *localSessionKey))
 			return false;
-		}
 	}
+	
+	if (remoteSessionKey)
+	{
+		return remoteSessionKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
+	}
+	else
+	if (remotePublicKey)
+	{
+		return remotePublicKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
+	}
+	
+	return true;
 }
 
 } // namespace

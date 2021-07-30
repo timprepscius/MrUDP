@@ -6,7 +6,7 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
-SCENARIO("mrudp packet id")
+SCENARIO("packet id")
 {
     GIVEN( "a set of interesting packet id numbers" )
     {

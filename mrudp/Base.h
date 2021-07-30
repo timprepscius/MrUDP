@@ -60,10 +60,10 @@ using String = std::string;
 
 #ifdef MRUDP_SINGLE_CHAR_TRACE
 
-void xTraceChar_(char c);
-void xTraceChar_(const String &c);
+void xTraceChar_(void *self, uint32_t, char c);
+void xTraceChar_(void *self, uint32_t, char prefix, char c);
 
-#define xTraceChar(x) xTraceChar_(x)
+#define xTraceChar(...) xTraceChar_(__VA_ARGS__)
 
 #else
 

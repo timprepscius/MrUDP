@@ -142,7 +142,7 @@ void Retrier::onRetryTimeout()
 		{
 			sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress)) << logLabel("FAILING") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
 
-			xTraceChar(String("F(") + (char)retry->packet->header.type + ")");
+			xTraceChar(this, retry->packet->header.id, 'F', (char)retry->packet->header.type);
 			connection->fail(MRUDP_EVENT_TIMEOUT);
 		}
 		else

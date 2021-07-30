@@ -8,15 +8,15 @@ namespace mrudp {
 
 static std::atomic<size_t> NumConnection = 0;
 
-Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_, ShortConnectionID remoteID_) :
+Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_) :
 	socket(socket_),
 	id(id_),
 	localID(localID_),
-	remoteID(remoteID_),
 	remoteAddress(remoteAddress_),
 	sender(this),
 	receiver(this),
-	probe(this)
+	probe(this),
+	handshake(this)
 {
 	#ifdef MRUDP_ENABLE_CRYPTO
 		crypto = strong<ConnectionCrypto>(socket->service->crypto);
@@ -28,6 +28,8 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 
 Connection::~Connection ()
 {
+	xTraceChar(this, 0, '~');
+
 	xLogDebug(logOfThis(this));
 	sLogDebug("mrudp::life_cycle", logOfThis(this) << --NumConnection);
 	
@@ -49,7 +51,18 @@ void Connection::open ()
 	imp->open();
 	
 	probe.onStart(socket->service->clock.now());
+
+#ifdef MRUDP_ENABLE_DEBUG_HOOK
+	__installDebugHook();
+#endif
 }
+
+#ifdef MRUDP_ENABLE_DEBUG_HOOK
+void Connection::__installDebugHook()
+{
+	imp->setTimeout("debug", socket->service->clock.now() + toDuration(10), [this](){ this->__installDebugHook(); });
+}
+#endif
 
 void Connection::close()
 {
@@ -75,7 +88,7 @@ void Connection::possiblyClose ()
 
 void Connection::fail (mrudp_event_t event)
 {
-	xTraceChar('!');
+	xTraceChar(this, 0, '!');
 
 	closeReason = event;
 
@@ -88,7 +101,7 @@ void Connection::fail (mrudp_event_t event)
 
 void Connection::close (mrudp_event_t event)
 {
-	xTraceChar('#');
+	xTraceChar(this, 0, '#');
 
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) logVar(closeHandler) << logVar(userData));
 
@@ -110,7 +123,7 @@ void Connection::close (mrudp_event_t event)
 
 		if (closeHandler_)
 		{
-			xTraceChar('*');
+			xTraceChar(this, 0, '*');
 			closeHandler_(userData_, event);
 		}
 			
@@ -135,35 +148,30 @@ void Connection::finishWhenReady()
 
 void Connection::finish ()
 {
+	xTraceChar(this, 0, '@');
 	socket->erase(this);
 }
 
 void Connection::receive(Packet &packet)
 {
-	xTraceChar((char)std::tolower((char)packet.header.type));
-
 	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (!crypto->decrypt(packet))
 	{
 		sLogDebug("mrudp::receive", "decryption failed");
+		xTraceChar(this, packet.header.id, '^');
 
+		debug_assert(false);
 		xDebugLine();
 		return ;
 	}
-
-	xTraceChar((char)std::tolower((char)packet.header.type));
-
+	
 	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 #endif
 
-	// TODO: this is a security concern
-	if (packet.header.type == SYN || packet.header.type == SYN_ACK)
-	{
-		peekData(packet, remoteID);
-		xDebugLine();
-	}
+	xTraceChar(this, packet.header.id, (char)std::tolower((char)packet.header.type));
+	handshake.onPacket(packet);
 
 	auto now = socket->service->clock.now();
 	probe.onReceive(now);
@@ -207,13 +215,14 @@ void Connection::send_(const PacketPtr &packet)
 
 void Connection::send(const PacketPtr &packet)
 {
-	xTraceChar((char)packet->header.type);
+	xTraceChar(this, packet->header.id, (char)packet->header.type);
 
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (!crypto->encrypt(*packet))
 	{
 		sLogDebug("mrudp::send", "encryption failed");
 		
+		debug_assert(false);
 		xDebugLine();
 		return;
 	}
@@ -224,16 +233,13 @@ void Connection::send(const PacketPtr &packet)
 
 void Connection::resend(const PacketPtr &packet)
 {
-	xTraceChar((char)packet->header.type);
+	xTraceChar(this, packet->header.id, 'R', (char)packet->header.type);
 	send_(packet);
 }
 
 void Connection::send(const char *buffer, int size, int reliable)
 {
 	xLogDebug(logOfThis(this));
-
-	if (sender.isUninitialized())
-		sender.open();
 
 	if (reliable)
 	{
@@ -247,13 +253,16 @@ void Connection::send(const char *buffer, int size, int reliable)
 	}
 	else
 	{
-		auto packet = strong<Packet>();
-		packet->header.type = DATA_UNRELIABLE;
-		packet->header.id = 0;
-		
-		packet->dataSize = size;
-		memcpy(packet->data, buffer, size);
-		send(packet);
+		if (canSend())
+		{
+			auto packet = strong<Packet>();
+			packet->header.type = DATA_UNRELIABLE;
+			packet->header.id = 0;
+			
+			packet->dataSize = size;
+			memcpy(packet->data, buffer, size);
+			send(packet);
+		}
 	}
 }
 

@@ -7,10 +7,12 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
-SCENARIO("mrudp basics")
+SCENARIO("basics")
 {
 //	xLogActivateStory(xLogAllStories);
-	
+	auto numConnectionsToCreate = 256;
+	auto numPacketsToSendOnEachConnection = 64;
+
     GIVEN( "mrudp service, remote socket" )
     {
 		mrudp_addr_t anyAddress;
@@ -27,18 +29,18 @@ SCENARIO("mrudp basics")
 		local.service = mrudp_service();
 		
 		auto listen = Listener {
-			[&](auto connection) {
+			.accept = [&](auto connection) {
 				auto l = Lock(remote.connectionsMutex);
 				remote.connections.push_back(connection);
 				
 				auto remoteConnectionDispatch = new Connection {
-					[&](auto data, auto size, auto isReliable) {
+					.receive = [&](auto data, auto size, auto isReliable) {
 						Lock lock(remote.packetsMutex);
 						remote.packets.push_back(Packet(data, data+size));
 						remote.packetsReceived++;
 						return 0;
 					},
-					[&remote, connection](auto event) {
+					.close = [&remote, connection](auto event) {
 						Lock lock(remote.connectionsMutex);
 						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 						if (connection_ != remote.connections.end())
@@ -60,7 +62,7 @@ SCENARIO("mrudp basics")
 				
 				return 0;
 			},
-			[&](auto event) { return 0; }
+			.close = [&](auto event) { return 0; }
 		} ;
 		
 		mrudp_listen(remote.sockets.back(), &listen, listenerAccept, listenerClose);
@@ -75,18 +77,18 @@ SCENARIO("mrudp basics")
 			mrudp_socket_connect(remote.sockets.back(), &localAddress);
 			
 			auto localConnectionDispatch = Connection {
-				[&](auto data, auto size, auto isReliable) {
+				.receive = [&](auto data, auto size, auto isReliable) {
+					local.packetsReceived++;
+					local.packets.push_back(Packet(data, data+size));
 					return 0;
 				},
-				[&](auto event) {
+				.close = [&](auto event) {
 					return 0;
 				}
 			} ;
 
-			WHEN("X connections are created from local to remote")
+			NO_WHEN("X connections are created from local to remote")
 			{
-				auto numConnectionsToCreate = 1;
-				
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
 					local.connections.push_back(
@@ -151,8 +153,6 @@ SCENARIO("mrudp basics")
 			
 			WHEN("X connections are created and Y packets are sent on each")
 			{
-				auto numConnectionsToCreate = 1;
-				auto numPacketsToSendOnEachConnection = 16;
 				auto packetsSent = 0;
 				
 				for (auto i=0; i<numConnectionsToCreate; ++i)
@@ -191,6 +191,44 @@ SCENARIO("mrudp basics")
 					);
 					
 					REQUIRE(allMatch);
+				}
+				
+				WHEN("packets are sent back oppositely")
+				{
+				
+					auto numPacketsSentRemoteToLocal = 0;
+					
+					wait_until(std::chrono::seconds(10), [&]() {
+						return remote.connections.size() == numConnectionsToCreate;
+					});
+					
+					for (auto &connection: remote.connections)
+					{
+						for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+						{
+							mrudp_send(connection, packet.data(), (int)packet.size(), 1);
+							numPacketsSentRemoteToLocal++;
+						}
+					}
+					
+					THEN("packets show up and are correct")
+					{
+						wait_until(
+							std::chrono::seconds(10),
+							[&]() { return local.packetsReceived == numPacketsSentRemoteToLocal; }
+						);
+
+						REQUIRE(local.packetsReceived == packetsSent);
+						
+						Lock l(local.packetsMutex);
+						
+						bool allMatch = std::all_of(
+							local.packets.begin(), local.packets.end(),
+							[&packet](auto &v) { return v == packet; }
+						);
+						
+						REQUIRE(allMatch);
+					}
 				}
 				
 				WHEN("the local connections are closed")

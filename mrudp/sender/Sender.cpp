@@ -17,7 +17,7 @@ void Sender::processSendQueue()
 {
 	xLogDebug(logOfThis(this));
 	
-	if (status <= Sender::SYN_SENT)
+	if (status < OPEN)
 		return;
 
 	if (!connection->canSend())
@@ -55,14 +55,16 @@ void Sender::open()
 {
 	xLogDebug(logOfThis(this));
 
-	status = SYN_SENT;
-	
-	auto packet = strong<Packet>();
-	packet->header.type = SYN;
+	// When connections are closed, while they are negotiating their handshake
+	// they may have queued data
+	// --
+	// So when an open is called from the handshake, even if has been officially closed
+	// we process the queue.
 
-	pushData(*packet, connection->localID);
-	
-	return sendImmediately(packet);
+	processSendQueue();
+
+	if (status == UNINITIALIZED)
+		status = OPEN;
 }
 
 void Sender::close()
@@ -111,7 +113,7 @@ void Sender::send(const PacketPtr &packet)
 
 void Sender::onPacket(Packet &packet)
 {
-	if (packet.header.type == ACK || packet.header.type == SYN_ACK)
+	if (isAck(packet.header.type))
 	{
 		onAck(packet);
 	}
@@ -126,31 +128,23 @@ void Sender::onPacket(Packet &packet)
 
 void Sender::onAck(Packet &packet)
 {
-	if (status > UNINITIALIZED)
+	auto packetID = packet.header.id;
+	
+	auto now = connection->socket->service->clock.now();
+	auto ackResult =
+		retrier.ack(packetID, now);
+
+	if (ackResult.contained)
 	{
-		auto packetID = packet.header.id;
+		rtt.onSample(ackResult.rtt);
+		windowSize.onSample(rtt.duration);
 		
-		auto now = connection->socket->service->clock.now();
-		auto ackResult =
-			retrier.ack(packetID, now);
-
-		if (ackResult.contained)
-		{
-			rtt.onSample(ackResult.rtt);
-			windowSize.onSample(rtt.duration);
-			
-			if (ackResult.needsRetryTimeoutRecalculation)
-				retrier.recalculateRetryTimeout();
-		}
-
-		// this should have more checks
-		// @TODO: think about this
-		if (status == SYN_SENT)
-			status = OPEN;
-		
-		processSendQueue();
-		connection->possiblyClose();
+		if (ackResult.needsRetryTimeoutRecalculation)
+			retrier.recalculateRetryTimeout();
 	}
+
+	processSendQueue();
+	connection->possiblyClose();
 }
 
 } // namespace

@@ -37,7 +37,6 @@ struct Sender
 {
 	enum Status {
 		UNINITIALIZED,
-		SYN_SENT,
 		OPEN,
 		CLOSED
 	} ;

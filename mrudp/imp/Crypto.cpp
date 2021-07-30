@@ -325,8 +325,9 @@ template<>
 bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom &random)
 {
 	// generate the public IV
-	AESIV<256> iv;
-	construct_(random, iv);
+	AESIVDefault iv;
+	if (!construct_(random, iv))
+		return false;
 
 	// move the header id into the packet data
 	if (!pushData(packet, packet.header.id))
@@ -355,8 +356,21 @@ bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom 
 		EVP_CIPHER_CTX_ptr ctx_ = EVP_CIPHER_CTX_ptr(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
 		auto ctx = ctx_.get();
 
-		if(SSL_FAIL(EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))
+		if (key.BitSize == 256)
+		{
+			if(SSL_FAIL(EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))
+				return false;
+		}
+		else
+		if (key.BitSize == 128)
+		{
+			if(SSL_FAIL(EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key.data, iv_.data)))
+				return false;
+		}
+		else
+		{
 			return false;
+		}
 
 		int size = 0;
 		
@@ -380,7 +394,7 @@ bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom 
 template<>
 bool decrypt_(AESKeyDefault &key, Packet &packet)
 {
-	AESIV<256> iv;
+	AESIVDefault iv;
 	if (!popData(packet, iv))
 		return false;
 
@@ -395,8 +409,21 @@ bool decrypt_(AESKeyDefault &key, Packet &packet)
 		EVP_CIPHER_CTX_ptr ctx_ = EVP_CIPHER_CTX_ptr(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
 		auto ctx = ctx_.get();
 
-		if(SSL_FAIL(EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))
+		if (key.BitSize == 256)
+		{
+			if(SSL_FAIL(EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))
+				return false;
+		}
+		else
+		if (key.BitSize == 128)
+		{
+			if(SSL_FAIL(EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key.data, iv_.data)))
+				return false;
+		}
+		else
+		{
 			return false;
+		}
 
 		int size;
 		if(SSL_FAIL(EVP_DecryptUpdate(ctx, (u8 *)packet.data, &size, (u8 *)data, packet.dataSize)))

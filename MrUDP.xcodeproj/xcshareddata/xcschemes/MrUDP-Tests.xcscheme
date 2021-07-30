@@ -52,20 +52,20 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: mrudp packet transmission rate&quot;"
+            argument = "-s &quot;Scenario: packet transmission rate&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: mrudp crypto&quot;"
-            isEnabled = "YES">
+            argument = "-s &quot;Scenario: crypto&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-s &quot;Scenario: connections&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: mrudp basics&quot;"
-            isEnabled = "NO">
+            argument = "-s &quot;Scenario: basics&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

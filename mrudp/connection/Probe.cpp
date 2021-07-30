@@ -80,6 +80,14 @@ void Probe::onTimeout()
 			
 			sender.sendImmediately(packet);
 		}
+		else
+		{
+			// when there is no probe sent
+			// nothing can time out, but if the probe can't
+			// even time out, it means the connection should fail
+			// immediately
+			connection->fail(MRUDP_EVENT_TIMEOUT);
+		}
 	}
 	
 	registerTimeout();

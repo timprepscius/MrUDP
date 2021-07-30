@@ -8,7 +8,7 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
-SCENARIO("mrudp crypto")
+SCENARIO("crypto")
 {
     GIVEN( "a packet" )
     {
@@ -30,10 +30,10 @@ SCENARIO("mrudp crypto")
 		WHEN("encrypting with aes")
 		{
 			auto b = a;
-			aes->encrypt(b, 32, random);
+			REQUIRE(aes->encrypt(b, 32, random));
 			
 			auto c = b;
-			aes->decrypt(c);
+			REQUIRE(aes->decrypt(c));
 			
 			REQUIRE(c == a);
 		}
@@ -41,10 +41,10 @@ SCENARIO("mrudp crypto")
 		WHEN("encrypting with rsa")
 		{
 			auto b = a;
-			keys.public_->encrypt(b, MAX_PACKET_SIZE, random);
+			REQUIRE(keys.public_->encrypt(b, MAX_PACKET_SIZE, random));
 			
 			auto c = b;
-			keys.private_->decrypt(c);
+			REQUIRE(keys.private_->decrypt(c));
 			
 			REQUIRE(c == a);
 		}
@@ -58,7 +58,7 @@ SCENARIO("mrudp crypto")
 
 			{
 				mrudp::Packet p;
-				p.header.type = SYN;
+				p.header.type = H0;
 				p.header.connection = 1;
 				p.dataSize = 0;
 				auto c = p;
@@ -70,7 +70,7 @@ SCENARIO("mrudp crypto")
 
 			{
 				mrudp::Packet p;
-				p.header.type = SYN;
+				p.header.type = H1;
 				p.header.connection = 1;
 				p.dataSize = 0;
 				auto c = p;
@@ -82,7 +82,7 @@ SCENARIO("mrudp crypto")
 			
 			{
 				mrudp::Packet p;
-				p.header.type = SYN_ACK;
+				p.header.type = H2;
 				p.header.connection = 1;
 				p.dataSize = 0;
 				auto c = p;
@@ -94,7 +94,7 @@ SCENARIO("mrudp crypto")
 
 			{
 				mrudp::Packet p;
-				p.header.type = SYN_ACK;
+				p.header.type = H3;
 				p.header.connection = 1;
 				p.dataSize = 0;
 				auto c = p;

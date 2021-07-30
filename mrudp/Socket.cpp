@@ -52,8 +52,7 @@ StrongPtr<Connection> Socket::connect(
 		strong_this(this),
 		generateLongConnectionID(),
 		remoteAddress,
-		nextConnectionID++,
-		0
+		nextConnectionID++
 	);
 		
 	connection->userData = userData;
@@ -62,7 +61,7 @@ StrongPtr<Connection> Socket::connect(
 
 	insert(connection);
 	connection->open();
-	connection->sender.open();
+	connection->handshake.initiate();
 	
 	return connection;
 }
@@ -152,11 +151,21 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 {
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "new connection");
 	
-	if (packet.header.type != SYN)
+	if (packet.header.type != H0)
 	{
-		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "not MRUDP syn");
+		xTraceChar(this, packet.header.id, '!', '0');
+		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "not MRUDP H0");
 
 		// @TODO: throw exception/ return some value?
+		return nullptr;
+	}
+	
+	if (lookup.longID == 0)
+	{
+		xTraceChar(this, packet.header.id, '!', 'L');
+
+		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "no LONGID");
+
 		return nullptr;
 	}
 
@@ -167,15 +176,8 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 		return nullptr;
 	}
 	
-	ShortConnectionID remoteID;
-	if (!peekData(packet, remoteID))
-	{
-		// @TODO: throw exception/ return some value?
-		return nullptr;
-	}
-	
 	auto localID = nextConnectionID++;
-	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID, remoteID);
+	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID);
 	
 	insert(connection);
 	connection->open();
@@ -193,12 +195,10 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 		return nullptr;
 	}
 	
-	connection->sender.open();
-	
 	return connection;
 }
 
-StrongPtr<Connection>  Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress)
+StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress)
 {
 	auto lock = lock_of(connectionsMutex);
 	auto connection = findConnection(lookup, packet, remoteAddress);

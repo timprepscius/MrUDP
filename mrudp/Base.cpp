@@ -5,18 +5,38 @@
 namespace timprepscius {
 namespace mrudp {
 
-#ifdef MRUDP_SINGLE_CHAR_TRACE
+#if defined(MRUDP_SINGLE_CHAR_TRACE)
+#if 0
 
-void xTraceChar_(char c)
+void xTraceChar_(void *self, uint32_t id, char c)
 {
-	std::cout << c;
+	std::ostringstream s;
+	s << self << ": \t" << c << " " << id << std::endl;
+	std::cerr << s.str();
 }
 
-void xTraceChar_(const String &c)
+void xTraceChar_(void *self, uint32_t id, char prefix, char c)
 {
-	std::cout << c;
+	std::ostringstream s;
+	s << self << ": \t" << prefix << "(" << c << ")" << " " << id << std::endl;
+	std::cerr << s.str();
 }
 
+#else
+
+void xTraceChar_(void *self, uint32_t id, char c)
+{
+	std::cerr << c;
+}
+
+void xTraceChar_(void *self, uint32_t id, char prefix, char c)
+{
+	std::ostringstream s;
+	s << prefix << "(" << c << ")";
+	std::cerr << s.str();
+}
+
+#endif
 #endif
 
 } // namespace

@@ -4,6 +4,7 @@
 #include "receiver/Receiver.h"
 #include "connection/Probe.h"
 #include "Crypto.h"
+#include "Handshake.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -30,12 +31,13 @@ struct Connection : StrongThis<Connection>
 	LongConnectionID id;
 	
 	// the short lookup ids for remote and local.
-	ShortConnectionID remoteID, localID = 0;
+	ShortConnectionID remoteID = 0, localID = 0;
 	
 	// the remote address
 	mrudp_addr_t remoteAddress; // Peer address
 
 	// connection mechanisms
+	Handshake handshake;
 	Sender sender;
 	Receiver receiver;
 	Probe probe;
@@ -58,8 +60,7 @@ struct Connection : StrongThis<Connection>
 		const StrongPtr<Socket> &socket_,
 		LongConnectionID id,
 		const mrudp_addr_t &remoteAddress_,
-		ShortConnectionID localID,
-		ShortConnectionID remoteID
+		ShortConnectionID localID
 	);
 	~Connection ();
 
@@ -84,6 +85,10 @@ struct Connection : StrongThis<Connection>
 	
 	void finishWhenReady ();
 	void finish ();
+
+#ifdef MRUDP_ENABLE_DEBUG_HOOK
+	void __installDebugHook ();
+#endif
 };
 
 // --------------------------------------------------------

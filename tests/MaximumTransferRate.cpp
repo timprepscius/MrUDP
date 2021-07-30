@@ -7,7 +7,7 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
-SCENARIO("mrudp packet transmission rate")
+SCENARIO("packet transmission rate")
 {
 	auto X = 256;
 	auto Y = 128;

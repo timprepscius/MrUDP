@@ -13,8 +13,16 @@ Receiver::Receiver(Connection *connection_) :
 
 void Receiver::open (PacketID packetID)
 {
-	status = OPEN;
+	// When connections are closed, while they are negotiating their handshake
+	// they may have queued data
+	// --
+	// So when an open is called from the handshake, even if has been officially closed
+	// we process the queue.
 	receiveQueue.expectedID = packetID;
+	processReceiveQueue();
+
+	if (status == UNINITIALIZED)
+		status = OPEN;
 }
 
 void Receiver::close ()
@@ -28,6 +36,7 @@ void Receiver::close ()
 		
 			connection->sender.sendImmediately(packet);
 		}
+		
 		status = CLOSED;
 	}
 }
@@ -72,7 +81,6 @@ void Receiver::processReceived(Packet &packet)
 	if (packet.header.type == CLOSE_WRITE)
 	{
 		close();
-		
 		connection->possiblyClose();
 	}
 }
@@ -86,6 +94,16 @@ void Receiver::processReceiveQueue()
 	);
 }
 
+inline
+bool isReceivable(TypeID typeID)
+{
+	return
+		typeID == DATA ||
+		typeID == PROBE ||
+		typeID == CLOSE_READ ||
+		typeID == CLOSE_WRITE;
+}
+
 void Receiver::onPacket(Packet &packet)
 {
 	if (packet.header.type == CLOSE_READ)
@@ -93,28 +111,10 @@ void Receiver::onPacket(Packet &packet)
 		xDebugLine();
 	}
 
-	if(status == Receiver::UNINITIALIZED)
+	if (status == OPEN)
 	{
-		if(packet.header.type == SYN)
-		{
-			open(packet.header.id);
-			
-			auto ack = strong<Packet>();
-			ack->header.type = SYN_ACK;
-			ack->header.id = receiveQueue.expectedID++;
-			pushData(*ack, connection->localID);
-			
-			connection->send(ack);
-		}
-		else
-		{
-			// No connections exist and we got a non syn packet
-			// We ignore this
-		}
-	}
-	else
-	{
-		if(packet.header.type == DATA || packet.header.type == PROBE || packet.header.type == CLOSE_WRITE || packet.header.type == CLOSE_READ)
+		auto type = packet.header.type;
+		if(isReceivable(type))
 		{
 			auto ack = strong<Packet>();
 			ack->header.type = ACK;
@@ -122,7 +122,7 @@ void Receiver::onPacket(Packet &packet)
 		
 			connection->send(ack);
 				
-			sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.connection) << logVar(packet.header.id) <<  logVar(receiveQueue.expectedID));
+			sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.connection) << logVar(packet.header.id) );
 
 			if(packet.header.id == receiveQueue.expectedID)
 			{

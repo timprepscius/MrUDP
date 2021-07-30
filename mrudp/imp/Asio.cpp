@@ -413,7 +413,7 @@ void SocketImp::sendDirect(const Address &addr, const PacketPtr &packet, Connect
 	
 	if (!handle.is_open())
 	{
-		xTraceChar('$');
+		xTraceChar(this, 0, '$');
 		return;
 	}
 	
@@ -456,7 +456,7 @@ void SocketImp::doSend(const StrongPtr<SocketNative> &socket)
 	
 	if (!handle.is_open())
 	{
-		xTraceChar('$');
+		xTraceChar(this, 0, '$');
 		return;
 	}
 	

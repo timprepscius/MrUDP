@@ -10,6 +10,8 @@ namespace tests {
 SCENARIO("connections")
 {
 //	xLogActivateStory(LogAllStories);
+	auto numConnectionsToCreate = 1;
+	size_t numPacketsToSendOnEachConnection = 16;
 	
     GIVEN( "mrudp service, remote socket" )
     {
@@ -29,18 +31,18 @@ SCENARIO("connections")
 		local.service = mrudp_service();
 		
 		auto listen = Listener {
-			[&](auto connection) {
+			.accept = [&](auto connection) {
 				auto l = Lock(remote.connectionsMutex);
 				remote.connections.push_back(connection);
 				
 				auto remoteConnectionDispatch = new Connection {
-					[&](auto data, auto size, auto isReliable) {
+					.receive = [&](auto data, auto size, auto isReliable) {
 						Lock lock(remote.packetsMutex);
 						remote.packets.push_back(Packet(data, data+size));
 						remote.packetsReceived++;
 						return 0;
 					},
-					[&remote, connection](auto event) {
+					.close = [&remote, connection](auto event) {
 						Lock lock(remote.connectionsMutex);
 						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 						if (connection_ != remote.connections.end())
@@ -62,7 +64,7 @@ SCENARIO("connections")
 				
 				return 0;
 			},
-			[&](auto event) { return 0; }
+			.close = [&](auto event) { return 0; }
 		} ;
 		
 		mrudp_listen(remote.sockets.back(), &listen, listenerAccept, listenerClose);
@@ -87,8 +89,6 @@ SCENARIO("connections")
 
 			WHEN("X connections are created from local to remote and then destroyed")
 			{
-				auto numConnectionsToCreate = 1;
-				
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
 					local.connections.push_back(
@@ -111,7 +111,6 @@ SCENARIO("connections")
 				
 				WHEN("Y packets are sent on each")
 				{
-					size_t numPacketsToSendOnEachConnection = 16;
 					size_t packetsSent = 0;
 					
 					Packet packet = { 'a', 'b', 'c', 'd', 'e' };

@@ -10,6 +10,12 @@ else()
     message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
 endif()
 
+if(USE_OPENSSL)
+    include_directories(PRIVATE ${USE_OPENSSL})
+else()
+    message( FATAL_ERROR "please specify USE_OPENSSL=/place/where/openssl/openssl <-- not a relative path!")
+endif()
+
 if (WIN32)
 	add_definitions(-DSYS_WINDOWS)
 endif ()
@@ -34,12 +40,15 @@ add_library(MrUDP STATIC
     mrudp/mrudp.cpp
     mrudp/Base.cpp
     mrudp/Connection.cpp
+    mrudp/Crypto.cpp
+    mrudp/Handshake.cpp
     mrudp/Packet.cpp
     mrudp/Service.cpp
     mrudp/Socket.cpp
     mrudp/Types.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
+    mrudp/imp/Crypto.cpp
     mrudp/receiver/ReceiveQueue.cpp
     mrudp/receiver/Receiver.cpp
     mrudp/sender/Retrier.cpp
