@@ -4,16 +4,18 @@ project(MrUDP)
 
 add_definitions(-DMRUDP_NO_CORE)
 
+if(USE_CRYPTO)
+	find_package(OpenSSL REQUIRED)
+	target_link_libraries(untitled OpenSSL::SSL)
+else()
+
+endif()
+
+
 if(USE_BOOST)
     include_directories(PRIVATE ${USE_BOOST})
 else()
     message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
-endif()
-
-if(USE_OPENSSL)
-    include_directories(PRIVATE ${USE_OPENSSL})
-else()
-    message( FATAL_ERROR "please specify USE_OPENSSL=/place/where/openssl/openssl <-- not a relative path!")
 endif()
 
 if (WIN32)
@@ -40,7 +42,6 @@ add_library(MrUDP STATIC
     mrudp/mrudp.cpp
     mrudp/Base.cpp
     mrudp/Connection.cpp
-    mrudp/Crypto.cpp
     mrudp/Handshake.cpp
     mrudp/Packet.cpp
     mrudp/Service.cpp
@@ -48,7 +49,6 @@ add_library(MrUDP STATIC
     mrudp/Types.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
-    mrudp/imp/Crypto.cpp
     mrudp/receiver/ReceiveQueue.cpp
     mrudp/receiver/Receiver.cpp
     mrudp/sender/Retrier.cpp
@@ -56,6 +56,15 @@ add_library(MrUDP STATIC
     mrudp/sender/SendIDGenerator.cpp
     mrudp/sender/SendQueue.cpp
 )
+
+if(USE_CRYPTO)
+	target_sources(MrUDP PRIVATE
+		mrudp/Crypto.cpp
+		mrudp/imp/CryptoOpenSSL.cpp
+	)
+else()
+
+endif()
 
 target_include_directories(MrUDP
     PUBLIC 
@@ -76,6 +85,14 @@ add_executable(MrUDP-Tests
     tests/StandaloneCore.cpp
     tests/Run.cpp
 )
+
+if(USE_CRYPTO)
+	target_sources(MrUDP-Tests PRIVATE
+		tests/Crypto.cpp
+	)
+else()
+
+endif()
 
 # link the new hello_library target with the hello_binary target
 target_link_libraries( MrUDP-Tests
