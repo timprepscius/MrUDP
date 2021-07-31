@@ -8,7 +8,11 @@ PROJECTS := \
 	mrudp/socket \
 	mrudp/imp
 
-INCPATH := $(timprepscius.libraries.cpp.include) $(timprepscius.core.include) $(timprepscius.base.include)
+INCPATH := \
+	$(timprepscius.libraries.cpp.include) \
+	$(timprepscius.core.include) \
+	$(timprepscius.standard.include)
+	
 LIBFILE := libMrUDP.a
 
 COPYTO := $(LIBRARIES)/project

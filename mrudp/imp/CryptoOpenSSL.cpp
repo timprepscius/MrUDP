@@ -443,7 +443,9 @@ bool decrypt_(AESKeyDefault &key, Packet &packet)
 	if (!popData(packet, packet.header.type))
 		return false;
 		
-	if (!popData(packet, packet.header.id))
+	// linux doesn't allow the u16 & in a packed structure.
+	// so we can't say, popData(packet, packet.header.id)
+	if (!popData(packet, (u8 *)&packet.header.id, sizeof(packet.header.id)))
 		return false;
 	
 	return true;

@@ -5,7 +5,7 @@ PROJECTS := .
 INCPATH := \
 	$(timprepscius.mrudp.include) \
 	$(timprepscius.core.include) \
-	$(timprepscius.base.include) \
+	$(timprepscius.standard.include) \
 	$(timprepscius.com.include) \
 	$(timprepscius.libraries.cpp.include)
 	
