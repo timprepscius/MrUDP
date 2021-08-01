@@ -77,7 +77,7 @@ void Handshake::handlePacket(Packet &packet)
 	else
 	if (received == H3)
 	{
-		readRemoteID(packet, waitingFor == H2);
+		readRemoteID(packet, waitingFor == H3);
 
 		if (waitingFor == H3)
 		{
