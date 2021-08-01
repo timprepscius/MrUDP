@@ -13,6 +13,7 @@ MrUDP has many benefits when compared to TCP:
   * Connection RTT (round trip time) measurements in realtime.
   * Single ports can have infinite connections to and from other ports.
   * One socket can both accept and connect.
+  * Encryption using OpenSSL: RSA Handshake -> AES Session Keys
   * Extremely small code base
   * Provided backend uses boost asio for cross platform sockets.
   
@@ -29,25 +30,21 @@ make
 
   * Optimize for maximal throughput and minimal latency.
   
-Currently overlapped IO on windows and linux is not implemented.  Target date is August 15th.  OSX does not support this feature (AFIK)
-Overlapped IO's performance benefits are large.
+  Currently overlapped IO on windows and linux is not implemented.  Target date is August 15th.  OSX does not support this feature (AFIK)
+  Overlapped IO's performance benefits are large.
   
   * UDP send and receive coalescing support.
 
-It is not clear exactly how I want to implement this.  It could be purely send side, or it could be on the receive side with acks becoming multiple acks.
-Acks and sends will need more metadata, as to "time within coalescing queue" so that ping times are calculated correctly.
-
-  * Encryption
-  
-I plan to implement an RSA handshake transferring AES keys.  All packets except for handshake should be encrypted past a session identifier.
+  It is not clear exactly how I want to implement this.  It could be purely send side, or it could be on the receive side with acks becoming multiple acks.
+  Acks and sends will need more metadata, as to "time within coalescing queue" so that ping times are calculated correctly.
 
   * Handles
   
-Handles are a bit strange right now.  I'm not sure if I want to keep it the way it is, or change it.
+  Handles are a bit strange right now.  I'm not sure if I want to keep it the way it is, or change it.
 
-Basically, a handle is a pointer to a strong_ptr to whatever object the handle references.
-This way, when referencing a connection or a socket or the service, there is no mutex that needs to be locked in order to traverse the handle. 
- If I were to change the pointers into pure number/file handles, then in order to send a packet on a connection, a global mutex which would 
- surround the file handle look up table would need to be momentarily locked.
+  Basically, a handle is a pointer to a strong_ptr to whatever object the handle references.
+  This way, when referencing a connection or a socket or the service, there is no mutex that needs to be locked in order to traverse the handle. 
+   If I were to change the pointers into pure number/file handles, then in order to send a packet on a connection, a global mutex which would 
+   surround the file handle look up table would need to be momentarily locked.
  
-Perhaps there is a way around this.  For the time being, I will continue to use the pointers with no global mutex.
+  Perhaps there is a way around this.  For the time being, I will continue to use the pointers with no global mutex.
