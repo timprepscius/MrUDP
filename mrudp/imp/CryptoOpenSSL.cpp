@@ -45,7 +45,9 @@ struct SecureRandom::I {
 
 	bool generate(u8 *data, size_t size)
 	{
-		RAND_bytes(data, size);
+		if (SSL_FAIL(RAND_bytes(data, (int)size)))
+			return false;
+			
 		return true;
 	}
 } ;
@@ -133,7 +135,8 @@ bool construct_(SecureRandom &random, RSAKeyDefault &private_, RSAKeyDefault &pu
 			return false;
 
 		Vector<u8> v(bytes, bytes+len);
-		construct_(public_, std::move(v));
+		if (!construct_(public_, std::move(v)))
+			return false;
 	}
 	
 	return true;
@@ -202,6 +205,8 @@ bool decrypt_(RSAKeyDefault &rsa, const Vector<u8> &in, AESKey<DefaultAESKeySize
 		return false;
 
 	u8 *temporary = (u8 *)alloca(size);
+	if (!temporary)
+		return false;
 
 	if (SSL_FAIL(EVP_PKEY_decrypt(ctx, temporary, &size, in.data(), in.size())))
 		return false;
@@ -235,7 +240,8 @@ bool encrypt_(RSAKeyDefault &rsa, Packet &packet, size_t maxPadTo, SecureRandom 
 {
 	// generate SHAKeys
 	AESKeyDefault aesKey;
-	construct_(random, aesKey);
+	if (!construct_(random, aesKey))
+		return false;
 	
 	Vector<u8> encryptedAESKey;
 	if (!rsa.encrypt(aesKey, encryptedAESKey, random))
@@ -355,6 +361,9 @@ bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom 
 
 		EVP_CIPHER_CTX_ptr ctx_ = EVP_CIPHER_CTX_ptr(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
 		auto ctx = ctx_.get();
+		
+		if (!ctx)
+			return false;
 
 		if (key.BitSize == 256)
 		{
@@ -408,6 +417,9 @@ bool decrypt_(AESKeyDefault &key, Packet &packet)
 
 		EVP_CIPHER_CTX_ptr ctx_ = EVP_CIPHER_CTX_ptr(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
 		auto ctx = ctx_.get();
+		
+		if (!ctx)
+			return false;
 
 		if (key.BitSize == 256)
 		{
