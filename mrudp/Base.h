@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <set>
 #include "base/Random.h"
 #include "base/Mutex.h"
 #include "base/Core.h"
@@ -29,6 +30,9 @@ using List = std::list<V>;
 
 template<typename V>
 using Vector = std::vector<V>;
+
+template<typename V>
+using Set = std::set<V>;
 
 template<typename K, typename V>
 using OrderedMap = std::map<K, V>;
@@ -62,6 +66,7 @@ using String = std::string;
 
 void xTraceChar_(void *self, uint32_t, char c);
 void xTraceChar_(void *self, uint32_t, char prefix, char c);
+void xTraceChar_(void *self, uint32_t, char prefix, const std::string &c);
 
 #define xTraceChar(...) xTraceChar_(__VA_ARGS__)
 

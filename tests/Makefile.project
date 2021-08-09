@@ -6,7 +6,6 @@ INCPATH := \
 	$(timprepscius.mrudp.include) \
 	$(timprepscius.core.include) \
 	$(timprepscius.standard.include) \
-	$(timprepscius.com.include) \
 	$(timprepscius.libraries.cpp.include)
 	
 LDPATH := $(timprepscius.libraries.cpp.link)
@@ -15,8 +14,9 @@ EXEFILE := mrudp-tests.exe
 
 LIBS := \
 	-lMrUDP \
-	-lCom \
 	-lCore \
+	-lcrypto \
+	-lssl
 
 LIBS += \
 	-lboost-system \

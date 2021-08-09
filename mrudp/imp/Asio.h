@@ -19,13 +19,16 @@ namespace imp {
 // #define MRUDP_IO_SENDQUEUE
 // --------------------------------------
 
-#ifdef SYS_LINUX
+#if defined(SYS_LINUX)
 	// So far, I am not seeing the performance gain with
 	// overlapped io. I must be doing something incorrectly.
 	//
-	// #define MRUDP_USE_OVERLAPPED_IO
+//	#define MRUDP_USE_OVERLAPPED_IO
 	#define MRUDP_IO_SENDQUEUE
 #else
+//	#define MRUDP_THREAD_PER_CPU
+	#define MRUDP_USE_OVERLAPPED_IO
+//	#define MRUDP_IO_SENDQUEUE
 	#define MRUDP_IO_DIRECT
 #endif
 
@@ -85,8 +88,13 @@ struct SocketNative
 struct ServiceImp : StrongThis<ServiceImp>
 {
 	WeakPtr<Service> parent;
-	Thread runner;
+	List<Thread> runners;
 	RecursiveMutex mutex;
+	
+	Mutex endpointsInUseMutex;
+	Set<udp::endpoint> endpointsInUse;
+	bool insertEndpoint(const udp::endpoint &endpoint);
+	void eraseEndpoint(const udp::endpoint &endpoint);
 	
 	StrongPtr<io_service> service;
 	StrongPtr<udp::resolver> resolver;
@@ -97,7 +105,7 @@ struct ServiceImp : StrongThis<ServiceImp>
 	
 	void start ();
 	void stop ();
-	
+
 	void resolve(const String &host, const String &port, Function<void(Vector<mrudp_addr_t> &&)> &&f);
 } ;
 
@@ -137,7 +145,7 @@ struct SocketImp : StrongThis<SocketImp>
 #endif
 
 	Packet receivePacket;
-	udp::endpoint remoteEndpoint;
+	udp::endpoint localEndpoint, remoteEndpoint;
 	void doReceiveFrom ();
 
 	bool running = true;
@@ -150,8 +158,8 @@ struct SocketImp : StrongThis<SocketImp>
 	void handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket, size_t bytesTransferred);
 	
 	void send(const Address &addr, const PacketPtr &packet, Connection *connection);
-	void sendDirect(const Address &addr, const PacketPtr &packet, Connection *connection);
-	void sendViaQueue(const Address &addr, const PacketPtr &packet, Connection *connection);
+	void sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
+	void sendViaQueue(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void doSend(const StrongPtr<SocketNative> &);
 	void close ();
 	

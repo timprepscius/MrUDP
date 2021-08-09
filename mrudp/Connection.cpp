@@ -29,6 +29,7 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 Connection::~Connection ()
 {
 	xTraceChar(this, 0, '~');
+	
 
 	xLogDebug(logOfThis(this));
 	sLogDebug("mrudp::life_cycle", logOfThis(this) << --NumConnection);
@@ -53,14 +54,24 @@ void Connection::open ()
 	probe.onStart(socket->service->clock.now());
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK
-	__installDebugHook();
+	__debugHook();
 #endif
 }
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK
-void Connection::__installDebugHook()
+void Connection::__debugHook()
 {
-	imp->setTimeout("debug", socket->service->clock.now() + toDuration(10), [this](){ this->__installDebugHook(); });
+	if (!sender.empty())
+	{
+		std::cerr << "__debugHook not empty!" << std::endl;
+		xDebugLine();
+	}
+
+	imp->setTimeout("debug", socket->service->clock.now() + toDuration(10),
+		[this](){
+			this->__debugHook();
+		}
+	);
 }
 #endif
 
@@ -88,7 +99,7 @@ void Connection::possiblyClose ()
 
 void Connection::fail (mrudp_event_t event)
 {
-	xTraceChar(this, 0, '!');
+	xTraceChar(this, 0, '%');
 
 	closeReason = event;
 
@@ -233,7 +244,7 @@ void Connection::send(const PacketPtr &packet)
 
 void Connection::resend(const PacketPtr &packet)
 {
-	xTraceChar(this, packet->header.id, 'R', (char)packet->header.type);
+	// xTraceChar(this, packet->header.id, 'R', (char)packet->header.type);
 	send_(packet);
 }
 

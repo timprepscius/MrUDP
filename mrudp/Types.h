@@ -57,3 +57,5 @@ bool isAck(TypeID typeID)
 } // namespace
 
 bool operator<(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs);
+bool operator==(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs);
+bool operator!=(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs);

@@ -36,6 +36,12 @@ void xTraceChar_(void *self, uint32_t id, char prefix, char c)
 	std::cerr << s.str();
 }
 
+void xTraceChar_(void *self, uint32_t id, char prefix, const std::string &c)
+{
+	std::ostringstream s;
+	s << prefix << "(" << c << ")";
+	std::cerr << s.str();
+}
 #endif
 #endif
 

@@ -21,3 +21,13 @@ bool operator<(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs)
 {
 	return memcmp(&lhs, &rhs, sizeof(lhs)) < 0;
 }
+
+bool operator==(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(lhs)) == 0;
+}
+
+bool operator!=(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(lhs)) != 0;
+}

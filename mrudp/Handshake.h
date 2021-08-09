@@ -13,7 +13,8 @@ struct Handshake
 
 	Connection *connection;
 	
-	TypeID waitingFor = H0;
+	Mutex mutex;
+	Atomic<TypeID> waitingFor = H0;
 	PacketID firstNonHandshakePacketID = 0;
 	void initiate();
 	

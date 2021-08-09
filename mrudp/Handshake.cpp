@@ -19,15 +19,16 @@ void Handshake::initiate()
 
 void Handshake::handlePacket(Packet &packet)
 {
-	auto readRemoteID = [this](Packet &packet, bool apply) {
-		ShortConnectionID remoteID_;
+	auto lock = lock_of(mutex);
+	
+	auto readRemoteID = [this](Packet &packet) {
+		ShortConnectionID remoteID_ = 0;
 		if (popData(packet, remoteID_))
 		{
-			if (apply)
-			{
-				connection->remoteID = remoteID_;
-			}
+			return remoteID_;
 		}
+		
+		return remoteID_;
 	};
 
 	auto received = packet.header.type;
@@ -39,26 +40,25 @@ void Handshake::handlePacket(Packet &packet)
 	
 		connection->send(ack);
 		
-		if (waitingFor == H0)
-			waitingFor = H2;
+		auto expected = H0;
+		waitingFor.compare_exchange_strong(expected, H2);
 	}
 	else
 	if (received == H1)
 	{
-		if (waitingFor == H1)
+		auto expected = H1;
+		if (waitingFor.compare_exchange_strong(expected, H3))
 		{
 			auto packet = strong<Packet>();
 			packet->header.type = H2;
 			pushData(*packet, connection->localID);
 			connection->sender.sendImmediately(packet);
-			
-			waitingFor = H3;
 		}
 	}
 	else
 	if (received == H2)
 	{
-		readRemoteID(packet, waitingFor == H2);
+		auto remoteID = readRemoteID(packet);
 	
 		auto ack = strong<Packet>();
 		ack->header.type = H3;
@@ -67,9 +67,10 @@ void Handshake::handlePacket(Packet &packet)
 	
 		connection->send(ack);
 		
-		if (waitingFor == H2)
+		auto expected = H2;
+		if (waitingFor.compare_exchange_strong(expected, HANDSHAKE_COMPLETE))
 		{
-			waitingFor = HANDSHAKE_COMPLETE;
+			connection->remoteID = remoteID;
 			firstNonHandshakePacketID = packet.header.id + 1;
 			onHandshakeComplete();
 		}
@@ -77,11 +78,12 @@ void Handshake::handlePacket(Packet &packet)
 	else
 	if (received == H3)
 	{
-		readRemoteID(packet, waitingFor == H3);
+		auto remoteID = readRemoteID(packet);
 
-		if (waitingFor == H3)
+		auto expected = H3;
+		if (waitingFor.compare_exchange_strong(expected, HANDSHAKE_COMPLETE))
 		{
-			waitingFor = HANDSHAKE_COMPLETE;
+			connection->remoteID = remoteID;
 			onHandshakeComplete();
 		}
 	}

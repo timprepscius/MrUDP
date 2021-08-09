@@ -25,7 +25,7 @@ struct WindowSizeConstant
 struct WindowSizeSimple
 {
 	size_t size = 3;
-	size_t minimum = 3, maximum = 128;
+	size_t minimum = 3, maximum = 1024;
 	
 	void onSample(float rtt)
 	{

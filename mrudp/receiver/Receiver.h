@@ -49,9 +49,6 @@ struct Receiver
 	// Dispatches to either reliable, unreliable, or probe paths
 	void processReceived(Packet &packet);
 	
-	// Dispatches waiting packets if any are wiating
-	void processReceiveQueue ();
-	
 	// Processes incoming packets
 	void onPacket (Packet &packet);
 };

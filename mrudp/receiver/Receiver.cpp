@@ -9,6 +9,10 @@ namespace mrudp {
 Receiver::Receiver(Connection *connection_) :
 	connection(connection_)
 {
+	receiveQueue.processor =
+		[this](auto &packet) {
+			processReceived(packet);
+		};
 }
 
 void Receiver::open (PacketID packetID)
@@ -19,7 +23,7 @@ void Receiver::open (PacketID packetID)
 	// So when an open is called from the handshake, even if has been officially closed
 	// we process the queue.
 	receiveQueue.expectedID = packetID;
-	processReceiveQueue();
+	receiveQueue.processQueue();
 
 	if (status == UNINITIALIZED)
 		status = OPEN;
@@ -85,15 +89,6 @@ void Receiver::processReceived(Packet &packet)
 	}
 }
 
-void Receiver::processReceiveQueue()
-{
-	receiveQueue.process(
-		[this](auto &packet) {
-			processReceived(packet);
-		}
-	);
-}
-
 inline
 bool isReceivable(TypeID typeID)
 {
@@ -119,28 +114,9 @@ void Receiver::onPacket(Packet &packet)
 			auto ack = strong<Packet>();
 			ack->header.type = ACK;
 			ack->header.id = packet.header.id;
-		
 			connection->send(ack);
 				
-			sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.connection) << logVar(packet.header.id) );
-
-			if(packet.header.id == receiveQueue.expectedID)
-			{
-				receiveQueue.expectedID++;
-
-				processReceived(packet);
-				processReceiveQueue();
-			}
-			else
-			if (packet_id_greater_than(packet.header.id, receiveQueue.expectedID))
-			{
-				sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << receiveQueue.expectedID);
-				receiveQueue.enqueue(packet);
-			}
-			else
-			{
-				sLogDebug("mrudp::receive", logOfThis(this) << "DISCARD out of order " << packet.header.id << " less " << receiveQueue.expectedID);
-			}
+			receiveQueue.process(packet);
 		}
 		else
 		if(packet.header.type == DATA_UNRELIABLE)

@@ -87,7 +87,7 @@ struct Connection : StrongThis<Connection>
 	void finish ();
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK
-	void __installDebugHook ();
+	void __debugHook ();
 #endif
 };
 

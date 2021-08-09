@@ -18,18 +18,24 @@ namespace mrudp {
 struct ReceiveQueue
 {
 	PacketID expectedID;
+	Function<void(Packet &)> processor;
 	
+	Mutex mutex;
 	typedef OrderedMap<PacketID, Packet> Queue;
 	Queue queue;
 	
 	// enqueues an out of order packet
 	void enqueue(Packet &packet);
 	
+	// either process the packet immediately, enqueue it or
+	// discard it
+	void process(Packet &packet);
+	
 	// processes all in order and as expected packets with the given function
-	void process(Function<void(Packet &)> &&f);
+	void processQueue ();
 	
 	// a helper method process the next packet
-	bool processNext(const Function<void(Packet &)> &f);
+	bool processNext();
 };
 
 } // namespace
