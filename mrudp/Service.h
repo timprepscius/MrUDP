@@ -21,7 +21,7 @@ struct ServiceImp;
 
 struct Service : StrongThis<Service>
 {
-	Service ();
+	Service (mrudp_imp_selector imp, void *options);
 	~Service ();
 	
 	void open ();

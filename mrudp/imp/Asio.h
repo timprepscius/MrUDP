@@ -12,26 +12,6 @@ namespace timprepscius {
 namespace mrudp {
 namespace imp {
 
-// --------------------------------------
-// the possibilities
-// #define MRUDP_IO_OVERLAPPED
-// #define MRUDP_IO_DIRECT
-// #define MRUDP_IO_SENDQUEUE
-// --------------------------------------
-
-#if defined(SYS_LINUX)
-	// So far, I am not seeing the performance gain with
-	// overlapped io. I must be doing something incorrectly.
-	//
-//	#define MRUDP_USE_OVERLAPPED_IO
-	#define MRUDP_IO_SENDQUEUE
-#else
-//	#define MRUDP_THREAD_PER_CPU
-	#define MRUDP_USE_OVERLAPPED_IO
-//	#define MRUDP_IO_SENDQUEUE
-	#define MRUDP_IO_DIRECT
-#endif
-
 using namespace boost::asio;
 using namespace boost::asio::ip;
 using namespace boost::system;
@@ -41,10 +21,19 @@ using namespace boost::system;
 mrudp_addr_t toAddr(const udp::endpoint &endpoint);
 udp::endpoint toEndpoint(const mrudp_addr_t &addr);
 
+typedef mrudp_options_asio_t OptionsImp;
+void merge(OptionsImp &lhs, const OptionsImp &rhs);
+
 struct Send
 {
 	Address address;
 	PacketPtr packet;
+} ;
+
+struct Receive
+{
+	Packet packet;
+	udp::endpoint endpoint;
 } ;
 
 struct SendQueue
@@ -77,16 +66,32 @@ struct SendQueue
 struct SocketNative
 {
 	SocketNative(io_service &service) :
-		handle(service)
+		handle(service),
+		isConnected(false)
 	{
 	}
-	
+
+	SocketNative(io_service &service, const udp::endpoint &remoteEndpoint_) :
+		handle(service),
+		isConnected(true),
+		remoteEndpoint(remoteEndpoint_)
+	{
+	}
+
 	udp::socket handle;
 	SendQueue queue;
+
+	bool isConnected;
+	udp::endpoint remoteEndpoint;
+	
+	void send(const Send &send, Function<void(const error_code &)> &&f);
+	void receive(Receive &receive, Function<void(const error_code &)> &&f);
 } ;
 
 struct ServiceImp : StrongThis<ServiceImp>
 {
+	OptionsImp options;
+
 	WeakPtr<Service> parent;
 	List<Thread> runners;
 	RecursiveMutex mutex;
@@ -100,7 +105,7 @@ struct ServiceImp : StrongThis<ServiceImp>
 	StrongPtr<udp::resolver> resolver;
 	io_service::work *working = nullptr;
 
-	ServiceImp (Service *parent_);
+	ServiceImp (Service *parent_, const OptionsImp *options);
 	~ServiceImp ();
 	
 	void start ();
@@ -116,9 +121,7 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 	
 	RecursiveMutex setTimeoutMutex;
 	
-#ifdef MRUDP_USE_OVERLAPPED_IO
 	StrongPtr<SocketNative> connectedSocket;
-#endif
 
 	ConnectionImp(const StrongPtr<Connection> &parent_);
 	~ConnectionImp();
@@ -131,31 +134,27 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 
 struct SocketImp : StrongThis<SocketImp>
 {
+	OptionsImp options;
+
 	WeakPtr<Socket> parent;
 
 	StrongPtr<SocketNative> socket;
+	udp::endpoint localEndpoint;
 	
-#ifdef MRUDP_USE_OVERLAPPED_IO
 	Mutex connectedSocketsMutex;
 	OrderedMap<Address, WeakPtr<SocketNative>> connectedSockets;
 	StrongPtr<SocketNative> getConnectedSocket(const Address &);
 	void releaseConnectedSocket(const Address &);
-	
-	void doReceive(const Address &remoteAddress, StrongPtr<SocketNative> &, const StrongPtr<Packet> &packet);
-#endif
-
-	Packet receivePacket;
-	udp::endpoint localEndpoint, remoteEndpoint;
-	void doReceiveFrom ();
 
 	bool running = true;
+	void doReceive(const StrongPtr<SocketNative> &, const StrongPtr<Receive> &packet);
 	
 	SocketImp(const StrongPtr<Socket> &parent, const Address &address);
 	~SocketImp ();
 	
 	void open();
 	void connect(const Address &address);
-	void handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket, size_t bytesTransferred);
+	void handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket);
 	
 	void send(const Address &addr, const PacketPtr &packet, Connection *connection);
 	void sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);

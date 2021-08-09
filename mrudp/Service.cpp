@@ -4,13 +4,15 @@
 namespace timprepscius {
 namespace mrudp {
 
-Service::Service ()
+Service::Service (mrudp_imp_selector imp_, void *options)
 {
+	debug_assert(imp_ == MRUDP_IMP_ASIO);
+	
+	imp = strong_thread(strong<imp::ServiceImp>(this, (mrudp_options_asio_t *)options));
 }
 
 void Service::open ()
 {
-	imp = strong_thread(strong<imp::ServiceImp>(this));
 	imp->start();
 
 #ifdef MRUDP_ENABLE_CRYPTO

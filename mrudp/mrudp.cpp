@@ -185,7 +185,12 @@ mrudp_error_code_t mrudp_send(mrudp_connection_t connection_, const char *buffer
 
 mrudp_service_t mrudp_service()
 {
-	auto service = strong<Service>();
+	return mrudp_service_ex(MRUDP_IMP_ASIO, nullptr);
+}
+
+mrudp_service_t mrudp_service_ex(mrudp_imp_selector imp, void *options)
+{
+	auto service = strong<Service>(imp, options);
 	service->open ();
 	
 	auto handle = newHandle(service);

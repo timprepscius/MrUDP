@@ -10,6 +10,34 @@ namespace imp {
 
 // --------------------------
 
+#if defined(SYS_LINUX)
+OptionsImp systemDefaultOptions {
+	.overlapped_io = 0,
+	.send_via_queue = 1,
+	.thread_quantity = 1,
+} ;
+#else
+OptionsImp systemDefaultOptions {
+	.overlapped_io = 1,
+	.send_via_queue = 0,
+	.thread_quantity = int8_t(std::thread::hardware_concurrency() - 1),
+} ;
+#endif
+
+void merge(OptionsImp &lhs, const OptionsImp &rhs)
+{
+	if (lhs.overlapped_io == -1)
+		lhs.overlapped_io = rhs.overlapped_io;
+		
+	if (lhs.send_via_queue == -1)
+		lhs.send_via_queue = rhs.send_via_queue;
+
+	if (lhs.thread_quantity == -1)
+		lhs.thread_quantity = rhs.thread_quantity;
+}
+
+// --------------------------
+
 typedef boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT> overlap_socket;
 //typedef boost::asio::socket_base::reuse_address overlap_socket;
 
@@ -67,9 +95,12 @@ udp::endpoint toEndpoint(const mrudp_addr_t &addr)
 
 // --------------------------
 
-ServiceImp::ServiceImp (Service *parent_) :
-	parent(weak_this(parent_))
+ServiceImp::ServiceImp (Service *parent_, const OptionsImp *options_) :
+	parent(weak_this(parent_)),
+	options(options_ ? *options_ : systemDefaultOptions)
 {
+	merge(options, systemDefaultOptions);
+
 	service = strong<io_service>();
 	resolver = strong<udp::resolver>(*service);
 }
@@ -111,11 +142,10 @@ void ServiceImp::start ()
 	{
 		working = new io_service::work(*service);
 		
-		size_t processor_count = 1;
-
-		#ifdef MRUDP_THREAD_PER_CPU
-		processor_count = std::thread::hardware_concurrency();
-		#endif
+		auto processor_count =
+			options.thread_quantity ?
+				options.thread_quantity :
+				std::thread::hardware_concurrency();
 		
 		std::cout << "starting " << processor_count << " io threads" << std::endl;
 		for (auto i=0; i<processor_count; ++i)
@@ -179,15 +209,13 @@ void ServiceImp::resolve(const String &host, const String &port, Function<void(V
 
 // -------------------------------------
 
-
 ConnectionImp::ConnectionImp(const StrongPtr<Connection> &parent_) :
 	parent(weak(parent_))
 {
 	xLogDebug(logOfThis(this));
 	
-#ifdef MRUDP_USE_OVERLAPPED_IO
-	connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
-#endif
+	if (parent_->socket->imp->options.overlapped_io)
+		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
 }
 
 ConnectionImp::~ConnectionImp()
@@ -242,9 +270,135 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 
 // -------------------------------------
 
+void SocketNative::send(const Send &send, Function<void (const error_code &)> &&f)
+{
+	if (!handle.is_open())
+	{
+		return;
+	}
+	
+	static Atomic<int> debugID = 0;
+	auto debugID_ = debugID++;
+	
+	char *buffer_ = (char *)ptr_of(send.packet);
+	auto size = send.packet->dataSize + sizeof(Header);
+	
+	if (isConnected)
+	{
+		handle.async_send(
+			buffer(buffer_, size),
+			[this, buffer_, debugID_, size, f](error_code ec, size_t bytesWritten) {
+
+				if (ec || bytesWritten != size)
+				{
+					sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
+				}
+
+				f(ec);
+			}
+		);
+	}
+	else
+	{
+		auto endpoint = toEndpoint(send.address);
+
+		handle.async_send_to(
+			buffer(buffer_, size),
+			endpoint,
+			[this, send, debugID_, size, f](error_code ec, size_t bytesWritten) {
+
+				if (ec || bytesWritten != size)
+				{
+					sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
+				}
+				
+				f(ec);
+			}
+		);
+	}
+}
+
+void SocketNative::receive(Receive &receive, Function<void (const error_code &)> &&f)
+{
+	auto *buffer_ = (char *)&receive.packet;
+	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
+	
+
+	// why am I using async_receive_from and not async_receive:
+	// There is a socket A bound to port X
+	// Client C sends a packet P to port X
+	// There is a packet P incoming to port X
+	// At that very moment we bind a new "connected" socket B to port X
+	// the packet is received by socket B
+	// And then we connect the "connected" socket to a remote client Y (not C)
+	// at this point, when we do an async_receive, it will asign the incorrect
+	// address to packet P as originating from Y, but really it came from C
+	// And what's more, it seems the route is established from C -> B, and all packets
+	// are received incorrectly.
+
+	if (isConnected)
+	{
+		auto remoteEndpoint = this->remoteEndpoint;
+
+		handle.async_receive_from(
+			buffer(buffer_, size),
+			receive.endpoint,
+			[this, remoteEndpoint, &receive, f=std::move(f)](auto error, auto bytesTransferred) {
+				if (error)
+				{
+					xDebugLine();
+				}
+				
+				if (!error)
+				{
+					if (receive.endpoint != remoteEndpoint)
+					{
+						xTraceChar(this, receive.packet.header.id, '?', (char)receive.packet.header.type);
+						sLogDebug("mrudp::overlap_io", "remoteReceived isn't as expected!" << logVar(receive.endpoint) << " != " << logVar(remoteEndpoint));
+					}
+					
+					if (bytesTransferred < sizeof(Header))
+						error = errc::make_error_code(errc::illegal_byte_sequence);
+					else
+						receive.packet.dataSize = bytesTransferred - sizeof(Header);
+				}
+
+				f(error);
+			}
+		);
+	}
+	else
+	{
+		handle.async_receive_from(
+			buffer(buffer_, size),
+			receive.endpoint,
+			[&receive, f=std::move(f)](auto error, auto bytesTransferred) {
+				if (error)
+				{
+					xDebugLine();
+				}
+				
+				if (!error)
+				{
+					if (bytesTransferred < sizeof(Header))
+						error = errc::make_error_code(errc::illegal_byte_sequence);
+					else
+						receive.packet.dataSize = bytesTransferred - sizeof(Header);
+				}
+
+				f(error);
+			}
+		);
+	}
+
+}
+
+// -------------------------------------
+
 SocketImp::SocketImp(const StrongPtr<Socket> &parent_, const Address &address) :
 	parent(weak(parent_)),
-	socket(strong<SocketNative>(*parent_->service->imp->service))
+	socket(strong<SocketNative>(*parent_->service->imp->service)),
+	options(parent_->service->imp->options)
 {
 	bool acquiredAddress = false;
 	while (!acquiredAddress)
@@ -259,34 +413,35 @@ SocketImp::SocketImp(const StrongPtr<Socket> &parent_, const Address &address) :
 		
 		acquiredAddress = parent_->service->imp->insertEndpoint(localEndpoint);
 		
-	#ifdef MRUDP_USE_OVERLAPPED_IO
-		// when you look at the following code, you will probably say to yourself
-		// "WTF is this? Is this really necessary?"  The answer is: yes, yes it is.
-		// Then you will ask, "does it really work?" The answer is: I hope so.
-		//
-		// The reason, is that on linux, when you declare SO_REUSEPORT it may give you a
-		// port you *already own*!
-		//
-		// At first when I fixed this, I just checked with the service that I had a unique port.
-		// But unfortunately, this doesn't solve the issue, because there can be multiple services running.
-		// I support I could have a "meta" service which has a set of all known ports,
-		// but even this will not solve the problem, because it seems that linux may give you
-		// a port owned by a different process, with the same UID.  Argh!!!
-		
-		// We bound the port before without overlapping, so at this point the port is unique
-		// move it to a temporary handle that we'll close at the last moment
-		auto temporary = std::move(socket->handle);
-		
-		// prepare the new handle
-		socket->handle.open(localEndpoint.protocol());
-		socket->handle.set_option(overlap_socket(true));
+		if (options.overlapped_io == 1)
+		{
+			// when you look at the following code, you will probably say to yourself
+			// "WTF is this? Is this really necessary?"  The answer is: yes, yes it is.
+			// Then you will ask, "does it really work?" The answer is: I hope so.
+			//
+			// The reason, is that on linux, when you declare SO_REUSEPORT it may give you a
+			// port you *already own*!
+			//
+			// At first when I fixed this, I just checked with the service that I had a unique port.
+			// But unfortunately, this doesn't solve the issue, because there can be multiple services running.
+			// I support I could have a "meta" service which has a set of all known ports,
+			// but even this will not solve the problem, because it seems that linux may give you
+			// a port owned by a different process, with the same UID.  Argh!!!
+			
+			// We bound the port before without overlapping, so at this point the port is unique
+			// move it to a temporary handle that we'll close at the last moment
+			auto temporary = std::move(socket->handle);
+			
+			// prepare the new handle
+			socket->handle.open(localEndpoint.protocol());
+			socket->handle.set_option(overlap_socket(true));
 
-		// close the old handle
-		temporary.close();
-		
-		// and open the new one immediately
-		socket->handle.bind(localEndpoint);
-	#endif
+			// close the old handle
+			temporary.close();
+			
+			// and open the new one immediately
+			socket->handle.bind(localEndpoint);
+		}
 	}
 }
 
@@ -299,111 +454,6 @@ SocketImp::~SocketImp ()
 		parent_->service->imp->eraseEndpoint(localEndpoint);
 	}
 }
-
-#ifdef MRUDP_USE_OVERLAPPED_IO
-
-void SocketImp::doReceive(const Address &remoteAddress_, StrongPtr<SocketNative> &socket, const StrongPtr<Packet> &receivePacket)
-{
-	if (!running)
-		return;
-		
-	auto &handle = socket->handle;
-	auto endpoint_ = strong<udp::endpoint>();
-		
-	auto *buffer_ = (char *)ptr_of(receivePacket);
-	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
-	Address remoteAddress = remoteAddress_;
-
-	// why am I using async_receive_from and not async_receive:
-	// There is a socket A bound to port X
-	// Client C sends a packet P to port X
-	// There is a packet P incoming to port X
-	// At that very moment we bind a new "connected" socket B to port X
-	// the packet is received by socket B
-	// And then we connect the "connected" socket to a remote client Y (not C)
-	// at this point, when we do an async_receive, it will asign the incorrect
-	// address to packet P as originating from Y, but really it came from C
-	// And what's more, it seems the route is established from C -> B, and all packets
-	// are received incorrectly.
-
-	handle.async_receive_from(
-		buffer(buffer_, size),
-		*endpoint_,
-		[this, weak_self=weak_this(this),
-			remoteAddress,
-			socket_=weak(socket),
-			receivePacket,
-		endpoint_](auto error, auto bytes_transfered) {
-			if (auto self = strong(weak_self))
-			{
-				if (error)
-				{
-					xDebugLine();
-				}
-			
-				if (!error)
-				{
-					auto remoteAddressReceived = toAddr(*endpoint_);
-					if (remoteAddressReceived != remoteAddress)
-					{
-						xTraceChar(this, receivePacket->header.id, '?', (char)receivePacket->header.type);
-						sLogDebug("mrudp::overlap_io", "remoteReceived isn't as expected!" << logVar(toString(remoteAddressReceived)) << " != " << logVar(toString(remoteAddress)));
-					}
-				
-					// xTraceChar(this, 0, '_', (char)receivePacket->header.type);
-					this->handleReceiveFrom(remoteAddressReceived, *receivePacket, bytes_transfered);
-				}
-
-				if (auto socket = strong(socket_))
-				{
-					doReceive(remoteAddress, socket, receivePacket);
-				}
-			}
-		}
-	);
-}
-
-#if 0
-void SocketImp::doReceiveXX(const Address &remoteAddress_, StrongPtr<SocketNative> &socket, const StrongPtr<Packet> &receivePacket)
-{
-	if (!running)
-		return;
-		
-	auto &handle = socket->handle;
-		
-	auto *buffer_ = (char *)ptr_of(receivePacket);
-	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
-	Address remoteAddress = remoteAddress_;
-
-	handle.async_receive(
-		buffer(buffer_, size),
-		[this, weak_self=weak_this(this),
-			remoteAddress,
-			socket_=weak(socket),
-			receivePacket
-		](auto error, auto bytes_transfered) {
-			if (auto self = strong(weak_self))
-			{
-				if (error)
-				{
-					xDebugLine();
-				}
-			
-				if (!error)
-				{
-					xTraceChar(this, 0, 'F', (char)receivePacket->header.type);
-					this->handleReceiveFrom(remoteAddress, *receivePacket, bytes_transfered);
-				}
-
-				if (auto socket = strong(socket_))
-				{
-					doReceive(remoteAddress, socket, receivePacket);
-				}
-			}
-		}
-	);
-}
-#endif
 
 StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddress)
 {
@@ -420,7 +470,8 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 		auto localEndpoint = toEndpoint(parent_->getLocalAddress());
 		auto remoteEndpoint = toEndpoint(remoteAddress);
 
-		auto connectedSocket = strong<SocketNative>(*parent_->service->imp->service);
+		auto connectedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
+
 		connectedSocket->handle.open(localEndpoint.protocol());
 		connectedSocket->handle.set_option(overlap_socket(true));
 
@@ -429,7 +480,7 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 		
 		connectedSocket_ = weak(connectedSocket);
 		
-		doReceive(remoteAddress, connectedSocket, strong<Packet>());
+		doReceive(connectedSocket, strong<Receive>());
 		
 		return connectedSocket;
 	}
@@ -442,64 +493,65 @@ void SocketImp::releaseConnectedSocket(const Address &)
 	// this needs to do something and get connected eventually
 }
 
-#endif
-
-void SocketImp::handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket, size_t bytesTransferred)
+void SocketImp::handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket)
 {
-	if (bytesTransferred >= sizeof(Header))
+	if (auto parent = strong(this->parent))
 	{
-		if (auto parent = strong(this->parent))
-		{
-			receivePacket.dataSize = bytesTransferred - sizeof(Header);
-			parent->receive(receivePacket, remoteAddress);
-		}
+		parent->receive(receivePacket, remoteAddress);
 	}
 }
 
 void SocketImp::open()
 {
-	doReceiveFrom();
+	doReceive(socket, strong<Receive>());
 }
 
 void SocketImp::connect(const Address &remoteAddress_)
 {
 }
 
-void SocketImp::doReceiveFrom ()
+void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr<Receive> &receive)
 {
 	if (!running)
 		return;
-
-	auto *buffer_ = (char *)&receivePacket;
-	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
-
-	socket->handle.async_receive_from(
-		buffer(buffer_, size),
-		remoteEndpoint,
-		[weak_self=weak_this(this), this](auto error, auto bytes_transfered) {
+		
+	socket->receive(
+		*receive,
+		[this, weak_self=weak_this(this), socket_=weak(socket), receive](auto &error)
+		{
 			if (auto self = strong(weak_self))
 			{
-				if (error)
-				{
-					xDebugLine();
-				}
-			
 				if (!error)
 				{
-					xTraceChar(this, 0, '$', (char)receivePacket.header.type);
-
-					this->handleReceiveFrom(
-						toAddr(remoteEndpoint),
-						receivePacket,
-						bytes_transfered
-					);
+					this->handleReceiveFrom(toAddr(receive->endpoint), receive->packet);
 				}
-
-				doReceiveFrom();
+				
+				if (auto socket = strong(socket_))
+				{
+					doReceive(socket, receive);
+				}
 			}
 		}
 	);
+}
 
+void SocketImp::send(const Address &addr, const PacketPtr &packet, Connection *connection)
+{
+	auto *socket = &this->socket;
+	
+	if (options.overlapped_io == 1)
+		socket = &connection->imp->connectedSocket;
+	
+	if (options.send_via_queue == 1)
+		sendViaQueue(*socket, addr, packet, connection);
+	else
+		sendDirect(*socket, addr, packet, connection);
+}
+
+void SocketImp::sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)
+{
+	Send send { addr, packet };
+	socket->send(send, [packet](auto &error) {});
 }
 
 void SocketImp::sendViaQueue(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)
@@ -508,168 +560,15 @@ void SocketImp::sendViaQueue(const StrongPtr<SocketNative> &socket, const Addres
 		doSend(socket);
 }
 
-#ifdef MRUDP_USE_OVERLAPPED_IO
-
-void SocketImp::send(const Address &addr, const PacketPtr &packet, Connection *connection)
-{
-	auto socket = connection->imp->connectedSocket;
-	
-#if defined(MRUDP_IO_SENDQUEUE)
-	sendViaQueue(socket, addr, packet, connection);
-#elif defined(MRUDP_IO_DIRECT)
-	sendDirect(socket, addr, packet, connection);
-#endif
-}
-
-void SocketImp::sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)
-{
-	auto &handle = socket->handle;
-	
-	if (!handle.is_open())
-	{
-		xTraceChar(this, 0, '-');
-		return;
-	}
-	
-	auto *send = new Send { addr, packet };
-	
-	static std::atomic<int> debugID = 0;
-	auto endpoint = toEndpoint(send->address);
-	auto debugID_ = debugID++;
-	xLogDebug(logVar(endpoint) << logVar(debugID_) );
-
-	char *buffer_ = (char *)ptr_of(send->packet);
-	auto size = send->packet->dataSize + sizeof(Header);
-
-	handle.async_send(
-		buffer(buffer_, size),
-		[this, send, debugID_, size](error_code ec, size_t bytesWritten) {
-
-			if (ec || bytesWritten != size)
-			{
-				sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
-			}
-			
-			delete send;
-		}
-	);
-}
-
 void SocketImp::doSend(const StrongPtr<SocketNative> &socket)
 {
 	auto *send = &socket->queue.front();
-	
-	auto &handle = socket->handle;
-	
-	if (!handle.is_open())
-	{
-		return;
-	}
 
-	static Atomic<int> debugID = 0;
-	auto debugID_ = debugID++;
-	
-	char *buffer_ = (char *)ptr_of(send->packet);
-	auto size = send->packet->dataSize + sizeof(Header);
-	
-	handle.async_send(
-		buffer(buffer_, size),
-		[this, socket, buffer_, debugID_, size](error_code ec, size_t bytesWritten) {
-
-			if (ec || bytesWritten != size)
-			{
-				sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
-			}
-		
-			if (socket->queue.pop_front())
-				doSend(socket);
-		}
-	);
+	socket->send(*send, [this, socket](auto &error) {
+		if (socket->queue.pop_front() > 0)
+			doSend(socket);
+	});
 }
-
-#else // !MRUDP_USE_OVERLAPPED_IO
-
-void SocketImp::send(const Address &addr, const PacketPtr &packet, Connection *connection)
-{
-#if defined(MRUDP_IO_SENDQUEUE)
-	sendViaQueue(socket, addr, packet, connection);
-#elif defined(MRUDP_IO_DIRECT)
-	sendDirect(socket, addr, packet, connection);
-#endif
-}
-
-void SocketImp::sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)
-{
-	auto &handle = socket->handle;
-	
-	if (!handle.is_open())
-	{
-		xTraceChar(this, 0, '-');
-		return;
-	}
-	
-	auto *send = new Send { addr, packet };
-	
-	static std::atomic<int> debugID = 0;
-	auto endpoint = toEndpoint(send->address);
-	auto debugID_ = debugID++;
-	xLogDebug(logVar(endpoint) << logVar(debugID_) );
-
-	char *buffer_ = (char *)ptr_of(send->packet);
-	auto size = send->packet->dataSize + sizeof(Header);
-
-	handle.async_send_to(
-		buffer(buffer_, size),
-		endpoint,
-		[this, send, debugID_, size](error_code ec, size_t bytesWritten) {
-
-			if (ec || bytesWritten != size)
-			{
-				sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
-			}
-			
-			delete send;
-		}
-	);
-}
-
-void SocketImp::doSend(const StrongPtr<SocketNative> &socket)
-{
-	auto *send = &socket->queue.front();
-	
-	auto &handle = socket->handle;
-	
-	if (!handle.is_open())
-	{
-		xTraceChar(this, 0, '-');
-		return;
-	}
-	
-	static std::atomic<int> debugID = 0;
-	auto endpoint = toEndpoint(send->address);
-	auto debugID_ = debugID++;
-	xLogDebug(logVar(endpoint) << logVar(debugID_) );
-
-	char *buffer_ = (char *)ptr_of(send->packet);
-	auto size = send->packet->dataSize + sizeof(Header);
-
-	handle.async_send_to(
-		buffer(buffer_, size),
-		endpoint,
-		[this, socket, buffer_, debugID_, size](error_code ec, size_t bytesWritten) {
-
-			if (ec || bytesWritten != size)
-			{
-				sLogDebug("mrudp::send", logOfThis(this) << "async_send failed " << logVar(ec)<< logVar(bytesWritten) << logVar(size) << logVar(debugID_));
-			}
-		
-			if (socket->queue.pop_front())
-				doSend(socket);
-		}
-	);
-}
-
-#endif // +-MRUDP_USE_OVERLAPPED_IO
 
 void SocketImp::close ()
 {
@@ -678,9 +577,14 @@ void SocketImp::close ()
 		running = false;
 		xLogDebug(logOfThis(this) << socket->handle.local_endpoint() << " handle is closing " << socket->handle.native_handle());
 
-//		handle.cancel();
 		socket->handle.close();
 		
+		auto lock = lock_of(connectedSocketsMutex);
+		for (auto &[remote, socket_] : connectedSockets)
+		{
+			if (auto socket = strong(socket_))
+				socket->handle.close();
+		}
 	}
 }
 

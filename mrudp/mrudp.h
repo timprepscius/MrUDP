@@ -44,6 +44,16 @@ typedef union {
     struct sockaddr_in6 v6;
 } mrudp_addr_t;
 
+typedef struct {
+	int8_t overlapped_io;
+	int8_t send_via_queue;
+	int8_t thread_quantity;
+} mrudp_options_asio_t;
+
+#define MRUDP_IMP_ASIO 0x01
+
+typedef int mrudp_imp_selector;
+
 // Call-back for when a handle is about to be closed
 typedef mrudp_error_code_t (*mrudp_close_callback_fn)(void *, mrudp_event_t);
 
@@ -64,6 +74,9 @@ mrudp_error_code_t mrudp_addr_to_str(const mrudp_addr_t *addr, char *out, size_t
 
 // creates a service
 mrudp_service_t mrudp_service ();
+
+// creates a service with the given options
+mrudp_service_t mrudp_service_ex (mrudp_imp_selector imp, void *options);
 
 // closes a service
 void mrudp_close_service(mrudp_service_t mrudp, int waitForFinish);
