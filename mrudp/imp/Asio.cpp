@@ -147,7 +147,6 @@ void ServiceImp::start ()
 				options.thread_quantity :
 				std::thread::hardware_concurrency();
 		
-		std::cout << "starting " << processor_count << " io threads" << std::endl;
 		for (auto i=0; i<processor_count; ++i)
 		{
 			runners.emplace_back([this, service=this->service]() {
