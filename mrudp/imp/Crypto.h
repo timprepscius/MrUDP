@@ -26,7 +26,7 @@ struct AESKey;
 template<int N>
 struct RSAKey
 {
-	static const int BitSize = N;
+	static constexpr int BitSize = N;
 
 	struct I;
 	I *i = nullptr;
@@ -54,8 +54,8 @@ struct RSAKey
 template<int N>
 struct AESIV
 {
-	static const int BitSize = N;
-	static const int ByteSize = BitSize / 8;
+	static constexpr int BitSize = N;
+	static constexpr int ByteSize = BitSize / 8;
 
 	u8 data[ByteSize];
 } ;
@@ -63,8 +63,8 @@ struct AESIV
 template<int N>
 struct AESKey
 {
-	static const int BitSize = N;
-	static const int ByteSize = BitSize / 8;
+	static constexpr int BitSize = N;
+	static constexpr int ByteSize = BitSize / 8;
 	
 	u8 data[ByteSize];
 	

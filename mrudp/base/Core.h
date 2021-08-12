@@ -16,6 +16,7 @@
 	#include <core/assert/Assert.h>
 #else
 	#define sLogDebug(...)
+	#define sLogDebugIf(...)
 	#define xLogDebug(...)
 	#define xDebugLine()
 	#define xLogActivateStory(...)

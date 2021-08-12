@@ -87,9 +87,6 @@ mrudp_error_code_t mrudp_resolve(mrudp_service_t mrudp, const char *address, mru
  // creates a socket using the given service and address
 mrudp_socket_t mrudp_socket(mrudp_service_t service, mrudp_addr_t *address);
 
-// connects a socket to a remote address (this is to test throughput for connected sockets on linux)
-mrudp_error_code_t mrudp_socket_connect(mrudp_socket_t socket, mrudp_addr_t *remote);
-
 // closes a given socket, after closing the socket handle is invalid
 mrudp_error_code_t mrudp_close_socket(mrudp_socket_t socket);
 

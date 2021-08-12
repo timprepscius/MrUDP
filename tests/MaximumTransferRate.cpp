@@ -64,7 +64,7 @@ SCENARIO("packet transmission rate")
 			&listenerDispatch, listenerAccept, listenerClose
 		);
 		
-		WHEN("create a local socket with X conections to the remote socket")
+		WHEN("create a local socket with " << X << " conections to the remote socket")
 		{
 			local.sockets.push_back(mrudp_socket(local.service, &anyAddress));
 			
@@ -93,7 +93,7 @@ SCENARIO("packet transmission rate")
 			
 			size_t packetsSent = 0;
 			
-			THEN("send Y packets of data on each connection")
+			THEN("send " << Y << " packets of data on each connection")
 			{
 				auto then = Clock::now();
 			
@@ -122,7 +122,7 @@ SCENARIO("packet transmission rate")
 			}
 		}
 
-		WHEN("create X local sockets and make one connections on each to the single remote")
+		WHEN("create " << X << " local sockets and make one connections on each to the single remote")
 		{
 			mrudp_str_to_addr("127.0.0.1:0", &anyAddress);
 		
@@ -151,7 +151,7 @@ SCENARIO("packet transmission rate")
 			
 			size_t packetsSent = 0;
 			
-			THEN("send Y packets of data on each connection")
+			THEN("send " << Y << " packets of data on each connection")
 			{
 				auto then = Clock::now();
 			
@@ -230,7 +230,7 @@ SCENARIO("packet transmission rate")
 			}
 		} ;
 		
-		WHEN ("establish connections")
+		WHEN ("establish " << X << " connections")
 		{
 			for (auto i=0; i<X; ++i)
 			{
@@ -246,9 +246,6 @@ SCENARIO("packet transmission rate")
 				mrudp_socket_addr(localSocket, &localAddress);
 				local.sockets.push_back(localSocket);
 				
-//				mrudp_socket_connect(remoteSocket, &localAddress);
-//				mrudp_socket_connect(localSocket, &remoteAddress);
-			
 				local.connections.push_back(mrudp_connect(
 					localSocket, &remoteAddress,
 					&localConnectionDispatch,
@@ -260,7 +257,7 @@ SCENARIO("packet transmission rate")
 			
 			size_t packetsSent = 0;
 			
-			THEN("send Y packets of data on each connection")
+			THEN("send " << Y << " packets of data on each connection")
 			{
 				auto then = Clock::now();
 			

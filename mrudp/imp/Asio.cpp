@@ -323,20 +323,20 @@ void SocketNative::receive(Receive &receive, Function<void (const error_code &)>
 	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
 	
 
-	// why am I using async_receive_from and not async_receive:
-	// There is a socket A bound to port X
-	// Client C sends a packet P to port X
-	// There is a packet P incoming to port X
-	// At that very moment we bind a new "connected" socket B to port X
-	// the packet is received by socket B
-	// And then we connect the "connected" socket to a remote client Y (not C)
-	// at this point, when we do an async_receive, it will asign the incorrect
-	// address to packet P as originating from Y, but really it came from C
-	// And what's more, it seems the route is established from C -> B, and all packets
-	// are received incorrectly.
-
 	if (isConnected)
 	{
+		// why am I using async_receive_from and not async_receive:
+		// There is a socket A bound to port X
+		// Client C sends a packet P to port X
+		// There is a packet P incoming to port X
+		// At that very moment we bind a new "connected" socket B to port X
+		// the packet is received by socket B
+		// And then we connect the "connected" socket to a remote client Y (not C)
+		// at this point, when we do an async_receive, it will asign the incorrect
+		// address to packet P as originating from Y, but really it came from C
+		// And what's more, it seems the route is established from C -> B, and all packets
+		// are received incorrectly.
+		
 		auto remoteEndpoint = this->remoteEndpoint;
 
 		handle.async_receive_from(
@@ -423,12 +423,13 @@ SocketImp::SocketImp(const StrongPtr<Socket> &parent_, const Address &address) :
 			//
 			// At first when I fixed this, I just checked with the service that I had a unique port.
 			// But unfortunately, this doesn't solve the issue, because there can be multiple services running.
-			// I support I could have a "meta" service which has a set of all known ports,
+			// I suppose I could have a "meta" service which has a set of all known ports,
 			// but even this will not solve the problem, because it seems that linux may give you
 			// a port owned by a different process, with the same UID.  Argh!!!
 			
-			// We bound the port before without overlapping, so at this point the port is unique
+			// We bind the port before without overlapping, so at this point the port is unique
 			// move it to a temporary handle that we'll close at the last moment
+			// it would be great if I locked a system wide mutex
 			auto temporary = std::move(socket->handle);
 			
 			// prepare the new handle
@@ -503,10 +504,6 @@ void SocketImp::handleReceiveFrom(const Address &remoteAddress, Packet &receiveP
 void SocketImp::open()
 {
 	doReceive(socket, strong<Receive>());
-}
-
-void SocketImp::connect(const Address &remoteAddress_)
-{
 }
 
 void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr<Receive> &receive)

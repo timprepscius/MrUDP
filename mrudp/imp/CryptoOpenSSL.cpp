@@ -8,9 +8,6 @@
 #include <openssl/evp.h>
 #include <openssl/engine.h>
 
-// need to go through later and convert to EVP
-// https://www.openssl.org/docs/man1.1.0/man3/EVP_PKEY_encrypt.html
-
 namespace timprepscius {
 namespace mrudp {
 namespace imp {
@@ -30,14 +27,6 @@ struct Engine
 #define SSL_FAIL(x) (x) <= 0
 
 Engine *Engine::shared = new Engine();
-
-// ------------------------------------------------------------
-
-void openssl_free(void *v)
-{
-	// somehow OPENSSL_free is missing
-	free(v);
-}
 
 // ------------------------------------------------------------
 
@@ -77,8 +66,6 @@ struct RSAKey<N>::I {
 	EVP_PKEY *pkey = nullptr;
 	Vector<u8> bytes;
 } ;
-
-// https://stackoverflow.com/questions/59219750/unable-to-derive-diffie-hellman-shared-secret-with-openssl-in-c
 
 bool construct_(RSAKeyDefault &public_, Vector<u8> &&bytes)
 {
@@ -204,6 +191,7 @@ bool decrypt_(RSAKeyDefault &rsa, const Vector<u8> &in, AESKey<DefaultAESKeySize
 	if (SSL_FAIL(EVP_PKEY_decrypt(ctx, NULL, &size, in.data(), in.size())))
 		return false;
 
+	// use the stack
 	u8 *temporary = (u8 *)alloca(size);
 	if (!temporary)
 		return false;
@@ -365,6 +353,8 @@ bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom 
 		if (!ctx)
 			return false;
 
+		// I believe, that because BitSize is a constexpr, one of the below statements will
+		// optimized out
 		if (key.BitSize == 256)
 		{
 			if(SSL_FAIL(EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))
@@ -421,6 +411,8 @@ bool decrypt_(AESKeyDefault &key, Packet &packet)
 		if (!ctx)
 			return false;
 
+		// I believe, that because BitSize is a constexpr, one of the below statements will
+		// optimized out
 		if (key.BitSize == 256)
 		{
 			if(SSL_FAIL(EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data, iv_.data)))

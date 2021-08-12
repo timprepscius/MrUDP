@@ -9,14 +9,11 @@ namespace tests {
 
 SCENARIO("connections")
 {
-//	xLogActivateStory(LogAllStories);
-	auto numConnectionsToCreate = 1;
+	auto numConnectionsToCreate = 512;
 	size_t numPacketsToSendOnEachConnection = 16;
 	
     GIVEN( "mrudp service, remote socket" )
     {
-//		std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n";
-    
 		mrudp_addr_t anyAddress;
 		mrudp_str_to_addr("127.0.0.1:0", &anyAddress);
 		
@@ -75,9 +72,6 @@ SCENARIO("connections")
 			mrudp_addr_t localAddress;
 			mrudp_socket_addr(local.sockets.back(), &localAddress);
 			
-			mrudp_socket_connect(local.sockets.back(), &remoteAddress);
-			mrudp_socket_connect(remote.sockets.back(), &localAddress);
-			
 			auto localConnectionDispatch = Connection {
 				[&](auto data, auto size, auto isReliable) {
 					return 0;
@@ -87,7 +81,7 @@ SCENARIO("connections")
 				}
 			} ;
 
-			WHEN("X connections are created from local to remote and then destroyed")
+			WHEN(numConnectionsToCreate << " connections are created from local to remote and then destroyed")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
@@ -109,7 +103,7 @@ SCENARIO("connections")
 					REQUIRE(remote.connections.size() == numConnectionsToCreate);
 				}
 				
-				WHEN("Y packets are sent on each")
+				WHEN(numPacketsToSendOnEachConnection << " packets are sent on each")
 				{
 					size_t packetsSent = 0;
 					

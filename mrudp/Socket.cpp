@@ -63,9 +63,7 @@ StrongPtr<Connection> Socket::connect(
 	connection->open();
 	connection->handshake.initiate();
 
-#ifdef MRUDP_USE_OVERLAPPED_IO
-	sLogDebug("mrudp::overlap_io", "connect " << logVar(uint64_t(connection->id)) << logVar(ptr_of(connection)) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())) << logVar(connection->imp->connectedSocket->handle.local_endpoint()));
-#endif
+	sLogDebugIf(connection->imp->connectedSocket, "mrudp::overlap_io", "connect " << logVar(uint64_t(connection->id)) << logVar(ptr_of(connection)) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())) << logVar(connection->imp->connectedSocket->handle.local_endpoint()));
 
 	return connection;
 }

@@ -9,7 +9,6 @@ namespace tests {
 
 SCENARIO("basics")
 {
-//	xLogActivateStory(xLogAllStories);
 	auto numConnectionsToCreate = 256;
 	auto numPacketsToSendOnEachConnection = 64;
 
@@ -73,9 +72,6 @@ SCENARIO("basics")
 			mrudp_addr_t localAddress;
 			mrudp_socket_addr(local.sockets.back(), &localAddress);
 			
-			mrudp_socket_connect(local.sockets.back(), &remoteAddress);
-			mrudp_socket_connect(remote.sockets.back(), &localAddress);
-			
 			auto localConnectionDispatch = Connection {
 				.receive = [&](auto data, auto size, auto isReliable) {
 					local.packetsReceived++;
@@ -87,7 +83,7 @@ SCENARIO("basics")
 				}
 			} ;
 
-			NO_WHEN("X connections are created from local to remote")
+			NO_WHEN(numConnectionsToCreate << " connections are created from local to remote")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
@@ -151,7 +147,7 @@ SCENARIO("basics")
 				}
 			}
 			
-			WHEN("X connections are created and Y packets are sent on each")
+			WHEN(numConnectionsToCreate << " connections are created and " << numPacketsToSendOnEachConnection << " packets are sent on each")
 			{
 				auto packetsSent = 0;
 				
@@ -174,7 +170,7 @@ SCENARIO("basics")
 					}
 				}
 				
-				THEN("packets show up and are correct")
+				THEN(numPacketsToSendOnEachConnection << " packets show up and are correct")
 				{
 					wait_until(
 						std::chrono::seconds(10),
@@ -193,7 +189,7 @@ SCENARIO("basics")
 					REQUIRE(allMatch);
 				}
 				
-				WHEN("packets are sent back oppositely")
+				WHEN(numPacketsToSendOnEachConnection << " packets are sent back oppositely")
 				{
 				
 					auto numPacketsSentRemoteToLocal = 0;

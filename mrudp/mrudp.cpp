@@ -22,20 +22,6 @@ mrudp_socket_t mrudp_socket(
 	return (mrudp_socket_t)handle;
 }
 
-mrudp_error_code_t mrudp_socket_connect(
-	mrudp_socket_t socket_,
-	mrudp_addr_t *remote
-)
-{
-	auto socket = toNative(socket_);
-	if (!socket)
-		return MRUDP_GENERAL_FAILURE;
-
-	socket->imp->connect(*remote);
-	
-	return MRUDP_OK;
-}
-
 mrudp_error_code_t mrudp_listen(
 	mrudp_socket_t socket_,
 	void *userData,
