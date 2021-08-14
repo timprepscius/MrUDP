@@ -34,7 +34,7 @@ struct Receiver
 	
 	Receiver(Connection *connection);
 	
-	ReceiveQueue receiveQueue;
+	ReceiveQueue receiveQueue, unreliableReceiveQueue;
 	
 	// Called on a SYN packet, sets the status to Open, and
 	// sets the expected packet id.
@@ -47,7 +47,7 @@ struct Receiver
 	void fail();
 	
 	// Dispatches to either reliable, unreliable, or probe paths
-	void processReceived(Packet &packet);
+	void processReceived(ReceiveQueue::Datum &packet, Reliability reliability);
 	
 	// Processes incoming packets
 	void onPacket (Packet &packet);

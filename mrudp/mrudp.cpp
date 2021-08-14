@@ -164,7 +164,7 @@ mrudp_error_code_t mrudp_send(mrudp_connection_t connection_, const char *buffer
 
 	xLogDebug(logVar(connection));
 
-	connection->send(buffer, size, reliable);
+	connection->send(buffer, size, reliable == 0 ? UNRELIABLE : RELIABLE);
 	
 	return MRUDP_OK;
 }

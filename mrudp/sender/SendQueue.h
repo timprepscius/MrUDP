@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Packet.h"
+#include "SendIDGenerator.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -16,6 +17,8 @@ namespace mrudp {
 // just a list of vectors.
 // --------------------------------------------------------------------------------
 
+// TODO: rename SendQueue DataQueue
+
 struct SendQueue
 {
 	enum Status {
@@ -28,9 +31,12 @@ struct SendQueue
 	~SendQueue ();
 
 	Mutex mutex;
+	
+	SendIDGenerator dataIDGenerator;
 	List<PacketPtr> queue;
 
-	void enqueue(const PacketPtr &packet);
+	bool coalesce(DataTypeID type, const u8 *data, size_t size);
+	void enqueue(DataTypeID type, const u8 *data, size_t size);
 	PacketPtr dequeue();
 	
 	bool empty();

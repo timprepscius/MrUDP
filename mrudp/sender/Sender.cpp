@@ -31,14 +31,21 @@ void Sender::processSendQueue()
 		
 		if (retrier.numUnacked() < windowSize.size)
 		{
-			if (auto packet = sendQueue.dequeue())
+			if (auto packet = dataQueue.dequeue())
 			{
+				packet->header.type = DATA_RELIABLE;
 				sentPacket = true;
 				sendImmediately(packet);
 			}
 		}
 	}
 	while(sentPacket);
+
+	while (auto packet = unreliableDataQueue.dequeue())
+	{
+		packet->header.type = DATA_UNRELIABLE;
+		connection->send(packet);
+	}
 }
 
 bool Sender::isUninitialized ()
@@ -48,7 +55,7 @@ bool Sender::isUninitialized ()
 
 bool Sender::empty ()
 {
-	return retrier.empty() && sendQueue.empty();
+	return retrier.empty() && dataQueue.empty();
 }
 
 void Sender::open()
@@ -73,10 +80,7 @@ void Sender::close()
 
 	if (status != CLOSED)
 	{
-		auto packet = strong<Packet>();
-		packet->header.type = CLOSE_WRITE;
-		send(packet);
-
+		dataQueue.enqueue(CLOSE_WRITE, nullptr, 0);
 		status = CLOSED;
 	}
 }
@@ -91,7 +95,8 @@ void Sender::fail()
 	}
 
 	retrier.close();
-	sendQueue.close();
+	dataQueue.close();
+	unreliableDataQueue.close();
 }
 
 void Sender::sendImmediately(const PacketPtr &packet)
@@ -102,14 +107,22 @@ void Sender::sendImmediately(const PacketPtr &packet)
 	connection->send(packet);
 }
 
-void Sender::send(const PacketPtr &packet)
+void Sender::send(const u8 *data, size_t size, Reliability reliability)
 {
 	if (status != CLOSED)
 	{
-		sendQueue.enqueue(packet);
-		processSendQueue();
+		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
+		dataQueue_.enqueue(DATA, data, size);
+		
+		scheduleSendQueueProcessing();
 	}
 }
+
+void Sender::scheduleSendQueueProcessing ()
+{
+	processSendQueue();
+}
+
 
 void Sender::onPacket(Packet &packet)
 {

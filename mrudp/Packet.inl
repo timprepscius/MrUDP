@@ -85,14 +85,37 @@ bool pushData(Packet &packet, const T &t)
 	return true;
 }
 
+inline
+bool pushSizedData(Packet &packet, const u8 *data, size_t size)
+{
+	return
+		pushData(packet, data, size) &&
+		pushData(packet, (u16)size) &&
+		true;
+}
+
 template<>
 inline
 bool pushData(Packet &packet, const Vector<u8> &data)
 {
-	return
-		pushData(packet, data.data(), data.size()) &&
-		pushData(packet, (u16)data.size()) &&
-		true;
+	return pushSizedData(packet, data.data(), data.size());
+}
+
+
+inline
+bool popSizedData(Packet &packet, u8 *data, size_t &size_)
+{
+	u16 size;
+	
+	if (!popData(packet, size))
+		return false;
+		
+	size_ = size;
+		
+	if (!popData(packet, data, size_))
+		return false;
+		
+	return true;
 }
 
 template<typename T>
@@ -108,6 +131,21 @@ size_t pushSize(const Vector<u8> &data)
 	return data.size() + sizeof(u16);
 }
 
+inline
+bool pushData(Packet &packet, const DataHeader &header, const u8 *data)
+{
+	return
+		pushData(packet, header) &&
+		pushData(packet, data, header.dataSize);
+}
+
+inline
+bool popData(Packet &packet, DataHeader &header, u8 *data)
+{
+	return
+		popData(packet, header) &&
+		popData(packet, data, header.dataSize);
+}
 
 } // namespace
 } // namespace

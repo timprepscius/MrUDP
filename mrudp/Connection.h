@@ -69,10 +69,11 @@ struct Connection : StrongThis<Connection>
 	void open ();
 
 	bool canSend ();
-	void send(const char *buffer, int size, int reliable);
-	void send_(const PacketPtr &packet);
+	void send(const char *buffer, int size, Reliability reliable);
+
 	void send(const PacketPtr &packet);
 	void resend(const PacketPtr &packet);
+	void send_(const PacketPtr &packet);
 	
 	void receive(Packet &p);
 	

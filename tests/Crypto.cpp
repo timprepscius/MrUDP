@@ -106,7 +106,7 @@ SCENARIO("crypto")
 			
 			{
 				mrudp::Packet p;
-				p.header.type = DATA;
+				p.header.type = DATA_RELIABLE;
 				p.header.connection = 1;
 				p.data[0] = 'H';
 				p.dataSize = 1;
@@ -119,7 +119,7 @@ SCENARIO("crypto")
 
 			{
 				mrudp::Packet p;
-				p.header.type = DATA;
+				p.header.type = DATA_RELIABLE;
 				p.header.connection = 1;
 				p.data[0] = 'H';
 				p.dataSize = 1;

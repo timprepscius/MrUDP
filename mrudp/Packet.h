@@ -18,6 +18,7 @@ struct Header {
 	PacketID id;
 } __attribute__ ((packed));
 
+
 // --------------------------------------------------------------------------------
 // Packet
 //
@@ -39,6 +40,20 @@ struct Packet
 
 typedef StrongPtr<Packet> PacketPtr;
 
+// --------------------------------------------------------------------------------
+// DataHeader
+//
+// Packets with type DATA_RELIABLE or DATA_UNRELIABLE are containers for multiple
+// subpackets of data.
+// --------------------------------------------------------------------------------
+struct DataHeader {
+	typedef Packet::Size Size;
+	
+	DataID id;
+	DataTypeID type;
+	Size dataSize;
+} __attribute__ ((packed));
+
 bool operator==(const Packet &lhs, const Packet &rhs);
 
 // returns whether or not the lhs is greater than the rhs
@@ -58,6 +73,9 @@ template<typename T>
 bool peekData(Packet &packet, T &t);
 
 bool pushData(Packet &packet, const u8 *data, size_t size);
+
+bool pushData(Packet &packet, const DataHeader &, const u8 *data);
+bool popData(Packet &packet, DataHeader &, u8 *data);
 
 template<typename T>
 bool pushData(Packet &packet, const T &);

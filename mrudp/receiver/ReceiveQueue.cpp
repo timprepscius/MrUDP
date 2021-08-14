@@ -14,16 +14,16 @@ void ReceiveQueue::processQueue()
 bool ReceiveQueue::processNext()
 {
 	// does the next expected packet exist?
-	auto packet_ = queue.find(expectedID);
-	if (packet_ != queue.end())
+	auto datum_ = queue.find(expectedID);
+	if (datum_ != queue.end())
 	{
-		auto &packet = packet_->second;
+		auto &datum = datum_->second;
 		
 		// process it
-		processor(packet);
+		processor(datum);
 			
 		// erase it
-		queue.erase(packet_);
+		queue.erase(datum_);
 		
 		// increase our expected ID
 		++expectedID;
@@ -40,33 +40,38 @@ void ReceiveQueue::process(Packet &packet)
 
 	auto lock = lock_of(mutex);
 	
-	if(packet.header.id == expectedID)
+	auto *begin = (Datum *)packet.data;
+	auto *end = (Datum *)(packet.data + packet.dataSize);
+	
+	for (auto *datum = (Datum *)begin; datum < end; datum = (Datum *)(datum->data + datum->header.dataSize))
 	{
-		processor(packet);
-		
-		expectedID++;
-		processQueue();
-	}
-	else
-	if (packet_id_greater_than(packet.header.id, expectedID))
-	{
-		sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << expectedID);
-		enqueue(packet);
-	}
-	else
-	{
-		sLogDebug("mrudp::receive", logOfThis(this) << "DISCARD out of order " << packet.header.id << " less " << expectedID);
-	}
+		if (datum->header.id == expectedID)
+		{
+			processor(*datum);
+			expectedID++;
 
+			processQueue();
+		}
+		else
+		{
+			if (packet_id_greater_than(datum->header.id, expectedID))
+			{
+				sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << expectedID);
+				enqueue(*datum);
+			}
+			else
+			{
+				sLogDebug("mrudp::receive", logOfThis(this) << "DISCARD out of order " << packet.header.id << " less " << expectedID);
+			}
+		}
+	}
 }
 
-void ReceiveQueue::enqueue(Packet &packet)
+void ReceiveQueue::enqueue(Datum &datum)
 {
-	auto id = packet.header.id;
-	queue.emplace(id, packet);
+	auto id = datum.header.id;
+	queue.emplace(id, datum);
 }
-
-
 
 } // namespace
 } // namespace

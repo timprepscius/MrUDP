@@ -20,13 +20,15 @@ SCENARIO("packet id")
 			REQUIRE(!packet_id_greater_than(r,l));
 		};
 
-		PacketID top_1 = (PacketID)1<<31;
-		PacketID top_01 = (PacketID)1<<30;
+		auto PacketIDBits = sizeof(PacketID) * 8;
+
+		PacketID top_1 = (PacketID)1<<(PacketIDBits - 1);
+		PacketID top_01 = (PacketID)1<<(PacketIDBits - 2);
 		PacketID max_num = std::numeric_limits<PacketID>::max();
 		
 
 		PacketID pairs[][2] = {
-			{ (max_num ^ top_1) - 1, max_num },
+			{ PacketID((max_num ^ top_1) - 1), max_num },
 			{ 0, max_num },
 			{ max_num, top_1 },
 			{ top_01, max_num },
@@ -36,9 +38,9 @@ SCENARIO("packet id")
 			{ 8, 4 },
 			{ 16, 8 },
 			{ top_1, 1 },
-			{ top_1 + 1, 1 },
-			{ 1, top_1 + 2 },
-			{ 1, top_1 + 2 },
+			{ PacketID(top_1 + 1), 1 },
+			{ 1, PacketID(top_1 + 2) },
+			{ 1, PacketID(top_1 + 2) },
 		} ;
 		
 		for (auto &p : pairs)

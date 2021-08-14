@@ -8,8 +8,14 @@ namespace timprepscius {
 namespace mrudp {
 
 typedef u_int8_t VersionID;
-typedef uint32_t PacketID;
+typedef uint16_t PacketID;
+typedef uint16_t DataID;
 typedef uint16_t ShortConnectionID;
+
+enum Reliability {
+	UNRELIABLE,
+	RELIABLE
+} ;
 
 enum TypeID : uint8_t {
 	NONE = 0,
@@ -20,16 +26,18 @@ enum TypeID : uint8_t {
 	HANDSHAKE_COMPLETE = 'E',
 	
 	ACK = 'K',
-	DATA = 'T',
-	DATA_UNRELIABLE = 'U',
-
-	CLOSE_READ = 'R',
-	CLOSE_WRITE = 'W',
-
+	DATA_RELIABLE = 'V',
+	DATA_UNRELIABLE = 'Q',
 	PROBE = 'P',
-
+	CLOSE_READ = 'R',
+	
 	ENCRYPTED_VIA_PUBLIC_KEY = 'X',
 	ENCRYPTED_VIA_AES = 'Z',
+} ;
+
+enum DataTypeID : uint8_t {
+	DATA = 'T',
+	CLOSE_WRITE = 'W',
 } ;
 
 typedef __uint128_t LongConnectionID;

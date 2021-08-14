@@ -248,33 +248,11 @@ void Connection::resend(const PacketPtr &packet)
 	send_(packet);
 }
 
-void Connection::send(const char *buffer, int size, int reliable)
+void Connection::send(const char *buffer, int size, Reliability reliability)
 {
 	xLogDebug(logOfThis(this));
 
-	if (reliable)
-	{
-		auto packet = strong<Packet>();
-		packet->header.type = DATA;
-		
-		packet->dataSize = size;
-		memcpy(packet->data, buffer, size);
-
-		sender.send(packet);
-	}
-	else
-	{
-		if (canSend())
-		{
-			auto packet = strong<Packet>();
-			packet->header.type = DATA_UNRELIABLE;
-			packet->header.id = 0;
-			
-			packet->dataSize = size;
-			memcpy(packet->data, buffer, size);
-			send(packet);
-		}
-	}
+	sender.send((const u8 *)buffer, size, reliability);
 }
 
 // -----------------------

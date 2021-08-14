@@ -11,7 +11,12 @@ Receiver::Receiver(Connection *connection_) :
 {
 	receiveQueue.processor =
 		[this](auto &packet) {
-			processReceived(packet);
+			processReceived(packet, RELIABLE);
+		};
+
+	unreliableReceiveQueue.processor =
+		[this](auto &packet) {
+			processReceived(packet, UNRELIABLE);
 		};
 }
 
@@ -22,7 +27,7 @@ void Receiver::open (PacketID packetID)
 	// --
 	// So when an open is called from the handshake, even if has been officially closed
 	// we process the queue.
-	receiveQueue.expectedID = packetID;
+//	receiveQueue.expectedID = 0;
 	receiveQueue.processQueue();
 
 	if (status == UNINITIALIZED)
@@ -53,50 +58,36 @@ void Receiver::fail ()
 	}
 }
 
-void Receiver::processReceived(Packet &packet)
+void Receiver::processReceived(ReceiveQueue::Datum &datum, Reliability reliability)
 {
-	if (packet.header.type == DATA)
+	if (datum.header.type == DATA)
 	{
 		if (connection->receiveHandler)
 			connection->receiveHandler(
 				connection->userData,
-				packet.data,
-				packet.dataSize,
-				1
-			);
-	}
-
-	if (packet.header.type == DATA_UNRELIABLE)
-	{
-		if (connection->receiveHandler)
-			connection->receiveHandler(
-				connection->userData,
-				packet.data,
-				packet.dataSize,
-				0
+				datum.data,
+				datum.header.dataSize,
+				reliability
 			);
 	}
 	else
-	if (packet.header.type == PROBE)
+	if (datum.header.type == CLOSE_WRITE)
 	{
-	
-	}
-	else
-	if (packet.header.type == CLOSE_WRITE)
-	{
-		close();
-		connection->possiblyClose();
+		if (reliability == RELIABLE)
+		{
+			close();
+			connection->possiblyClose();
+		}
 	}
 }
 
 inline
-bool isReceivable(TypeID typeID)
+bool requiresAck(TypeID typeID)
 {
 	return
-		typeID == DATA ||
+		typeID == DATA_RELIABLE ||
 		typeID == PROBE ||
-		typeID == CLOSE_READ ||
-		typeID == CLOSE_WRITE;
+		typeID == CLOSE_READ;
 }
 
 void Receiver::onPacket(Packet &packet)
@@ -109,28 +100,19 @@ void Receiver::onPacket(Packet &packet)
 	if (status == OPEN)
 	{
 		auto type = packet.header.type;
-		if(isReceivable(type))
+		if(requiresAck(type))
 		{
 			auto ack = strong<Packet>();
 			ack->header.type = ACK;
 			ack->header.id = packet.header.id;
 			connection->send(ack);
-				
+		}
+
+		if (packet.header.type == DATA_RELIABLE)
 			receiveQueue.process(packet);
-		}
 		else
-		if(packet.header.type == DATA_UNRELIABLE)
-		{
-			if(connection->receiveHandler)
-			{
-				connection->receiveHandler(
-					connection->userData,
-					packet.data,
-					packet.dataSize,
-					0
-				);
-			}
-		}
+		if (packet.header.type == DATA_UNRELIABLE)
+			unreliableReceiveQueue.process(packet);
 	}
 }
 

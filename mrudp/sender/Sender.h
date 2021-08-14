@@ -50,13 +50,17 @@ struct Sender
 	RTT rtt;
 	WindowSize windowSize;
 	Retrier retrier;
-	SendQueue sendQueue;
+	SendQueue dataQueue;
+	
+	SendQueue unreliableDataQueue;
 	
 	bool isUninitialized ();
 	
 	void open ();
+
+	void send(const u8 *data, size_t size, Reliability reliability);
+	
 	void sendImmediately(const PacketPtr &packet);
-	void send(const PacketPtr &packet);
 	void onAck(Packet &packet);
 	void onPacket (Packet &packet);
 	void close ();
@@ -65,6 +69,7 @@ struct Sender
 	bool empty ();
 	
 	void processSendQueue ();
+	void scheduleSendQueueProcessing ();
 };
 
 } // namespace
