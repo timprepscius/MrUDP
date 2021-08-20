@@ -19,21 +19,24 @@ void SendQueue::close()
 	}
 }
 
-bool SendQueue::coalesce(DataTypeID type, const u8 *data, size_t size)
+bool SendQueue::coalesce(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode)
 {
+	if (mode == MRUDP_COALESCE_NONE)
+		return false;
+
 	if (queue.empty())
 		return false;
 		
 	auto &packet = *queue.front();
-	if (packet.dataSize + size + sizeof(DataHeader) < MAX_PACKET_SIZE)
+	if (packet.dataSize + size + sizeof(FrameHeader) < MAX_PACKET_SIZE)
 	{
-		DataHeader dataHeader {
+		FrameHeader frameHeader {
 			.type = type,
-			.id = dataIDGenerator.nextID(),
-			.dataSize = DataHeader::Size(size),
+			.id = frameIDGenerator.nextID(),
+			.dataSize = FrameHeader::Size(size),
 		} ;
 		
-		pushData(packet, dataHeader, data);
+		pushFrame(packet, frameHeader, data);
 		
 		return true;
 	}
@@ -41,23 +44,23 @@ bool SendQueue::coalesce(DataTypeID type, const u8 *data, size_t size)
 	return false;
 }
 
-void SendQueue::enqueue(DataTypeID type, const u8 *data, size_t size)
+void SendQueue::enqueue(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode)
 {
 	auto lock = lock_of(mutex);
 	if (status == CLOSED)
 		return;
 		
-	if (coalesce(type, data, size))
+	if (coalesce(type, data, size, mode))
 		return;
 
 	auto packet = strong<Packet>();
-	DataHeader dataHeader {
+	FrameHeader frameHeader {
 		.type = type,
-		.id = dataIDGenerator.nextID(),
-		.dataSize = DataHeader::Size(size),
+		.id = frameIDGenerator.nextID(),
+		.dataSize = FrameHeader::Size(size),
 	} ;
 	
-	pushData(*packet, dataHeader, data);
+	pushFrame(*packet, frameHeader, data);
 
 	queue.push_back(packet);
 }

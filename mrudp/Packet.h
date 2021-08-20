@@ -41,16 +41,16 @@ struct Packet
 typedef StrongPtr<Packet> PacketPtr;
 
 // --------------------------------------------------------------------------------
-// DataHeader
+// FrameHeader
 //
 // Packets with type DATA_RELIABLE or DATA_UNRELIABLE are containers for multiple
 // subpackets of data.
 // --------------------------------------------------------------------------------
-struct DataHeader {
+struct FrameHeader {
 	typedef Packet::Size Size;
 	
-	DataID id;
-	DataTypeID type;
+	FrameID id;
+	FrameTypeID type;
 	Size dataSize;
 } __attribute__ ((packed));
 
@@ -74,8 +74,8 @@ bool peekData(Packet &packet, T &t);
 
 bool pushData(Packet &packet, const u8 *data, size_t size);
 
-bool pushData(Packet &packet, const DataHeader &, const u8 *data);
-bool popData(Packet &packet, DataHeader &, u8 *data);
+bool pushFrame(Packet &packet, const FrameHeader &, const u8 *data);
+bool popFrame(Packet &packet, FrameHeader &, u8 *data);
 
 template<typename T>
 bool pushData(Packet &packet, const T &);

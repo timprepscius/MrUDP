@@ -20,15 +20,15 @@ struct ReceiveQueue
 	struct Frame {
 		typedef char Data[MAX_PACKET_SIZE];
 
-		DataHeader header;
+		FrameHeader header;
 		Data data;
 	} __attribute__ ((packed));
 
-	DataID expectedID = 0;
+	FrameID expectedID = 0;
 	Function<void(Frame &)> processor;
 	
 	Mutex mutex;
-	typedef OrderedMap<DataID, Frame> Queue;
+	typedef OrderedMap<FrameID, Frame> Queue;
 	Queue queue;
 	
 	// enqueues an out of order packet

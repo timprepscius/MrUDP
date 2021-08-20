@@ -17,8 +17,11 @@ String toString(const Address &addr)
 ConnectionOptions merge(const ConnectionOptions &lhs, const ConnectionOptions &rhs)
 {
 	ConnectionOptions merged = lhs;
-	if (merged.coalesc_delay_ms == -1)
-		merged.coalesc_delay_ms = rhs.coalesc_delay_ms;
+	if (merged.coalesce_mode == -1)
+		merged.coalesce_mode = rhs.coalesce_mode;
+
+	if (merged.coalesce_delay_ms == -1)
+		merged.coalesce_delay_ms = rhs.coalesce_delay_ms;
 		
 	return merged;
 }

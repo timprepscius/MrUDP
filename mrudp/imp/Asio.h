@@ -24,6 +24,8 @@ udp::endpoint toEndpoint(const mrudp_addr_t &addr);
 typedef mrudp_options_asio_t OptionsImp;
 void merge(OptionsImp &lhs, const OptionsImp &rhs);
 
+OptionsImp getDefaultOptions();
+
 struct Send
 {
 	Address address;

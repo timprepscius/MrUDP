@@ -9,7 +9,7 @@ namespace mrudp {
 
 typedef u_int8_t VersionID;
 typedef uint16_t PacketID;
-typedef uint16_t DataID;
+typedef uint16_t FrameID;
 typedef uint16_t ShortConnectionID;
 
 enum Reliability {
@@ -35,7 +35,7 @@ enum TypeID : uint8_t {
 	ENCRYPTED_VIA_AES = 'Z',
 } ;
 
-enum DataTypeID : uint8_t {
+enum FrameTypeID : uint8_t {
 	DATA = 'T',
 	CLOSE_WRITE = 'W',
 } ;

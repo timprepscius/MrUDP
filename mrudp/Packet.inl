@@ -132,7 +132,7 @@ size_t pushSize(const Vector<u8> &data)
 }
 
 inline
-bool pushData(Packet &packet, const DataHeader &header, const u8 *data)
+bool pushFrame(Packet &packet, const FrameHeader &header, const u8 *data)
 {
 	return
 		pushData(packet, header) &&
@@ -140,7 +140,7 @@ bool pushData(Packet &packet, const DataHeader &header, const u8 *data)
 }
 
 inline
-bool popData(Packet &packet, DataHeader &header, u8 *data)
+bool popFrame(Packet &packet, FrameHeader &header, u8 *data)
 {
 	return
 		popData(packet, header) &&

@@ -7,6 +7,15 @@
 
 using namespace timprepscius;
 using namespace mrudp;
+
+mrudp_error_code_t mrudp_default_options (mrudp_imp_selector imp, void *options_)
+{
+	// TODO: size checks
+	auto options = imp::getDefaultOptions();
+	memcpy(options_, &options, sizeof(options));
+	return MRUDP_OK;
+}
+
 	
 mrudp_socket_t mrudp_socket(
 	mrudp_service_t service_,

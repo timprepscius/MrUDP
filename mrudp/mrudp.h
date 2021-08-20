@@ -44,8 +44,15 @@ typedef union {
     struct sockaddr_in6 v6;
 } mrudp_addr_t;
 
+typedef enum {
+	MRUDP_COALESCE_NONE,
+	MRUDP_COALESCE_PACKET,
+	MRUDP_COALESCE_STREAM
+} mrudp_coalesce_mode_t;
+
 typedef struct {
-	int32_t coalesc_delay_ms;
+	int8_t coalesce_mode;
+	int32_t coalesce_delay_ms;
 } mrudp_connection_options_t;
 
 typedef struct {
@@ -98,6 +105,9 @@ mrudp_error_code_t mrudp_str_to_addr(const char *str, mrudp_addr_t *addr);
 
 // converts an address into an ip+port string
 mrudp_error_code_t mrudp_addr_to_str(const mrudp_addr_t *addr, char *out, size_t outSize);
+
+// gets default options for given backend
+mrudp_error_code_t mrudp_default_options (mrudp_imp_selector imp, void *options);
 
 // creates a service
 mrudp_service_t mrudp_service ();

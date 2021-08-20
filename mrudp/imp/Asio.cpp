@@ -14,7 +14,8 @@ namespace imp {
 #if defined(SYS_LINUX)
 OptionsImp systemDefaultOptions {
 	.connection {
-		.coalesc_delay_ms = 5
+		.coalesce_mode = MRUDP_COALESCE_PACKET,
+		.coalesce_delay_ms = 5
 	},
 
 	.overlapped_io = 0,
@@ -24,7 +25,8 @@ OptionsImp systemDefaultOptions {
 #else
 OptionsImp systemDefaultOptions {
 	.connection {
-		.coalesc_delay_ms = 5
+		.coalesce_mode = MRUDP_COALESCE_PACKET,
+		.coalesce_delay_ms = 5
 	},
 
 	.overlapped_io = 1,
@@ -33,6 +35,10 @@ OptionsImp systemDefaultOptions {
 } ;
 #endif
 
+OptionsImp getDefaultOptions()
+{
+	return systemDefaultOptions;
+}
 
 void merge(OptionsImp &lhs, const OptionsImp &rhs)
 {

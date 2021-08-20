@@ -80,7 +80,11 @@ void Sender::close()
 
 	if (status != CLOSED)
 	{
-		dataQueue.enqueue(CLOSE_WRITE, nullptr, 0);
+		dataQueue.enqueue(
+			CLOSE_WRITE,
+			nullptr, 0,
+			(SendQueue::CoalesceMode)connection->options.coalesce_mode
+		);
 		status = CLOSED;
 	}
 }
@@ -112,7 +116,11 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 	if (status != CLOSED)
 	{
 		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
-		dataQueue_.enqueue(DATA, data, size);
+		dataQueue_.enqueue(
+			DATA,
+			data, size,
+			(SendQueue::CoalesceMode)connection->options.coalesce_mode
+		);
 		
 		scheduleSendQueueProcessing();
 	}
@@ -120,12 +128,15 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 
 void Sender::scheduleSendQueueProcessing ()
 {
+	if (connection->options.coalesce_mode == 0)
+		return processSendQueue();
+
 	if (queueProcessingScheduled)
 		return ;
 		
 	queueProcessingScheduled = true;
 
-	auto sendQueueProcessingDelay = connection->options.coalesc_delay_ms;
+	auto sendQueueProcessingDelay = connection->options.coalesce_delay_ms;
 	auto now = connection->socket->service->clock.now();
 	auto then = now + Duration(sendQueueProcessingDelay);
 	

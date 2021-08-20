@@ -25,18 +25,19 @@ struct SendQueue
 		OPEN,
 		CLOSED
 	};
-
+	
 	Status status = OPEN;
+	using CoalesceMode = mrudp_coalesce_mode_t;
 
 	~SendQueue ();
 
 	Mutex mutex;
 	
-	SendIDGenerator dataIDGenerator;
+	SendIDGenerator frameIDGenerator;
 	List<PacketPtr> queue;
 
-	bool coalesce(DataTypeID type, const u8 *data, size_t size);
-	void enqueue(DataTypeID type, const u8 *data, size_t size);
+	bool coalesce(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode);
+	void enqueue(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode);
 	PacketPtr dequeue();
 	
 	bool empty();

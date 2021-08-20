@@ -1,6 +1,6 @@
 #pragma once
 
-#define MRUDP_SINGLE_CHAR_TRACE
+//#define MRUDP_SINGLE_CHAR_TRACE
 //#define MRUDP_ENABLE_CRYPTO
 #define MRUDP_ENABLE_DEBUG_HOOK
 

@@ -17,15 +17,19 @@ SCENARIO("basics")
 		mrudp_addr_t anyAddress;
 		mrudp_str_to_addr("127.0.0.1:0", &anyAddress);
 		
+		mrudp_options_asio_t options;
+		mrudp_default_options(MRUDP_IMP_ASIO, &options);
+		options.connection.coalesce_mode = MRUDP_COALESCE_NONE;
+		
 		State remote("remote");
-		remote.service = mrudp_service();
+		remote.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		remote.sockets.push_back(mrudp_socket(remote.service, &anyAddress));
 		
 		mrudp_addr_t remoteAddress;
 		mrudp_socket_addr(remote.sockets.back(), &remoteAddress);
 ;
 		State local("local");
-		local.service = mrudp_service();
+		local.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		
 		auto listen = Listener {
 			.accept = [&](auto connection) {
@@ -87,7 +91,8 @@ SCENARIO("basics")
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
 					mrudp_connection_options_t options;
-					options.coalesc_delay_ms = 20;
+					options.coalesce_mode = MRUDP_COALESCE_PACKET;
+					options.coalesce_delay_ms = 20;
 					
 					local.connections.push_back(
 						mrudp_connect_ex(
