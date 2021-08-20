@@ -83,7 +83,7 @@ SCENARIO("basics")
 				}
 			} ;
 
-			NO_WHEN(numConnectionsToCreate << " connections are created from local to remote")
+			WHEN(numConnectionsToCreate << " connections are created from local to remote")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
@@ -274,6 +274,78 @@ SCENARIO("basics")
 						});
 					
 						REQUIRE(remote.connections.size() == 0);
+					}
+				}
+			}
+		}
+
+		WHEN("create one local socket and make many connections")
+		{
+			local.sockets.push_back(mrudp_socket(local.service, &anyAddress));
+			mrudp_addr_t localAddress;
+			mrudp_socket_addr(local.sockets.back(), &localAddress);
+			
+			auto localConnectionDispatch = Connection {
+				.receive = [&](auto data, auto size, auto isReliable) {
+					local.packetsReceived++;
+					return 0;
+				},
+				.close = [&](auto event) {
+					return 0;
+				}
+			} ;
+
+			WHEN(numConnectionsToCreate << " connections are created from local to remote")
+			{
+				for (auto i=0; i<numConnectionsToCreate; ++i)
+				{
+					local.connections.push_back(
+						mrudp_connect(
+							local.sockets.back(), &remoteAddress,
+							&localConnectionDispatch, connectionReceive, connectionClose
+						)
+					);
+				}
+			
+				wait_until(std::chrono::seconds(10), [&]() {
+					return remote.connections.size() == numConnectionsToCreate;
+				});
+				
+				auto numPacketsToSendOnEachConnection = 512;
+				
+				WHEN(numPacketsToSendOnEachConnection << " packets are sent in short bursts")
+				{
+					Packet packet = { 'a', 'b', 'c', 'd', 'e' };
+					auto packetsSent = 0;
+
+					for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+					{
+						if (i % 32 == 0)
+							std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					
+						for (auto &connection: local.connections)
+						{
+							mrudp_send(connection, packet.data(), (int)packet.size(), 1);
+							packetsSent++;
+						}
+					}
+					
+					wait_until(
+						std::chrono::seconds(10),
+						[&]() { return remote.packetsReceived == packetsSent; }
+					);
+
+					THEN("all packets arrive")
+					{
+						REQUIRE(remote.packetsReceived == packetsSent);
+					}
+					
+					THEN("the number of packets sent is far less than the number of data packets sent")
+					{
+						mrudp_connection_statistics_t statistics;
+						mrudp_connection_statistics(local.connections.front(), &statistics);
+						
+						REQUIRE(statistics.reliable.packets.sent < statistics.reliable.frames.sent / 16);
 					}
 				}
 			}

@@ -27,7 +27,6 @@ void Receiver::open (PacketID packetID)
 	// --
 	// So when an open is called from the handshake, even if has been officially closed
 	// we process the queue.
-//	receiveQueue.expectedID = 0;
 	receiveQueue.processQueue();
 
 	if (status == UNINITIALIZED)
@@ -62,13 +61,7 @@ void Receiver::processReceived(ReceiveQueue::Datum &datum, Reliability reliabili
 {
 	if (datum.header.type == DATA)
 	{
-		if (connection->receiveHandler)
-			connection->receiveHandler(
-				connection->userData,
-				datum.data,
-				datum.header.dataSize,
-				reliability
-			);
+		connection->receive(datum.data, datum.header.dataSize, reliability);
 	}
 	else
 	if (datum.header.type == CLOSE_WRITE)
@@ -109,10 +102,14 @@ void Receiver::onPacket(Packet &packet)
 		}
 
 		if (packet.header.type == DATA_RELIABLE)
+		{
 			receiveQueue.process(packet);
+		}
 		else
 		if (packet.header.type == DATA_UNRELIABLE)
+		{
 			unreliableReceiveQueue.process(packet);
+		}
 	}
 }
 

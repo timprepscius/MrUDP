@@ -181,6 +181,9 @@ void Connection::receive(Packet &packet)
 	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 #endif
 
+	// this should be moved somewhere else
+	statistics.onReceive(packet);
+
 	xTraceChar(this, packet.header.id, (char)std::tolower((char)packet.header.type));
 	handshake.onPacket(packet);
 
@@ -189,6 +192,19 @@ void Connection::receive(Packet &packet)
 	
 	sender.onPacket(packet);
 	receiver.onPacket(packet);
+}
+
+void Connection::receive(char *buffer, int size, Reliability reliability)
+{
+	if (receiveHandler)
+		receiveHandler(
+			userData,
+			buffer,
+			size,
+			reliability
+		);
+
+	statistics.onReceiveDataFrame(size, reliability);
 }
 
 bool Connection::canSend ()
@@ -228,6 +244,8 @@ void Connection::send(const PacketPtr &packet)
 {
 	xTraceChar(this, packet->header.id, (char)packet->header.type);
 
+	statistics.onSend(*packet);
+
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (!crypto->encrypt(*packet))
 	{
@@ -246,11 +264,15 @@ void Connection::resend(const PacketPtr &packet)
 {
 	// xTraceChar(this, packet->header.id, 'R', (char)packet->header.type);
 	send_(packet);
+	
+	statistics.onResend(*packet);
 }
 
 void Connection::send(const char *buffer, int size, Reliability reliability)
 {
 	xLogDebug(logOfThis(this));
+
+	statistics.onSendDataFrame(size, reliability);
 
 	sender.send((const u8 *)buffer, size, reliability);
 }

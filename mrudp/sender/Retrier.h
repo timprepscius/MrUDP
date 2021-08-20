@@ -71,7 +71,7 @@ struct Retrier
 		bool needsRetryTimeoutRecalculation;
 		float rtt;
 	} ;
-
+	
 	// Signals to the Retrier that a packet was acked,
 	// which causes the Retry to removed
 	// Returns AckResult, where .needsRetryTimeoutRecalculation signifies

@@ -91,6 +91,17 @@ mrudp_error_code_t mrudp_connection_remote_addr (mrudp_connection_t connection_,
 	return MRUDP_OK;
 }
 
+mrudp_error_code_t mrudp_connection_statistics (mrudp_connection_t connection_, mrudp_connection_statistics_t *statistics)
+{
+	auto connection = toNative(connection_);
+	if (!connection)
+		return MRUDP_GENERAL_FAILURE;
+
+	*statistics = connection->statistics.query();
+	
+	return MRUDP_OK;
+}
+
 mrudp_error_code_t mrudp_close_socket(mrudp_socket_t socket_)
 {
 	auto socket = closeHandle(socket_);

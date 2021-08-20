@@ -5,6 +5,7 @@
 #include "connection/Probe.h"
 #include "Crypto.h"
 #include "Handshake.h"
+#include "Statistics.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -41,6 +42,7 @@ struct Connection : StrongThis<Connection>
 	Sender sender;
 	Receiver receiver;
 	Probe probe;
+	ConnectionStatistics statistics;
 	
 #ifdef MRUDP_ENABLE_CRYPTO
 	StrongPtr<ConnectionCrypto> crypto;
@@ -76,6 +78,7 @@ struct Connection : StrongThis<Connection>
 	void send_(const PacketPtr &packet);
 	
 	void receive(Packet &p);
+	void receive(char *buffer, int size, Reliability reliable);
 	
 	void possiblyClose ();
 	void close ();

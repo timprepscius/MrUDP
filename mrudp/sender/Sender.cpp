@@ -120,9 +120,23 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 
 void Sender::scheduleSendQueueProcessing ()
 {
-	processSendQueue();
-}
+	if (queueProcessingScheduled)
+		return ;
+		
+	queueProcessingScheduled = true;
 
+	auto sendQueueProcessingDelay = 5.0/1000;
+	auto now = connection->socket->service->clock.now();
+	auto then = now + toDuration(sendQueueProcessingDelay);
+	
+	connection->imp->setTimeout(
+		"send", then,
+		[this]() {
+			queueProcessingScheduled = false;
+			processSendQueue();
+		}
+	);
+}
 
 void Sender::onPacket(Packet &packet)
 {
@@ -144,8 +158,7 @@ void Sender::onAck(Packet &packet)
 	auto packetID = packet.header.id;
 	
 	auto now = connection->socket->service->clock.now();
-	auto ackResult =
-		retrier.ack(packetID, now);
+	auto ackResult = retrier.ack(packetID, now);
 
 	if (ackResult.contained)
 	{

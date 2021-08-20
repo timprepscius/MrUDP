@@ -69,6 +69,7 @@ struct Sender
 	bool empty ();
 	
 	void processSendQueue ();
+	Atomic<bool> queueProcessingScheduled = 0;
 	void scheduleSendQueueProcessing ();
 };
 

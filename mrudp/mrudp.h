@@ -50,6 +50,27 @@ typedef struct {
 	int8_t thread_quantity;
 } mrudp_options_asio_t;
 
+typedef struct {
+	uint32_t sent, received;
+} mrudp_data_send_receive_t;
+
+typedef struct {
+	mrudp_data_send_receive_t packets;
+	mrudp_data_send_receive_t frames;
+	mrudp_data_send_receive_t bytes;
+} mrudp_data_statistics_t;
+
+// statistics for connections
+typedef struct {
+	uint32_t packets_received;
+	uint32_t packets_sent;
+	
+	mrudp_data_statistics_t reliable, unreliable;
+	
+	uint32_t acks_sent;
+	uint32_t packets_resent;
+} mrudp_connection_statistics_t;
+
 #define MRUDP_IMP_ASIO 0x01
 
 typedef int mrudp_imp_selector;
@@ -139,6 +160,9 @@ mrudp_error_code_t mrudp_close_connection_socket_native(mrudp_connection_t socke
 
 // sends data on the given connection
 mrudp_error_code_t mrudp_send (mrudp_connection_t connection, const char *, int size, int reliable);
+
+// gets the statistics for the connect connection
+mrudp_error_code_t mrudp_connection_statistics(mrudp_connection_t connection, mrudp_connection_statistics_t *statistics);
 
 #ifdef __cplusplus
 }

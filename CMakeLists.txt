@@ -46,6 +46,7 @@ add_library(MrUDP STATIC
     mrudp/Packet.cpp
     mrudp/Service.cpp
     mrudp/Socket.cpp
+    mrudp/Statistics.cpp
     mrudp/Types.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
