@@ -57,14 +57,14 @@ void Receiver::fail ()
 	}
 }
 
-void Receiver::processReceived(ReceiveQueue::Datum &datum, Reliability reliability)
+void Receiver::processReceived(ReceiveQueue::Frame &frame, Reliability reliability)
 {
-	if (datum.header.type == DATA)
+	if (frame.header.type == DATA)
 	{
-		connection->receive(datum.data, datum.header.dataSize, reliability);
+		connection->receive(frame.data, frame.header.dataSize, reliability);
 	}
 	else
-	if (datum.header.type == CLOSE_WRITE)
+	if (frame.header.type == CLOSE_WRITE)
 	{
 		if (reliability == RELIABLE)
 		{

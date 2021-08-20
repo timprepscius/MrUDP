@@ -17,7 +17,7 @@ namespace mrudp {
 
 struct ReceiveQueue
 {
-	struct Datum {
+	struct Frame {
 		typedef char Data[MAX_PACKET_SIZE];
 
 		DataHeader header;
@@ -25,14 +25,14 @@ struct ReceiveQueue
 	} __attribute__ ((packed));
 
 	DataID expectedID = 0;
-	Function<void(Datum &)> processor;
+	Function<void(Frame &)> processor;
 	
 	Mutex mutex;
-	typedef OrderedMap<DataID, Datum> Queue;
+	typedef OrderedMap<DataID, Frame> Queue;
 	Queue queue;
 	
 	// enqueues an out of order packet
-	void enqueue(Datum &packet);
+	void enqueue(Frame &packet);
 	
 	// either process the packet immediately, enqueue it or
 	// discard it

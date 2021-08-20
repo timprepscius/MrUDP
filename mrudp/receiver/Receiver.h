@@ -47,7 +47,7 @@ struct Receiver
 	void fail();
 	
 	// Dispatches to either reliable, unreliable, or probe paths
-	void processReceived(ReceiveQueue::Datum &packet, Reliability reliability);
+	void processReceived(ReceiveQueue::Frame &frame, Reliability reliability);
 	
 	// Processes incoming packets
 	void onPacket (Packet &packet);

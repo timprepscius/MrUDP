@@ -40,24 +40,24 @@ void ReceiveQueue::process(Packet &packet)
 
 	auto lock = lock_of(mutex);
 	
-	auto *begin = (Datum *)packet.data;
-	auto *end = (Datum *)(packet.data + packet.dataSize);
+	auto *begin = (Frame *)packet.data;
+	auto *end = (Frame *)(packet.data + packet.dataSize);
 	
-	for (auto *datum = (Datum *)begin; datum < end; datum = (Datum *)(datum->data + datum->header.dataSize))
+	for (auto *frame = (Frame *)begin; frame < end; frame = (Frame *)(frame->data + frame->header.dataSize))
 	{
-		if (datum->header.id == expectedID)
+		if (frame->header.id == expectedID)
 		{
-			processor(*datum);
+			processor(*frame);
 			expectedID++;
 
 			processQueue();
 		}
 		else
 		{
-			if (packet_id_greater_than(datum->header.id, expectedID))
+			if (packet_id_greater_than(frame->header.id, expectedID))
 			{
 				sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << expectedID);
-				enqueue(*datum);
+				enqueue(*frame);
 			}
 			else
 			{
@@ -67,7 +67,7 @@ void ReceiveQueue::process(Packet &packet)
 	}
 }
 
-void ReceiveQueue::enqueue(Datum &datum)
+void ReceiveQueue::enqueue(Frame &datum)
 {
 	auto id = datum.header.id;
 	queue.emplace(id, datum);
