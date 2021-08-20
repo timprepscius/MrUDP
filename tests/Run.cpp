@@ -26,7 +26,7 @@ int main( int argc, char* argv[] )
 	session.applyCommandLine(argc, argv);
 
 	int result = 0;
-	while (true)
+//	while (true)
 	{
 		result = session.run( argc, argv );
 	}
