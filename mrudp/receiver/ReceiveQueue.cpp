@@ -14,16 +14,16 @@ void ReceiveQueue::processQueue()
 bool ReceiveQueue::processNext()
 {
 	// does the next expected packet exist?
-	auto datum_ = queue.find(expectedID);
-	if (datum_ != queue.end())
+	auto frame_ = queue.find(expectedID);
+	if (frame_ != queue.end())
 	{
-		auto &datum = datum_->second;
+		auto &frame = frame_->second;
 		
 		// process it
-		processor(datum);
+		processor(frame);
 			
 		// erase it
-		queue.erase(datum_);
+		queue.erase(frame_);
 		
 		// increase our expected ID
 		++expectedID;
@@ -67,10 +67,10 @@ void ReceiveQueue::process(Packet &packet)
 	}
 }
 
-void ReceiveQueue::enqueue(Frame &datum)
+void ReceiveQueue::enqueue(Frame &frame)
 {
-	auto id = datum.header.id;
-	queue.emplace(id, datum);
+	auto id = frame.header.id;
+	queue.emplace(id, frame);
 }
 
 } // namespace

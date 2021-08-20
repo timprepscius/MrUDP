@@ -78,6 +78,7 @@ struct SocketNative
 	{
 	}
 
+	SharedMutex handleMutex;
 	udp::socket handle;
 	SendQueue queue;
 

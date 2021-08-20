@@ -25,7 +25,11 @@ int main( int argc, char* argv[] )
 	
 	session.applyCommandLine(argc, argv);
 
-	int result = session.run( argc, argv );
+	int result = 0;
+	while (true)
+	{
+		result = session.run( argc, argv );
+	}
 	
 	return result;
 }

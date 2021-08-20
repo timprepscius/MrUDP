@@ -283,6 +283,8 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 
 void SocketNative::send(const Send &send, Function<void (const error_code &)> &&f)
 {
+	auto lock = shared_lock_of(handleMutex);
+	
 	if (!handle.is_open())
 	{
 		return;
@@ -331,10 +333,16 @@ void SocketNative::send(const Send &send, Function<void (const error_code &)> &&
 
 void SocketNative::receive(Receive &receive, Function<void (const error_code &)> &&f)
 {
+	auto lock = shared_lock_of(handleMutex);
+	
+	if (!handle.is_open())
+	{
+		return;
+	}
+
 	auto *buffer_ = (char *)&receive.packet;
 	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
 	
-
 	if (isConnected)
 	{
 		// why am I using async_receive_from and not async_receive:
@@ -585,19 +593,27 @@ void SocketImp::close ()
 		running = false;
 		xLogDebug(logOfThis(this) << socket->handle.local_endpoint() << " handle is closing " << socket->handle.native_handle());
 
-		socket->handle.close();
+		{
+			auto lock = lock_of(socket->handleMutex);
+			socket->handle.close();
+		}
 		
 		auto lock = lock_of(connectedSocketsMutex);
 		for (auto &[remote, socket_] : connectedSockets)
 		{
 			if (auto socket = strong(socket_))
+			{
+				auto lock = lock_of(socket->handleMutex);
 				socket->handle.close();
+			}
 		}
 	}
 }
 
 mrudp_addr_t SocketImp::getLocalAddress ()
 {
+	auto lock = shared_lock_of(socket->handleMutex);
+
 	boost::system::error_code ec;
 	auto endpoint = socket->handle.local_endpoint(ec);
 	return toAddr(endpoint);

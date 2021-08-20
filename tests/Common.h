@@ -10,6 +10,7 @@
 #include "catch.hpp"
 
 #include "../mrudp/base/Core.h"
+#include "../mrudp/base/Mutex.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -23,9 +24,6 @@ typedef std::function<int(mrudp_event_t)> ConnectionCloseFunction;
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::duration<Clock> Duration;
-
-typedef std::mutex Mutex;
-typedef std::lock_guard<Mutex> Lock;
 
 struct Listener {
 	ListenerAcceptFunction accept;
@@ -109,11 +107,15 @@ struct State {
 		}
 
 		{
-			Lock lock(connectionsMutex);
-			for (auto &connection: connections)
+			decltype(connections) connections_;
+			
+			{
+				auto lock = lock_of(connectionsMutex);
+				connections_ = std::move(connections);
+			}
+			
+			for (auto &connection: connections_)
 				mrudp_close_connection(connection);
-				
-			connections.clear();
 		}
 
 		{
@@ -142,7 +144,7 @@ inline auto wait_until(D &&d, F &&f)
 		auto now = Clock::now();
 		if (now > expire)
 		{
-			break;
+//			break;
 		}
 			
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

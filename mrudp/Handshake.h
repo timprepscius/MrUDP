@@ -7,6 +7,19 @@ namespace mrudp {
 
 struct Connection;
 
+// --------------------------------------------------------
+// Handshake
+//
+// Handshake reacts to handshake packets, providing appropriate
+// acks.
+//
+// Random notes:
+// I experimented with waitingFor as an atomic, and not using a mutex;
+// however I made a minor mistake within initiate, where I did
+// not set the waitingFor before sending the packet.  This would cause
+// a race condition..  At this point I figure a mutex
+// is simpler to use and less error prone.
+// --------------------------------------------------------
 struct Handshake
 {
 	Handshake(Connection *connection);
@@ -14,7 +27,7 @@ struct Handshake
 	Connection *connection;
 	
 	Mutex mutex;
-	Atomic<TypeID> waitingFor = H0;
+	TypeID waitingFor = H0;
 	PacketID firstNonHandshakePacketID = 0;
 	void initiate();
 	

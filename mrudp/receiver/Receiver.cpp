@@ -85,31 +85,26 @@ bool requiresAck(TypeID typeID)
 
 void Receiver::onPacket(Packet &packet)
 {
-	if (packet.header.type == CLOSE_READ)
+	if (status != OPEN)
+		return;
+		
+	auto type = packet.header.type;
+	if(requiresAck(type))
 	{
-		xDebugLine();
+		auto ack = strong<Packet>();
+		ack->header.type = ACK;
+		ack->header.id = packet.header.id;
+		connection->send(ack);
 	}
 
-	if (status == OPEN)
+	if (packet.header.type == DATA_RELIABLE)
 	{
-		auto type = packet.header.type;
-		if(requiresAck(type))
-		{
-			auto ack = strong<Packet>();
-			ack->header.type = ACK;
-			ack->header.id = packet.header.id;
-			connection->send(ack);
-		}
-
-		if (packet.header.type == DATA_RELIABLE)
-		{
-			receiveQueue.process(packet);
-		}
-		else
-		if (packet.header.type == DATA_UNRELIABLE)
-		{
-			unreliableReceiveQueue.process(packet);
-		}
+		receiveQueue.process(packet);
+	}
+	else
+	if (packet.header.type == DATA_UNRELIABLE)
+	{
+		unreliableReceiveQueue.process(packet);
 	}
 }
 

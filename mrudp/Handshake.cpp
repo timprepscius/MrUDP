@@ -1,5 +1,6 @@
 #include "Handshake.h"
 #include "Connection.h"
+#include <iostream>
 
 namespace timprepscius {
 namespace mrudp {
@@ -11,9 +12,12 @@ Handshake::Handshake(Connection *connection_) :
 
 void Handshake::initiate()
 {
+	auto lock = lock_of(mutex);
+	
 	auto packet = strong<Packet>();
 	packet->header.type = H0;
 	connection->sender.sendImmediately(packet);
+
 	waitingFor = H1;
 }
 
@@ -41,14 +45,21 @@ void Handshake::handlePacket(Packet &packet)
 		connection->send(ack);
 		
 		auto expected = H0;
-		waitingFor.compare_exchange_strong(expected, H2);
+		auto next = H2;
+		if (waitingFor == expected)
+		{
+			waitingFor = next;
+		}
 	}
 	else
 	if (received == H1)
 	{
 		auto expected = H1;
-		if (waitingFor.compare_exchange_strong(expected, H3))
+		auto next = H3;
+		if (waitingFor == expected)
 		{
+			waitingFor = next;
+			
 			auto packet = strong<Packet>();
 			packet->header.type = H2;
 			pushData(*packet, connection->localID);
@@ -68,8 +79,11 @@ void Handshake::handlePacket(Packet &packet)
 		connection->send(ack);
 		
 		auto expected = H2;
-		if (waitingFor.compare_exchange_strong(expected, HANDSHAKE_COMPLETE))
+		auto next = HANDSHAKE_COMPLETE;
+		if (waitingFor == expected)
 		{
+			waitingFor = next;
+			
 			connection->remoteID = remoteID;
 			firstNonHandshakePacketID = packet.header.id + 1;
 			onHandshakeComplete();
@@ -81,8 +95,11 @@ void Handshake::handlePacket(Packet &packet)
 		auto remoteID = readRemoteID(packet);
 
 		auto expected = H3;
-		if (waitingFor.compare_exchange_strong(expected, HANDSHAKE_COMPLETE))
+		auto next = HANDSHAKE_COMPLETE;
+		if (waitingFor == expected)
 		{
+			waitingFor = next;
+			
 			connection->remoteID = remoteID;
 			onHandshakeComplete();
 		}

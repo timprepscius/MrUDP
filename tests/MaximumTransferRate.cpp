@@ -43,7 +43,7 @@ SCENARIO("packet transmission rate")
 		
 		auto listenerDispatch = Listener {
 			[&](auto connection) {
-				auto l = Lock(remote.connectionsMutex);
+				auto l = lock_of(remote.connectionsMutex);
 				remote.connections.push_back(connection);
 				
 				mrudp_accept(
@@ -215,7 +215,7 @@ SCENARIO("packet transmission rate")
 		
 		auto listen = Listener {
 			[&](auto connection) {
-				auto l = Lock(remote.connectionsMutex);
+				auto l = lock_of(remote.connectionsMutex);
 				remote.connections.push_back(connection);
 				
 				mrudp_accept(connection,

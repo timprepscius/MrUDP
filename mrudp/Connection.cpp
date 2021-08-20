@@ -79,6 +79,25 @@ void Connection::__debugHook()
 		std::cerr << "__debugHook not empty!" << std::endl;
 		xDebugLine();
 	}
+	
+	if (statistics.statistics.reliable.frames.received == 0 && statistics.statistics.reliable.frames.sent == 0)
+	{
+		int x = 0;
+		x++;
+	}
+	
+	static int numToWaitFor = 512;
+	if (statistics.statistics.reliable.frames.received < numToWaitFor && statistics.statistics.reliable.frames.received > 0)
+	{
+		int x = 0;
+		x++;
+	}
+	
+	if (!receiver.receiveQueue.queue.empty())
+	{
+		int y = 0;
+		y++;
+	}
 
 	imp->setTimeout("debug", socket->service->clock.now() + toDuration(10),
 		[this](){

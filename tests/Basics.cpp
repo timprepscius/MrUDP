@@ -29,18 +29,18 @@ SCENARIO("basics")
 		
 		auto listen = Listener {
 			.accept = [&](auto connection) {
-				auto l = Lock(remote.connectionsMutex);
+				auto l = lock_of(remote.connectionsMutex);
 				remote.connections.push_back(connection);
 				
 				auto remoteConnectionDispatch = new Connection {
 					.receive = [&](auto data, auto size, auto isReliable) {
-						Lock lock(remote.packetsMutex);
+						auto lock = lock_of(remote.packetsMutex);
 						remote.packets.push_back(Packet(data, data+size));
 						remote.packetsReceived++;
 						return 0;
 					},
 					.close = [&remote, connection](auto event) {
-						Lock lock(remote.connectionsMutex);
+						auto lock = lock_of(remote.connectionsMutex);
 						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 						if (connection_ != remote.connections.end())
 						{
@@ -177,7 +177,7 @@ SCENARIO("basics")
 
 				THEN("connections show up on the remote")
 				{
-					Lock l(remote.connectionsMutex);
+					auto l = lock_of(remote.connectionsMutex);
 					REQUIRE(remote.connections.size() == numConnectionsToCreate);
 				}
 				
@@ -255,7 +255,7 @@ SCENARIO("basics")
 
 					REQUIRE(remote.packetsReceived == packetsSent);
 					
-					Lock l(remote.packetsMutex);
+					auto l = lock_of(remote.packetsMutex);
 					
 					bool allMatch = std::all_of(
 						remote.packets.begin(), remote.packets.end(),
@@ -292,7 +292,7 @@ SCENARIO("basics")
 
 						REQUIRE(local.packetsReceived == packetsSent);
 						
-						Lock l(local.packetsMutex);
+						auto l = lock_of(local.packetsMutex);
 						
 						bool allMatch = std::all_of(
 							local.packets.begin(), local.packets.end(),
@@ -310,7 +310,7 @@ SCENARIO("basics")
 					});
 
 					{
-						Lock l(remote.connectionsMutex);
+						auto l = lock_of(remote.connectionsMutex);
 						REQUIRE(remote.connections.size() == numConnectionsToCreate);
 					}
 
