@@ -14,6 +14,7 @@ MrUDP has many benefits when compared to TCP:
   * Single ports can have infinite connections to and from other ports.
   * One socket can both accept and connect.
   * Encryption using OpenSSL: RSA Handshake -> AES Session Keys
+  * Send coalescing
   * Extremely small code base
   * Provided backend uses boost asio for cross platform sockets.
   
@@ -28,8 +29,7 @@ make
 
 ## In Progress
   
-  * UDP send and receive coalescing support.
-
-  It is not clear exactly how I want to implement this.  It could be purely send side, or it could be on the receive side with acks becoming multiple acks.
-  Acks and sends will need more metadata, as to "time within coalescing queue" so that ping times are calculated correctly.
-
+  * reliable stream rather than reliable packets.
+  
+  While implementing the send coalescing, I realized it should be trivial to do send coalescing in packet mode or stream mode.  Stream mode just fills up the last packet before writing another, packet mode will never break packets.  Stream mode could obviously be used to send packets larger than the MAX_PACKET_LENGTH
+  

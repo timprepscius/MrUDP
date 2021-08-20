@@ -45,7 +45,10 @@ typedef __uint128_t LongConnectionID;
 const size_t MAX_PACKET_SIZE = MRUDP_MAX_PACKET_SIZE;
 const VersionID MRUDP_VERSION = 1;
 
-typedef mrudp_addr_t Address;
+using Address = mrudp_addr_t;
+using ConnectionOptions = mrudp_connection_options_t;
+
+ConnectionOptions merge(const ConnectionOptions &lhs, const ConnectionOptions &rhs);
 
 String toString(const Address &addr);
 

@@ -46,7 +46,7 @@ mrudp_error_code_t mrudp_close_connection(mrudp_connection_t connection_)
 	xLogDebug(logVar(connection));
 
 	connection->close();
-	connection->setHandlers(nullptr, nullptr, nullptr);
+	connection->closeUser();
 	
 	deleteHandle((ConnectionHandle)connection_);
 
@@ -132,11 +132,22 @@ mrudp_error_code_t mrudp_accept(
 	mrudp_close_callback_fn closeHandler
 )
 {
+	return mrudp_accept_ex(connection_, nullptr, userData, receiveHandler, closeHandler);
+}
+
+mrudp_error_code_t mrudp_accept_ex(
+	mrudp_connection_t connection_,
+	const mrudp_connection_options_t *options,
+	void *userData,
+	mrudp_receive_callback_fn receiveHandler,
+	mrudp_close_callback_fn closeHandler
+)
+{
 	auto connection = toNative(connection_);
 	if (!connection)
 		return MRUDP_GENERAL_FAILURE;
 
-	connection->setHandlers(userData, receiveHandler, closeHandler);
+	connection->openUser(options, userData, receiveHandler, closeHandler);
 	
 	return MRUDP_OK;
 }
@@ -144,6 +155,18 @@ mrudp_error_code_t mrudp_accept(
 mrudp_connection_t mrudp_connect(
 	mrudp_socket_t socket_,
 	const mrudp_addr_t *remoteAddress,
+	void *userData,
+	mrudp_receive_callback_fn receiveCallback,
+	mrudp_close_callback_fn eventCallback
+)
+{
+	return mrudp_connect_ex(socket_, remoteAddress, nullptr, userData, receiveCallback, eventCallback);
+}
+
+mrudp_connection_t mrudp_connect_ex(
+	mrudp_socket_t socket_,
+	const mrudp_addr_t *remoteAddress,
+	const mrudp_connection_options_t *options,
 	
 	void *userData,
 	mrudp_receive_callback_fn receiveCallback,
@@ -156,7 +179,7 @@ mrudp_connection_t mrudp_connect(
 
 	xLogDebug(logVar(socket) << logVar(userData));
 	
-	auto connection = socket->connect(*remoteAddress, userData, receiveCallback, eventCallback);
+	auto connection = socket->connect(*remoteAddress, options, userData, receiveCallback, eventCallback);
 	
 	return newHandle(connection);
 }

@@ -45,6 +45,12 @@ typedef union {
 } mrudp_addr_t;
 
 typedef struct {
+	int32_t coalesc_delay_ms;
+} mrudp_connection_options_t;
+
+typedef struct {
+	mrudp_connection_options_t connection;
+
 	int8_t overlapped_io;
 	int8_t send_via_queue;
 	int8_t thread_quantity;
@@ -134,6 +140,14 @@ mrudp_error_code_t mrudp_accept(
 	mrudp_close_callback_fn
 );
 
+mrudp_error_code_t mrudp_accept_ex(
+	mrudp_connection_t connection,
+	const mrudp_connection_options_t *options,
+	void *userData,
+	mrudp_receive_callback_fn,
+	mrudp_close_callback_fn
+);
+
 // gets the local address of the given socket
 mrudp_error_code_t mrudp_socket_addr(mrudp_socket_t socket, mrudp_addr_t *);
 
@@ -143,6 +157,16 @@ mrudp_error_code_t mrudp_socket_addr(mrudp_socket_t socket, mrudp_addr_t *);
 mrudp_connection_t mrudp_connect(
 	mrudp_socket_t socket,
 	const mrudp_addr_t *,
+	
+	void *userData,
+	mrudp_receive_callback_fn,
+	mrudp_close_callback_fn
+);
+
+mrudp_connection_t mrudp_connect_ex(
+	mrudp_socket_t socket,
+	const mrudp_addr_t *,
+	const mrudp_connection_options_t *options,
 	
 	void *userData,
 	mrudp_receive_callback_fn,

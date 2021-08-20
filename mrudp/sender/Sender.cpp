@@ -125,9 +125,9 @@ void Sender::scheduleSendQueueProcessing ()
 		
 	queueProcessingScheduled = true;
 
-	auto sendQueueProcessingDelay = 5.0/1000;
+	auto sendQueueProcessingDelay = connection->options.coalesc_delay_ms;
 	auto now = connection->socket->service->clock.now();
-	auto then = now + toDuration(sendQueueProcessingDelay);
+	auto then = now + Duration(sendQueueProcessingDelay);
 	
 	connection->imp->setTimeout(
 		"send", then,

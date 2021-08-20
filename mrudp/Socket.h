@@ -66,7 +66,9 @@ struct Socket : StrongThis<Socket>
 	void listen(void *userData, mrudp_accept_callback_fn acceptCallback, mrudp_close_callback_fn closeCallback);
 	
 	StrongPtr<Connection> connect(
-		const Address &address, void *userData,
+		const Address &address,
+		const ConnectionOptions *options,
+		void *userData,
 		mrudp_receive_callback_fn receiveCallback,
 		mrudp_close_callback_fn eventCallback
 	);

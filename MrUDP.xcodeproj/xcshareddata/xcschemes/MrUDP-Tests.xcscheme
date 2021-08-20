@@ -56,8 +56,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: packet transmission rate&quot;"
+            argument = "-s &quot;Scenario: basics&quot;"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-s &quot;Scenario: packet transmission rate&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-s &quot;Scenario: crypto&quot;"

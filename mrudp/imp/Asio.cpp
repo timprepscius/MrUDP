@@ -1,6 +1,7 @@
 #include "Asio.h"
 
 #include "../Base.h"
+#include "../Types.h"
 #include <boost/asio.hpp>
 #include <iostream>
 
@@ -12,20 +13,31 @@ namespace imp {
 
 #if defined(SYS_LINUX)
 OptionsImp systemDefaultOptions {
+	.connection {
+		.coalesc_delay_ms = 5
+	},
+
 	.overlapped_io = 0,
 	.send_via_queue = 1,
 	.thread_quantity = 1,
 } ;
 #else
 OptionsImp systemDefaultOptions {
+	.connection {
+		.coalesc_delay_ms = 5
+	},
+
 	.overlapped_io = 1,
 	.send_via_queue = 0,
 	.thread_quantity = int8_t(std::thread::hardware_concurrency() - 1),
 } ;
 #endif
 
+
 void merge(OptionsImp &lhs, const OptionsImp &rhs)
 {
+	lhs.connection = mrudp::merge(lhs.connection, rhs.connection);
+
 	if (lhs.overlapped_io == -1)
 		lhs.overlapped_io = rhs.overlapped_io;
 		

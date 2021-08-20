@@ -37,6 +37,9 @@ struct Connection : StrongThis<Connection>
 	// the remote address
 	mrudp_addr_t remoteAddress; // Peer address
 
+	// the options for how the connectino functions
+	ConnectionOptions options;
+
 	// connection mechanisms
 	Handshake handshake;
 	Sender sender;
@@ -66,7 +69,8 @@ struct Connection : StrongThis<Connection>
 	);
 	~Connection ();
 
-	void setHandlers(void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_);
+	void openUser(const ConnectionOptions *options, void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_);
+	void closeUser ();
 
 	void open ();
 

@@ -16,7 +16,8 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 	sender(this),
 	receiver(this),
 	probe(this),
-	handshake(this)
+	handshake(this),
+	options(socket->service->imp->options.connection)
 {
 	#ifdef MRUDP_ENABLE_CRYPTO
 		crypto = strong<ConnectionCrypto>(socket->service->crypto);
@@ -37,13 +38,25 @@ Connection::~Connection ()
 	imp = nullptr;
 }
 
-void Connection::setHandlers(void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_)
+void Connection::openUser(const ConnectionOptions *options_, void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_)
 {
+	if (options_)
+		options = merge(*options_, options);
+
 	auto lock = lock_of(userDataMutex);
 	
 	userData = userData_;
 	receiveHandler = receiveHandler_;
 	closeHandler = closeHandler_;
+}
+
+void Connection::closeUser ()
+{
+	auto lock = lock_of(userDataMutex);
+	
+	userData = nullptr;
+	receiveHandler = nullptr;
+	closeHandler = nullptr;
 }
 
 void Connection::open ()

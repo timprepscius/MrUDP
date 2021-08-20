@@ -43,6 +43,7 @@ void Socket::listen(void *userData_, mrudp_accept_callback_fn acceptHandler_, mr
 
 StrongPtr<Connection> Socket::connect(
 	const Address &remoteAddress,
+	const ConnectionOptions *options,
 	void *userData,
 	mrudp_receive_callback_fn receiveHandler_,
 	mrudp_close_callback_fn closeHandler_
@@ -55,9 +56,7 @@ StrongPtr<Connection> Socket::connect(
 		nextConnectionID++
 	);
 	
-	connection->userData = userData;
-	connection->receiveHandler = receiveHandler_;
-	connection->closeHandler = closeHandler_;
+	connection->openUser(options, userData, receiveHandler_, closeHandler_);
 
 	insert(connection);
 	connection->open();

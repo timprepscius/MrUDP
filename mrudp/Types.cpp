@@ -14,6 +14,16 @@ String toString(const Address &addr)
 	return str;
 }
 
+ConnectionOptions merge(const ConnectionOptions &lhs, const ConnectionOptions &rhs)
+{
+	ConnectionOptions merged = lhs;
+	if (merged.coalesc_delay_ms == -1)
+		merged.coalesc_delay_ms = rhs.coalesc_delay_ms;
+		
+	return merged;
+}
+
+
 } // namespace
 } // namespace
 
@@ -31,3 +41,4 @@ bool operator!=(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs)
 {
 	return memcmp(&lhs, &rhs, sizeof(lhs)) != 0;
 }
+
