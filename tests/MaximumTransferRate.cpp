@@ -19,20 +19,24 @@ SCENARIO("packet transmission rate")
 //	xLogActivateStory("mrudp::retry");
 //	xLogActivateStory("mrudp::overlap_io");
 
+	mrudp_options_asio_t options;
+	mrudp_default_options(MRUDP_IMP_ASIO, &options);
+	options.connection.coalesce_mode = MRUDP_COALESCE_NONE;
+
     GIVEN( "mrudp service, remote socket" )
     {
 		mrudp_addr_t anyAddress;
 		mrudp_str_to_addr("127.0.0.1:0", &anyAddress);
 		
 		State remote("remote");
-		remote.service = mrudp_service();
+		remote.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		remote.sockets.push_back(mrudp_socket(remote.service, &anyAddress));
 		
 		mrudp_addr_t remoteAddress;
 		mrudp_socket_addr(remote.sockets.back(), &remoteAddress);
 ;
 		State local("local");
-		local.service = mrudp_service();
+		local.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		
 		auto connectionDispatch = Connection {
 			[&](auto data, auto size, auto isReliable) {
@@ -187,10 +191,10 @@ SCENARIO("packet transmission rate")
 		mrudp_str_to_addr("127.0.0.1:0", &anyAddress);
 		
 		State remote("remote");
-		remote.service = mrudp_service();
+		remote.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		
 		State local("local");
-		local.service = mrudp_service();
+		local.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 		
 		std::vector<bool> packetsReceived(X * Y, false);
 		
