@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Packet.h"
-#include "SendIDGenerator.h"
+#include "IDGenerator.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -33,7 +33,7 @@ struct SendQueue
 
 	Mutex mutex;
 	
-	SendIDGenerator frameIDGenerator;
+	IDGenerator<FrameID> frameIDGenerator;
 	List<PacketPtr> queue;
 
 	bool coalescePacket(FrameTypeID type, const u8 *data, size_t size);

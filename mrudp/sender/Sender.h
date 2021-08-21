@@ -3,7 +3,7 @@
 #include "Retrier.h"
 #include "RTT.h"
 #include "WindowSize.h"
-#include "SendIDGenerator.h"
+#include "IDGenerator.h"
 #include "SendQueue.h"
 
 namespace timprepscius {
@@ -46,7 +46,7 @@ struct Sender
 	
 	Sender(Connection *connection_);
 
-	SendIDGenerator sendIDGenerator;
+	IDGenerator<PacketID> packetIDGenerator;
 	RTT rtt;
 	WindowSize windowSize;
 	Retrier retrier;

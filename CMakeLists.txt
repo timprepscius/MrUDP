@@ -54,7 +54,6 @@ add_library(MrUDP STATIC
     mrudp/receiver/Receiver.cpp
     mrudp/sender/Retrier.cpp
     mrudp/sender/Sender.cpp
-    mrudp/sender/SendIDGenerator.cpp
     mrudp/sender/SendQueue.cpp
 )
 

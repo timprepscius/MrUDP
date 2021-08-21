@@ -11,13 +11,16 @@ namespace mrudp {
 // SendIDGenerator generates unique packet IDs for a connection.
 // --------------------------------------------------------------------------------
 
-struct SendIDGenerator
+template<typename T>
+struct IDGenerator
 {
-	Atomic<PacketID> nextID_;
+	Atomic<T> nextID_;
 	
-	SendIDGenerator ();
-	PacketID nextID();
+	IDGenerator ();
+	T nextID();
 };
 
 } // namespace
 } // namespace
+
+#include "IDGenerator.inl"

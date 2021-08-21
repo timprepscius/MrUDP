@@ -120,7 +120,7 @@ void Sender::fail()
 
 void Sender::sendReliably(const PacketPtr &packet)
 {
-	packet->header.id = sendIDGenerator.nextID();
+	packet->header.id = packetIDGenerator.nextID();
 
 	retrier.insert(packet, connection->socket->service->clock.now());
 	connection->send(packet);

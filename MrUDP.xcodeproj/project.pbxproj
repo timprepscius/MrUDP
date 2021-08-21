@@ -19,7 +19,7 @@
 		F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
 		F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
 		F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3126A4E128001C2E1E /* SendQueue.cpp */; };
-		F64AC0F126A63FAE001829A0 /* SendIDGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */; };
+		F64AC0F126A63FAE001829A0 /* IDGenerator.inl in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* IDGenerator.inl */; };
 		F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3A26A4E128001C2E1E /* Receiver.cpp */; };
 		F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */; };
 		F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2226A4E128001C2E1E /* Probe.cpp */; };
@@ -35,11 +35,11 @@
 		F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
 		F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
 		F6915A5826A4E128001C2E1E /* SendQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2B26A4E128001C2E1E /* SendQueue.h */; };
-		F6915A5926A4E128001C2E1E /* SendIDGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */; };
+		F6915A5926A4E128001C2E1E /* IDGenerator.inl in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* IDGenerator.inl */; };
 		F6915A5A26A4E128001C2E1E /* RTT.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2D26A4E128001C2E1E /* RTT.h */; };
 		F6915A5B26A4E128001C2E1E /* Sender.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2E26A4E128001C2E1E /* Sender.h */; };
 		F6915A5C26A4E129001C2E1E /* Retrier.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2F26A4E128001C2E1E /* Retrier.h */; };
-		F6915A5D26A4E129001C2E1E /* SendIDGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3026A4E128001C2E1E /* SendIDGenerator.h */; };
+		F6915A5D26A4E129001C2E1E /* IDGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3026A4E128001C2E1E /* IDGenerator.h */; };
 		F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3126A4E128001C2E1E /* SendQueue.cpp */; };
 		F6915A5F26A4E129001C2E1E /* WindowSize.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A3226A4E128001C2E1E /* WindowSize.h */; };
 		F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3326A4E128001C2E1E /* mrudp.cpp */; };
@@ -138,11 +138,11 @@
 		F6915A2926A4E128001C2E1E /* Sender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sender.cpp; sourceTree = "<group>"; };
 		F6915A2A26A4E128001C2E1E /* Retrier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Retrier.cpp; sourceTree = "<group>"; };
 		F6915A2B26A4E128001C2E1E /* SendQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendQueue.h; sourceTree = "<group>"; };
-		F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SendIDGenerator.cpp; sourceTree = "<group>"; };
+		F6915A2C26A4E128001C2E1E /* IDGenerator.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = IDGenerator.inl; sourceTree = "<group>"; };
 		F6915A2D26A4E128001C2E1E /* RTT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTT.h; sourceTree = "<group>"; };
 		F6915A2E26A4E128001C2E1E /* Sender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sender.h; sourceTree = "<group>"; };
 		F6915A2F26A4E128001C2E1E /* Retrier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Retrier.h; sourceTree = "<group>"; };
-		F6915A3026A4E128001C2E1E /* SendIDGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendIDGenerator.h; sourceTree = "<group>"; };
+		F6915A3026A4E128001C2E1E /* IDGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDGenerator.h; sourceTree = "<group>"; };
 		F6915A3126A4E128001C2E1E /* SendQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SendQueue.cpp; sourceTree = "<group>"; };
 		F6915A3226A4E128001C2E1E /* WindowSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowSize.h; sourceTree = "<group>"; };
 		F6915A3326A4E128001C2E1E /* mrudp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mrudp.cpp; sourceTree = "<group>"; };
@@ -309,8 +309,8 @@
 				F6915A2D26A4E128001C2E1E /* RTT.h */,
 				F6915A2926A4E128001C2E1E /* Sender.cpp */,
 				F6915A2E26A4E128001C2E1E /* Sender.h */,
-				F6915A2C26A4E128001C2E1E /* SendIDGenerator.cpp */,
-				F6915A3026A4E128001C2E1E /* SendIDGenerator.h */,
+				F6915A2C26A4E128001C2E1E /* IDGenerator.inl */,
+				F6915A3026A4E128001C2E1E /* IDGenerator.h */,
 				F6915A3126A4E128001C2E1E /* SendQueue.cpp */,
 				F6915A2B26A4E128001C2E1E /* SendQueue.h */,
 				F6915A3226A4E128001C2E1E /* WindowSize.h */,
@@ -378,7 +378,7 @@
 				F6915A4D26A4E128001C2E1E /* Connection.h in Headers */,
 				F6915A5226A4E128001C2E1E /* Types.h in Headers */,
 				F6915A6C26A4E129001C2E1E /* Socket.h in Headers */,
-				F6915A5D26A4E129001C2E1E /* SendIDGenerator.h in Headers */,
+				F6915A5D26A4E129001C2E1E /* IDGenerator.h in Headers */,
 				F6915A5A26A4E128001C2E1E /* RTT.h in Headers */,
 				F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */,
 				F6915A6426A4E129001C2E1E /* Packet.h in Headers */,
@@ -492,7 +492,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6915A5926A4E128001C2E1E /* SendIDGenerator.cpp in Sources */,
+				F6915A5926A4E128001C2E1E /* IDGenerator.inl in Sources */,
 				F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */,
 				F6BEFDA626CF206D008EB30E /* Statistics.cpp in Sources */,
 				F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */,
@@ -533,7 +533,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F64AC0F126A63FAE001829A0 /* SendIDGenerator.cpp in Sources */,
+				F64AC0F126A63FAE001829A0 /* IDGenerator.inl in Sources */,
 				F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */,
 				F6BEFDA526CF206D008EB30E /* Statistics.cpp in Sources */,
 				F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */,
