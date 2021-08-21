@@ -69,14 +69,14 @@ struct Connection : StrongThis<Connection>
 	);
 	~Connection ();
 
+	ErrorCode send(const char *buffer, int size, Reliability reliable);
+
 	void openUser(const ConnectionOptions *options, void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_);
 	void closeUser ();
 
 	void open ();
 
 	bool canSend ();
-	void send(const char *buffer, int size, Reliability reliable);
-
 	void send(const PacketPtr &packet);
 	void resend(const PacketPtr &packet);
 	void send_(const PacketPtr &packet);

@@ -40,7 +40,7 @@ mrudp_error_code_t mrudp_listen(
 {
 	auto socket = toNative(socket_);
 	if (!socket)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 	
 	socket->listen(userData, acceptCallback, closeCallback);
 	return MRUDP_OK;
@@ -50,7 +50,7 @@ mrudp_error_code_t mrudp_close_connection(mrudp_connection_t connection_)
 {
 	auto connection = closeHandle(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 		
 	xLogDebug(logVar(connection));
 
@@ -66,7 +66,7 @@ mrudp_error_code_t mrudp_close_connection_socket_native(mrudp_connection_t conne
 {
 	auto connection = toNative(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 	
 	auto socket = connection->socket;
 	mrudp_close_connection(connection_);
@@ -80,7 +80,7 @@ mrudp_error_code_t mrudp_socket_addr (mrudp_socket_t socket_, mrudp_addr_t *addr
 {
 	auto socket = toNative(socket_);
 	if (!socket)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	xLogDebug(logVar(socket));
 
@@ -93,7 +93,7 @@ mrudp_error_code_t mrudp_connection_remote_addr (mrudp_connection_t connection_,
 {
 	auto connection = toNative(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	*address = connection->remoteAddress;
 	
@@ -104,7 +104,7 @@ mrudp_error_code_t mrudp_connection_statistics (mrudp_connection_t connection_, 
 {
 	auto connection = toNative(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	*statistics = connection->statistics.query();
 	
@@ -115,7 +115,7 @@ mrudp_error_code_t mrudp_close_socket(mrudp_socket_t socket_)
 {
 	auto socket = closeHandle(socket_);
 	if (!socket)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	socket->close();
 	deleteHandle(socket_);
@@ -127,7 +127,7 @@ mrudp_error_code_t mrudp_close_socket_native(mrudp_socket_t socket_)
 {
 	auto socket = toNative(socket_);
 	if (!socket)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	socket->imp->close();
 		
@@ -154,7 +154,7 @@ mrudp_error_code_t mrudp_accept_ex(
 {
 	auto connection = toNative(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	connection->openUser(options, userData, receiveHandler, closeHandler);
 	
@@ -197,19 +197,11 @@ mrudp_error_code_t mrudp_send(mrudp_connection_t connection_, const char *buffer
 {
 	auto connection = toNative(connection_);
 	if (!connection)
-		return MRUDP_GENERAL_FAILURE;
-
-	if(size < 0 || size > MRUDP_MAX_PACKET_SIZE)
-	{
-		fprintf(stderr, "mrudp_sendto Error: Attempting to send with invalid max packet size\n");
-		return MRUDP_GENERAL_FAILURE;
-	}
+		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	xLogDebug(logVar(connection));
 
-	connection->send(buffer, size, reliable == 0 ? UNRELIABLE : RELIABLE);
-	
-	return MRUDP_OK;
+	return connection->send(buffer, size, reliable == 0 ? UNRELIABLE : RELIABLE);
 }
 
 mrudp_service_t mrudp_service()
@@ -254,7 +246,7 @@ mrudp_error_code_t mrudp_resolve(mrudp_service_t service_, const char *address, 
 {
 	auto service = toNative(service_);
 	if (!service)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 	
 	String id(address);
 	auto colon = id.rfind(':');
@@ -328,7 +320,7 @@ mrudp_error_code_t mrudp_addr_to_str(const mrudp_addr_t *addr, char *out, size_t
 	auto s = ss.str();
 	
 	if (s.size() >= outSize)
-		return MRUDP_GENERAL_FAILURE;
+		return MRUDP_ERROR_GENERAL_FAILURE;
 		
 	strcpy(out, s.c_str());
 

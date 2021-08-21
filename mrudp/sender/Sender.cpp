@@ -126,7 +126,7 @@ void Sender::sendReliably(const PacketPtr &packet)
 	connection->send(packet);
 }
 
-void Sender::send(const u8 *data, size_t size, Reliability reliability)
+ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 {
 	if (status != CLOSED)
 	{
@@ -135,7 +135,10 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 			(SendQueue::CoalesceMode)connection->options.coalesce_unreliable.mode;
 
 		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
-		
+
+		if (size > MAX_PACKET_SIZE && mode != MRUDP_COALESCE_STREAM)
+			return ERROR_PACKET_SIZE_TOO_LARGE;
+
 		dataQueue_.enqueue(
 			DATA,
 			data, size,
@@ -143,7 +146,11 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 		);
 		
 		scheduleDataQueueProcessing(reliability);
+		
+		return OK;
 	}
+	
+	return ERROR_CONNECTION_CLOSED;
 }
 
 void Sender::scheduleDataQueueProcessing (Reliability reliability)

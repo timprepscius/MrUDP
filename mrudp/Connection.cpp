@@ -300,13 +300,13 @@ void Connection::resend(const PacketPtr &packet)
 	statistics.onResend(*packet);
 }
 
-void Connection::send(const char *buffer, int size, Reliability reliability)
+ErrorCode Connection::send(const char *buffer, int size, Reliability reliability)
 {
 	xLogDebug(logOfThis(this));
 
 	statistics.onSendDataFrame(size, reliability);
 
-	sender.send((const u8 *)buffer, size, reliability);
+	return sender.send((const u8 *)buffer, size, reliability);
 }
 
 // -----------------------

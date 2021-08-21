@@ -58,7 +58,7 @@ struct Sender
 	
 	void open ();
 
-	void send(const u8 *data, size_t size, Reliability reliability);
+	ErrorCode send(const u8 *data, size_t size, Reliability reliability);
 	
 	void sendReliably(const PacketPtr &packet);
 	void onAck(Packet &packet);

@@ -10,7 +10,9 @@ extern "C" {
 // 1500 - sizeof(Header) - sanity = 1400
 #define MRUDP_MAX_PACKET_SIZE 1400
 #define MRUDP_OK 0
-#define MRUDP_GENERAL_FAILURE -1
+#define MRUDP_ERROR_GENERAL_FAILURE 1
+#define MRUDP_ERROR_PACKET_SIZE_TOO_LARGE 2
+#define MRUDP_ERROR_CONNECTION_CLOSED 3
 
 // The events possible for when a close callback is invoked
 typedef enum {

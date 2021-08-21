@@ -9,12 +9,11 @@ It is cross-platform, written in C++ and designed to be a general purpose commun
 MrUDP has many benefits when compared to TCP:
 
   * Parallel streams of reliable and unreliable application data.
-  * Survives a change in the clients' IP address or port.
   * Connection RTT (round trip time) measurements in realtime.
   * Single ports can have infinite connections to and from other ports.
   * One socket can both accept and connect.
   * Encryption using OpenSSL: RSA Handshake -> AES Session Keys
-  * Send coalescing
+  * Send coalescing via contiguous data frames or a continuous stream
   * Extremely small code base
   * Provided backend uses boost asio for cross platform sockets.
   
@@ -29,7 +28,8 @@ make
 
 ## In Progress
   
-  * reliable stream rather than reliable packets.
+  * Survives a change in the clients' IP address or port.
   
-  While implementing the send coalescing, I realized it should be trivial to do send coalescing in packet mode or stream mode.  Stream mode just fills up the last packet before writing another, packet mode will never break packets.  Stream mode could obviously be used to send packets larger than the MAX_PACKET_LENGTH
+  It is unclear to me how I want to implement this.  It is easy to implement so that it works, 
+  but it seems difficult to implement and prevent MITM attacks.
   
