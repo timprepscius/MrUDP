@@ -19,15 +19,12 @@ void SendQueue::close()
 	}
 }
 
-bool SendQueue::coalesce(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode)
+bool SendQueue::coalescePacket(FrameTypeID type, const u8 *data, size_t size)
 {
-	if (mode == MRUDP_COALESCE_NONE)
-		return false;
-
 	if (queue.empty())
 		return false;
 		
-	auto &packet = *queue.front();
+	auto &packet = *queue.back();
 	if (packet.dataSize + size + sizeof(FrameHeader) < MAX_PACKET_SIZE)
 	{
 		FrameHeader frameHeader {
@@ -43,6 +40,55 @@ bool SendQueue::coalesce(FrameTypeID type, const u8 *data, size_t size, Coalesce
 		
 	return false;
 }
+
+bool SendQueue::coalesceStream(FrameTypeID type, const u8 *data, size_t size)
+{
+	if (queue.empty())
+		return false;
+
+	while (size > 0)
+	{
+		auto &packet = *queue.back();
+		auto availableWriteSize = MAX_PACKET_SIZE - int(packet.dataSize + sizeof(FrameHeader));
+		if (availableWriteSize > 0)
+		{
+			auto writeSize = std::min((size_t)availableWriteSize, size);
+		
+			FrameHeader frameHeader {
+				.type = type,
+				.id = frameIDGenerator.nextID(),
+				.dataSize = FrameHeader::Size(writeSize),
+			} ;
+			
+			pushFrame(packet, frameHeader, data);
+			
+			size -= writeSize;
+		}
+		else
+		{
+			auto packet = strong<Packet>();
+			queue.push_back(packet);
+		}
+	}
+		
+	return true;
+}
+
+bool SendQueue::coalesce(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode)
+{
+	if (mode == MRUDP_COALESCE_NONE)
+		return false;
+		
+	if (mode == MRUDP_COALESCE_PACKET)
+		return coalescePacket(type, data, size);
+		
+	if (mode == MRUDP_COALESCE_STREAM)
+		return coalesceStream(type, data, size);
+		
+	debug_assert(false);
+	return false;
+}
+
 
 void SendQueue::enqueue(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode)
 {
@@ -83,6 +129,12 @@ bool SendQueue::empty()
 {
 	auto lock = lock_of(mutex);
 	return queue.empty();
+}
+
+void SendQueue::clear ()
+{
+	auto lock = lock_of(mutex);
+	queue.clear();
 }
 
 } // namespace

@@ -16,7 +16,7 @@ void Handshake::initiate()
 	
 	auto packet = strong<Packet>();
 	packet->header.type = H0;
-	connection->sender.sendImmediately(packet);
+	connection->sender.sendReliably(packet);
 
 	waitingFor = H1;
 }
@@ -63,7 +63,7 @@ void Handshake::handlePacket(Packet &packet)
 			auto packet = strong<Packet>();
 			packet->header.type = H2;
 			pushData(*packet, connection->localID);
-			connection->sender.sendImmediately(packet);
+			connection->sender.sendReliably(packet);
 		}
 	}
 	else

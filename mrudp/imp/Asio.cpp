@@ -11,12 +11,24 @@ namespace imp {
 
 // --------------------------
 
+ConnectionOptions getDefaultConnectionOptions ()
+{
+	return ConnectionOptions {
+		.coalesce_reliable = {
+			.mode = MRUDP_COALESCE_STREAM,
+			.delay_ms = 5
+		},
+
+		.coalesce_unreliable = {
+			.mode = MRUDP_COALESCE_PACKET,
+			.delay_ms = 5
+		}
+	} ;
+}
+
 #if defined(SYS_LINUX)
 OptionsImp systemDefaultOptions {
-	.connection {
-		.coalesce_mode = MRUDP_COALESCE_PACKET,
-		.coalesce_delay_ms = 5
-	},
+	.connection = getDefaultConnectionOptions(),
 
 	.overlapped_io = 0,
 	.send_via_queue = 1,
@@ -24,10 +36,7 @@ OptionsImp systemDefaultOptions {
 } ;
 #else
 OptionsImp systemDefaultOptions {
-	.connection {
-		.coalesce_mode = MRUDP_COALESCE_PACKET,
-		.coalesce_delay_ms = 5
-	},
+	.connection = getDefaultConnectionOptions(),
 
 	.overlapped_io = 1,
 	.send_via_queue = 0,

@@ -78,7 +78,7 @@ void Probe::onTimeout()
 			auto packet = strong<Packet>();
 			packet->header.type = PROBE;
 			
-			sender.sendImmediately(packet);
+			sender.sendReliably(packet);
 		}
 		else
 		{

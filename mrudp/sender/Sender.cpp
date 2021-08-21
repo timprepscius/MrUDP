@@ -11,9 +11,11 @@ Sender::Sender(Connection *connection_) :
 	connection(connection_),
 	retrier(this)
 {
+	schedules[0].name = "send-0";
+	schedules[1].name = "send-1";
 }
 
-void Sender::processSendQueue()
+void Sender::processReliableDataQueue()
 {
 	xLogDebug(logOfThis(this));
 	
@@ -35,16 +37,28 @@ void Sender::processSendQueue()
 			{
 				packet->header.type = DATA_RELIABLE;
 				sentPacket = true;
-				sendImmediately(packet);
+				sendReliably(packet);
 			}
 		}
 	}
 	while(sentPacket);
+}
 
-	while (auto packet = unreliableDataQueue.dequeue())
+void Sender::processUnreliableDataQueue()
+{
+	xLogDebug(logOfThis(this));
+	
+	if (status >= OPEN && connection->canSend())
 	{
-		packet->header.type = DATA_UNRELIABLE;
-		connection->send(packet);
+		while (auto packet = unreliableDataQueue.dequeue())
+		{
+			packet->header.type = DATA_UNRELIABLE;
+			connection->send(packet);
+		}
+	}
+	else
+	{
+		unreliableDataQueue.clear();
 	}
 }
 
@@ -68,7 +82,8 @@ void Sender::open()
 	// So when an open is called from the handshake, even if has been officially closed
 	// we process the queue.
 
-	processSendQueue();
+	scheduleDataQueueProcessing(RELIABLE);
+	scheduleDataQueueProcessing(UNRELIABLE);
 
 	if (status == UNINITIALIZED)
 		status = OPEN;
@@ -83,7 +98,7 @@ void Sender::close()
 		dataQueue.enqueue(
 			CLOSE_WRITE,
 			nullptr, 0,
-			(SendQueue::CoalesceMode)connection->options.coalesce_mode
+			MRUDP_COALESCE_PACKET
 		);
 		status = CLOSED;
 	}
@@ -103,7 +118,7 @@ void Sender::fail()
 	unreliableDataQueue.close();
 }
 
-void Sender::sendImmediately(const PacketPtr &packet)
+void Sender::sendReliably(const PacketPtr &packet)
 {
 	packet->header.id = sendIDGenerator.nextID();
 
@@ -115,38 +130,61 @@ void Sender::send(const u8 *data, size_t size, Reliability reliability)
 {
 	if (status != CLOSED)
 	{
+		auto mode = reliability ?
+			(SendQueue::CoalesceMode)connection->options.coalesce_reliable.mode :
+			(SendQueue::CoalesceMode)connection->options.coalesce_unreliable.mode;
+
 		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
+		
 		dataQueue_.enqueue(
 			DATA,
 			data, size,
-			(SendQueue::CoalesceMode)connection->options.coalesce_mode
+			mode
 		);
 		
-		scheduleSendQueueProcessing();
+		scheduleDataQueueProcessing(reliability);
 	}
 }
 
-void Sender::scheduleSendQueueProcessing ()
+void Sender::scheduleDataQueueProcessing (Reliability reliability)
 {
-	if (connection->options.coalesce_mode == 0)
-		return processSendQueue();
+	auto &options = reliability ?
+		connection->options.coalesce_reliable :
+		connection->options.coalesce_unreliable;
 
-	if (queueProcessingScheduled)
+	if (options.mode == MRUDP_COALESCE_NONE)
+		return processDataQueue(reliability);
+
+	debug_assert((size_t)reliability >= 0 && (size_t)reliability < 2);
+	auto &schedule = schedules[(size_t)reliability];
+	if (schedule.waiting)
 		return ;
 		
-	queueProcessingScheduled = true;
+	schedule.waiting = true;
 
-	auto sendQueueProcessingDelay = connection->options.coalesce_delay_ms;
+	auto sendQueueProcessingDelay = options.delay_ms;
 	auto now = connection->socket->service->clock.now();
 	auto then = now + Duration(sendQueueProcessingDelay);
 	
 	connection->imp->setTimeout(
-		"send", then,
-		[this]() {
-			queueProcessingScheduled = false;
-			processSendQueue();
+		schedule.name, then,
+		[this, &schedule, reliability]() {
+			schedule.waiting = false;
+			processDataQueue(reliability);
 		}
 	);
+}
+
+void Sender::processDataQueue(Reliability reliability)
+{
+	if (reliability)
+	{
+		processReliableDataQueue();
+	}
+	else
+	{
+		processUnreliableDataQueue();
+	}
 }
 
 void Sender::onPacket(Packet &packet)
@@ -180,7 +218,7 @@ void Sender::onAck(Packet &packet)
 			retrier.recalculateRetryTimeout();
 	}
 
-	processSendQueue();
+	scheduleDataQueueProcessing(RELIABLE);
 	connection->possiblyClose();
 }
 

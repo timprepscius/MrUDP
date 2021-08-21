@@ -51,8 +51,13 @@ typedef enum {
 } mrudp_coalesce_mode_t;
 
 typedef struct {
-	int8_t coalesce_mode;
-	int32_t coalesce_delay_ms;
+	int8_t mode;
+	int32_t delay_ms;
+} mrudp_coalesce_options_t;
+
+typedef struct {
+	mrudp_coalesce_options_t coalesce_reliable;
+	mrudp_coalesce_options_t coalesce_unreliable;
 } mrudp_connection_options_t;
 
 typedef struct {

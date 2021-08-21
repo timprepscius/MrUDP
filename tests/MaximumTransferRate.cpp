@@ -21,7 +21,8 @@ SCENARIO("packet transmission rate")
 
 	mrudp_options_asio_t options;
 	mrudp_default_options(MRUDP_IMP_ASIO, &options);
-	options.connection.coalesce_mode = MRUDP_COALESCE_NONE;
+	options.connection.coalesce_reliable.mode = MRUDP_COALESCE_NONE;
+	options.connection.coalesce_unreliable.mode = MRUDP_COALESCE_NONE;
 
     GIVEN( "mrudp service, remote socket" )
     {

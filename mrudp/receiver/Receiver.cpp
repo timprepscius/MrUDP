@@ -42,7 +42,7 @@ void Receiver::close ()
 			auto packet = strong<Packet>();
 			packet->header.type = CLOSE_READ;
 		
-			connection->sender.sendImmediately(packet);
+			connection->sender.sendReliably(packet);
 		}
 		
 		status = CLOSED;

@@ -60,7 +60,7 @@ struct Sender
 
 	void send(const u8 *data, size_t size, Reliability reliability);
 	
-	void sendImmediately(const PacketPtr &packet);
+	void sendReliably(const PacketPtr &packet);
 	void onAck(Packet &packet);
 	void onPacket (Packet &packet);
 	void close ();
@@ -68,9 +68,19 @@ struct Sender
 	
 	bool empty ();
 	
-	void processSendQueue ();
-	Atomic<bool> queueProcessingScheduled = 0;
-	void scheduleSendQueueProcessing ();
+	void processDataQueue(Reliability reliability);
+	void processReliableDataQueue ();
+	void processUnreliableDataQueue ();
+	
+	struct Schedule
+	{
+		String name;
+		Atomic<bool> waiting = false;
+	} ;
+	
+	// scheduler for reliable and unreliable
+	Schedule schedules[2];
+	void scheduleDataQueueProcessing (Reliability reliability);
 };
 
 } // namespace

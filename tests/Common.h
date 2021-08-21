@@ -90,6 +90,7 @@ struct State {
 	std::list<Packet> packets;
 	
 	std::atomic<size_t> packetsReceived = 0;
+	std::atomic<size_t> bytesReceived = 0;
 	
 	State(const std::string &label_ = "") :
 		label(label_)
