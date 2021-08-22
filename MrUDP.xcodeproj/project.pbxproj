@@ -211,12 +211,12 @@
 		F676C52326A78AE3001559F4 /* imp */ = {
 			isa = PBXGroup;
 			children = (
+				F6915A3E26A4E128001C2E1E /* Asio.cpp */,
+				F6915A4026A4E128001C2E1E /* Asio.h */,
+				F676C52226A78AC8001559F4 /* BoostAsio.h */,
 				F66B0AD126B03D080055F46D /* Crypto.h */,
 				F66B0AD226B03EDA0055F46D /* Crypto.inl */,
 				F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */,
-				F676C52226A78AC8001559F4 /* BoostAsio.h */,
-				F6915A3E26A4E128001C2E1E /* Asio.cpp */,
-				F6915A4026A4E128001C2E1E /* Asio.h */,
 				F6915A2726A4E128001C2E1E /* UVW.h */,
 			);
 			path = imp;
@@ -306,13 +306,13 @@
 		F6915A2826A4E128001C2E1E /* sender */ = {
 			isa = PBXGroup;
 			children = (
+				F6915A3026A4E128001C2E1E /* IDGenerator.h */,
+				F6915A2C26A4E128001C2E1E /* IDGenerator.inl */,
 				F6915A2A26A4E128001C2E1E /* Retrier.cpp */,
 				F6915A2F26A4E128001C2E1E /* Retrier.h */,
 				F6915A2D26A4E128001C2E1E /* RTT.h */,
 				F6915A2926A4E128001C2E1E /* Sender.cpp */,
 				F6915A2E26A4E128001C2E1E /* Sender.h */,
-				F6915A2C26A4E128001C2E1E /* IDGenerator.inl */,
-				F6915A3026A4E128001C2E1E /* IDGenerator.h */,
 				F6915A3126A4E128001C2E1E /* SendQueue.cpp */,
 				F6915A2B26A4E128001C2E1E /* SendQueue.h */,
 				F6915A3226A4E128001C2E1E /* WindowSize.h */,
@@ -342,17 +342,17 @@
 		F6915A4626A4E128001C2E1E /* tests */ = {
 			isa = PBXGroup;
 			children = (
-				F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */,
 				F6915A4726A4E128001C2E1E /* Basics.cpp */,
-				F634A8EB26A613AC00869A6F /* Connections.cpp */,
-				F6915A4826A4E128001C2E1E /* Run.cpp */,
-				F6915A4926A4E128001C2E1E /* Makefile.project */,
 				F6915A4A26A4E128001C2E1E /* Common.h */,
-				F6915A4B26A4E128001C2E1E /* PacketID.cpp */,
-				F6A176BD26B1C0C4003708D8 /* Crypto.cpp */,
+				F634A8EB26A613AC00869A6F /* Connections.cpp */,
 				F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */,
-				F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */,
+				F6A176BD26B1C0C4003708D8 /* Crypto.cpp */,
+				F6915A4926A4E128001C2E1E /* Makefile.project */,
 				F6915A4C26A4E128001C2E1E /* MaximumTransferRate.cpp */,
+				F6915A4B26A4E128001C2E1E /* PacketID.cpp */,
+				F6915A4826A4E128001C2E1E /* Run.cpp */,
+				F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */,
+				F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */,
 			);
 			path = tests;
 			sourceTree = "<group>";

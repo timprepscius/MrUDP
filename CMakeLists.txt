@@ -80,9 +80,11 @@ target_include_directories(MrUDP
 add_executable(MrUDP-Tests 
     tests/Basics.cpp
     tests/Connections.cpp
+    tests/ConnectionTimesOutAtBeginning.cpp
     tests/MaximumTransferRate.cpp
     tests/PacketID.cpp
     tests/StandaloneCore.cpp
+    tests/Streams.cpp
     tests/Run.cpp
 )
 
