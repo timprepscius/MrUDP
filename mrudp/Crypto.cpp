@@ -84,12 +84,12 @@ bool ConnectionCrypto::encrypt (Packet &packet)
 	
 	if (remoteSessionKey)
 	{
-		return remoteSessionKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
+		return remoteSessionKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random);
 	}
 	else
 	if (remotePublicKey)
 	{
-		return remotePublicKey->encrypt(packet, MAX_PACKET_SIZE - sizeof(LongConnectionID), *host->random);
+		return remotePublicKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random);
 	}
 	
 	return true;

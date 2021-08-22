@@ -65,7 +65,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-s &quot;Scenario: basics&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-s &quot;Scenario: packet transmission rate&quot;"
@@ -78,6 +78,10 @@
          <CommandLineArgument
             argument = "-s &quot;Scenario: connections&quot;"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-s &quot;Scenario: streams&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

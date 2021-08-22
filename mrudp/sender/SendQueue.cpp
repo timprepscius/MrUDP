@@ -25,7 +25,7 @@ bool SendQueue::coalescePacket(FrameTypeID type, const u8 *data, size_t size)
 		return false;
 		
 	auto &packet = *queue.back();
-	if (packet.dataSize + size + sizeof(FrameHeader) < MAX_PACKET_SIZE)
+	if (packet.dataSize + size + sizeof(FrameHeader) < MAX_PACKET_POST_FRAME_SIZE)
 	{
 		FrameHeader frameHeader {
 			.id = frameIDGenerator.nextID(),
@@ -44,12 +44,16 @@ bool SendQueue::coalescePacket(FrameTypeID type, const u8 *data, size_t size)
 bool SendQueue::coalesceStream(FrameTypeID type, const u8 *data, size_t size)
 {
 	if (queue.empty())
-		return false;
+	{
+		auto packet = strong<Packet>();
+		queue.push_back(packet);
+	}
 
+	auto offset = 0;
 	while (size > 0)
 	{
 		auto &packet = *queue.back();
-		auto availableWriteSize = MAX_PACKET_SIZE - int(packet.dataSize + sizeof(FrameHeader));
+		auto availableWriteSize = MAX_PACKET_POST_FRAME_SIZE - int(packet.dataSize + sizeof(FrameHeader));
 		if (availableWriteSize > 0)
 		{
 			auto writeSize = std::min((size_t)availableWriteSize, size);
@@ -60,9 +64,10 @@ bool SendQueue::coalesceStream(FrameTypeID type, const u8 *data, size_t size)
 				.dataSize = FrameHeader::Size(writeSize),
 			} ;
 			
-			pushFrame(packet, frameHeader, data);
+			pushFrame(packet, frameHeader, data + offset);
 			
 			size -= writeSize;
+			offset += writeSize;
 		}
 		else
 		{

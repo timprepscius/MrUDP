@@ -5,6 +5,48 @@
 namespace timprepscius {
 namespace mrudp {
 
+enum TypeID : uint8_t {
+	NONE = 0,
+	H0 = 'A',
+	H1 = 'B',
+	H2 = 'C',
+	H3 = 'D',
+	HANDSHAKE_COMPLETE = 'E',
+	
+	ACK = 'K',
+	DATA_RELIABLE = 'V',
+	DATA_UNRELIABLE = 'Q',
+	PROBE = 'P',
+	CLOSE_READ = 'R',
+	
+	ENCRYPTED_VIA_PUBLIC_KEY = 'X',
+	ENCRYPTED_VIA_AES = 'Z',
+} ;
+
+inline
+bool isHandshake(TypeID typeID)
+{
+	return typeID >= H0 && typeID < HANDSHAKE_COMPLETE;
+}
+
+inline
+bool isAck(TypeID typeID)
+{
+	return typeID == ACK || typeID == H1 || typeID == H3;
+}
+
+enum FrameTypeID : uint8_t {
+	DATA = 'T',
+	CLOSE_WRITE = 'W',
+} ;
+
+const int MAX_PACKET_SIZE = 1500;
+// TODO: put in some static assert somewhere that
+// MRUDP_MAX_PACKET_SIZE + sizeof(FrameHeader) + max_crypto_overhead < MAX_PACKET_SIZE
+
+typedef uint16_t PacketID;
+typedef uint16_t FrameID;
+
 // --------------------------------------------------------------------------------
 // Header
 //
@@ -18,6 +60,19 @@ struct Header {
 	PacketID id;
 } __attribute__ ((packed));
 
+// --------------------------------------------------------------------------------
+// FrameHeader
+//
+// Packets with type DATA_RELIABLE or DATA_UNRELIABLE are containers for multiple
+// subpackets of data.
+// --------------------------------------------------------------------------------
+struct FrameHeader {
+	typedef uint16_t Size;
+	
+	FrameID id;
+	FrameTypeID type;
+	Size dataSize;
+} __attribute__ ((packed));
 
 // --------------------------------------------------------------------------------
 // Packet
@@ -40,24 +95,19 @@ struct Packet
 
 typedef StrongPtr<Packet> PacketPtr;
 
-// --------------------------------------------------------------------------------
-// FrameHeader
-//
-// Packets with type DATA_RELIABLE or DATA_UNRELIABLE are containers for multiple
-// subpackets of data.
-// --------------------------------------------------------------------------------
-struct FrameHeader {
-	typedef Packet::Size Size;
-	
-	FrameID id;
-	FrameTypeID type;
-	Size dataSize;
-} __attribute__ ((packed));
-
 bool operator==(const Packet &lhs, const Packet &rhs);
 
+// TODO: these constants, especially size constants should be located somewhere else
+const int MAX_ROUTE_SIZE = 0;
+const int MAX_PACKET_POST_CRYPTO_SIZE = MAX_PACKET_SIZE - MAX_ROUTE_SIZE;
+const int MAX_CRYPTO_SIZE = 64; // this should call a function in crypto to find out
+const int MAX_PACKET_POST_FRAME_SIZE = MAX_PACKET_POST_CRYPTO_SIZE - MAX_CRYPTO_SIZE;
+const int MAX_FRAME_HEADER_SIZE = sizeof(FrameHeader);
+const int MAX_PACKET_DATA_SIZE = MAX_PACKET_POST_FRAME_SIZE - MAX_FRAME_HEADER_SIZE;
+static_assert(MRUDP_MAX_PACKET_SIZE < MAX_PACKET_DATA_SIZE);
+
 // returns whether or not the lhs is greater than the rhs
-// when the packet number wraps around (u32), packet id is greater will still
+// when the packet number wraps around, the packet_id_greater_than will still
 // function correctly
 bool packet_id_greater_than(PacketID lhs, PacketID rhs);
 

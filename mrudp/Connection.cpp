@@ -254,6 +254,8 @@ void Connection::send_(const PacketPtr &packet)
 	
 	if (packet->header.connection == 0)
 	{
+		debug_assert(packet->header.type < HANDSHAKE_COMPLETE);
+		
 		auto packet_ = strong<Packet>();
 		*packet_ = *packet;
 		pushData(*packet_, id);

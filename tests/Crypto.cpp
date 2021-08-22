@@ -41,7 +41,7 @@ SCENARIO("crypto")
 		WHEN("encrypting with rsa")
 		{
 			auto b = a;
-			REQUIRE(keys.public_->encrypt(b, MAX_PACKET_SIZE, random));
+			REQUIRE(keys.public_->encrypt(b, MAX_PACKET_POST_CRYPTO_SIZE, random));
 			
 			auto c = b;
 			REQUIRE(keys.private_->decrypt(c));

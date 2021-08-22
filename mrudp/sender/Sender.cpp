@@ -136,7 +136,7 @@ ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 
 		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
 
-		if (size > MAX_PACKET_SIZE && mode != MRUDP_COALESCE_STREAM)
+		if (size > MAX_PACKET_DATA_SIZE && mode != MRUDP_COALESCE_STREAM)
 			return ERROR_PACKET_SIZE_TOO_LARGE;
 
 		dataQueue_.enqueue(

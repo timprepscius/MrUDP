@@ -280,8 +280,8 @@ bool pushPadding(Packet &packet, size_t padding, SecureRandom &random)
 {
 	return true;
 	
-	debug_assert(packet.dataSize + padding < MAX_PACKET_SIZE);
-	if (packet.dataSize + padding >= MAX_PACKET_SIZE)
+	debug_assert(packet.dataSize + padding < MAX_PACKET_POST_CRYPTO_SIZE);
+	if (packet.dataSize + padding >= MAX_PACKET_POST_CRYPTO_SIZE)
 	{
 		xDebugLine();
 		return false;

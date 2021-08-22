@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 // The maximum data payload size can be sent.
-// 1500 - sizeof(Header) - sanity = 1400
+// 1500 - sizeof(Header) - sizeof(crypto) - sizeof(FrameOverhead) - sizeo(cryptoOverhead) - sanity = 1400
 #define MRUDP_MAX_PACKET_SIZE 1400
 #define MRUDP_OK 0
 #define MRUDP_ERROR_GENERAL_FAILURE 1
