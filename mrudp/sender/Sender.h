@@ -54,9 +54,8 @@ struct Sender
 	
 	SendQueue unreliableDataQueue;
 	
-	bool isUninitialized ();
-	
 	void open ();
+	bool isReadyToSend ();
 
 	ErrorCode send(const u8 *data, size_t size, Reliability reliability);
 	
@@ -67,6 +66,8 @@ struct Sender
 	void fail ();
 	
 	bool empty ();
+	
+	void enqueue(FrameTypeID type, const u8 *data, size_t size, Reliability reliability, SendQueue::CoalesceMode mode);
 	
 	void processDataQueue(Reliability reliability);
 	void processReliableDataQueue ();

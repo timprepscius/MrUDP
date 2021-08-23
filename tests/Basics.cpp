@@ -233,7 +233,7 @@ SCENARIO("basics")
 
 							THEN("connections on remote return to 0")
 							{
-								wait_until(std::chrono::seconds(10), [&]() {
+								wait_until(std::chrono::seconds(30), [&]() {
 									return remote.connections.size() == 0;
 								});
 							
@@ -394,7 +394,7 @@ SCENARIO("basics")
 
 							THEN("connections on remote return to 0")
 							{
-								wait_until(std::chrono::seconds(10), [&]() {
+								wait_until(std::chrono::seconds(30), [&]() {
 									return remote.connections.size() == 0;
 								});
 							

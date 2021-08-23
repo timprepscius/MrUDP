@@ -19,10 +19,7 @@ void Sender::processReliableDataQueue()
 {
 	xLogDebug(logOfThis(this));
 	
-	if (status < OPEN)
-		return;
-
-	if (!connection->canSend())
+	if (!isReadyToSend())
 		return;
 
 	bool sentPacket;
@@ -48,7 +45,7 @@ void Sender::processUnreliableDataQueue()
 {
 	xLogDebug(logOfThis(this));
 	
-	if (status >= OPEN && connection->canSend())
+	if (isReadyToSend())
 	{
 		while (auto packet = unreliableDataQueue.dequeue())
 		{
@@ -62,9 +59,9 @@ void Sender::processUnreliableDataQueue()
 	}
 }
 
-bool Sender::isUninitialized ()
+bool Sender::isReadyToSend ()
 {
-	return status == UNINITIALIZED;
+	return status >= OPEN && connection->canSend();
 }
 
 bool Sender::empty ()
@@ -82,11 +79,11 @@ void Sender::open()
 	// So when an open is called from the handshake, even if has been officially closed
 	// we process the queue.
 
-	scheduleDataQueueProcessing(RELIABLE);
-	scheduleDataQueueProcessing(UNRELIABLE);
-
 	if (status == UNINITIALIZED)
 		status = OPEN;
+
+	scheduleDataQueueProcessing(RELIABLE);
+	scheduleDataQueueProcessing(UNRELIABLE);
 }
 
 void Sender::close()
@@ -95,11 +92,13 @@ void Sender::close()
 
 	if (status != CLOSED)
 	{
-		dataQueue.enqueue(
+		enqueue(
 			CLOSE_WRITE,
 			nullptr, 0,
+			RELIABLE,
 			MRUDP_COALESCE_PACKET
 		);
+
 		status = CLOSED;
 	}
 }
@@ -126,6 +125,20 @@ void Sender::sendReliably(const PacketPtr &packet)
 	connection->send(packet);
 }
 
+void Sender::enqueue(FrameTypeID typeID, const u8 *data, size_t size, Reliability reliability, SendQueue::CoalesceMode mode)
+{
+	auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
+
+	dataQueue_.enqueue(
+		typeID,
+		data, size,
+		mode
+	);
+	
+	if (isReadyToSend())
+		scheduleDataQueueProcessing(reliability);
+}
+
 ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 {
 	if (status != CLOSED)
@@ -134,18 +147,10 @@ ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 			(SendQueue::CoalesceMode)connection->options.coalesce_reliable.mode :
 			(SendQueue::CoalesceMode)connection->options.coalesce_unreliable.mode;
 
-		auto &dataQueue_ = reliability ? dataQueue : unreliableDataQueue;
-
 		if (size > MAX_PACKET_DATA_SIZE && mode != MRUDP_COALESCE_STREAM)
 			return ERROR_PACKET_SIZE_TOO_LARGE;
 
-		dataQueue_.enqueue(
-			DATA,
-			data, size,
-			mode
-		);
-		
-		scheduleDataQueueProcessing(reliability);
+		enqueue(DATA, data, size, reliability, mode);
 		
 		return OK;
 	}

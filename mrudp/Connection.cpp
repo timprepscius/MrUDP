@@ -244,7 +244,7 @@ bool Connection::canSend ()
 #ifdef MRUDP_ENABLE_CRYPTO
 	return crypto->canEncrypt();
 #else
-	return true;
+	return remoteID > 0;
 #endif
 }
 
@@ -254,7 +254,7 @@ void Connection::send_(const PacketPtr &packet)
 	
 	if (packet->header.connection == 0)
 	{
-		debug_assert(packet->header.type < HANDSHAKE_COMPLETE);
+		debug_assert(packet->header.type != DATA_RELIABLE && packet->header.type != DATA_UNRELIABLE);
 		
 		auto packet_ = strong<Packet>();
 		*packet_ = *packet;

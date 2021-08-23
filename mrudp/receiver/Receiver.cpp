@@ -22,11 +22,6 @@ Receiver::Receiver(Connection *connection_) :
 
 void Receiver::open (PacketID packetID)
 {
-	// When connections are closed, while they are negotiating their handshake
-	// they may have queued data
-	// --
-	// So when an open is called from the handshake, even if has been officially closed
-	// we process the queue.
 	receiveQueue.processQueue();
 
 	if (status == UNINITIALIZED)
@@ -87,6 +82,10 @@ void Receiver::onPacket(Packet &packet)
 {
 	if (status != OPEN)
 		return;
+		
+	// TODO:
+	// this needs to keep track of packet ids which arrive out of order, maintain the last good ID
+	// and only accept packets after it
 		
 	auto type = packet.header.type;
 	if(requiresAck(type))
