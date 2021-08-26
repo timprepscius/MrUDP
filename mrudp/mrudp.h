@@ -14,6 +14,9 @@ extern "C" {
 #define MRUDP_ERROR_PACKET_SIZE_TOO_LARGE 2
 #define MRUDP_ERROR_CONNECTION_CLOSED 3
 
+// this is for tests
+#define MRUDP_MAXIMUM_CONNECTION_TIMEOUT 30
+
 // The events possible for when a close callback is invoked
 typedef enum {
 	MRUDP_EVENT_NOT_ACCEPTED,

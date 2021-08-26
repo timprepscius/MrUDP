@@ -149,7 +149,7 @@ SCENARIO("connections")
 
 					THEN("connections on remote return to 0")
 					{
-						wait_until(std::chrono::seconds(30), [&]() {
+						wait_until(std::chrono::seconds(MRUDP_MAXIMUM_CONNECTION_TIMEOUT), [&]() {
 							return remote.connections.size() == 0;
 						});
 					
