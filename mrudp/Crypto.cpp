@@ -18,9 +18,14 @@ ConnectionCrypto::ConnectionCrypto(const StrongPtr<HostCrypto> &host_) :
 	localSessionKey = generateAESKey(*host->random);
 }
 
-bool ConnectionCrypto::canEncrypt ()
+bool ConnectionCrypto::canSend ()
 {
 	return (bool)remoteSessionKey;
+}
+
+bool ConnectionCrypto::canReceive ()
+{
+	return (bool)localSessionKey;
 }
 	
 bool ConnectionCrypto::onReceive (Packet &packet)
@@ -35,7 +40,7 @@ bool ConnectionCrypto::onReceive (Packet &packet)
 	else
 	if (type == ENCRYPTED_VIA_AES)
 	{
-		if (!localSessionKey->decrypt(packet))
+		if (!localSessionKey || !localSessionKey->decrypt(packet))
 			return false;
 	}
 

@@ -33,8 +33,8 @@ struct ConnectionCrypto
 	const TypeID H2_SESSION_KEY = H2;
 	const TypeID H3_SESSION_KEY = H3;
 
-	bool canEncrypt ();
-	bool canDecrypt ();
+	bool canSend ();
+	bool canReceive ();
 
 	bool onReceive (Packet &packet);
 	bool onSend (Packet &packet);

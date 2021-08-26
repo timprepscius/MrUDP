@@ -242,7 +242,7 @@ void Connection::receive(char *buffer, int size, Reliability reliability)
 bool Connection::canSend ()
 {
 #ifdef MRUDP_ENABLE_CRYPTO
-	return crypto->canEncrypt();
+	return crypto->canSend();
 #else
 	return remoteID > 0;
 #endif
