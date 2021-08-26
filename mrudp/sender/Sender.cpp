@@ -199,7 +199,7 @@ void Sender::processDataQueue(Reliability reliability)
 	}
 }
 
-void Sender::onPacket(Packet &packet)
+void Sender::onReceive(Packet &packet)
 {
 	if (isAck(packet.header.type))
 	{

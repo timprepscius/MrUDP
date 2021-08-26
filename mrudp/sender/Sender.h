@@ -60,8 +60,8 @@ struct Sender
 	ErrorCode send(const u8 *data, size_t size, Reliability reliability);
 	
 	void sendReliably(const PacketPtr &packet);
+	void onReceive (Packet &packet);
 	void onAck(Packet &packet);
-	void onPacket (Packet &packet);
 	void close ();
 	void fail ();
 	

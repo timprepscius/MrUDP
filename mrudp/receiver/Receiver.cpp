@@ -32,6 +32,12 @@ void Receiver::close ()
 {
 	if (status < CLOSED)
 	{
+		// TODO:
+		// this should send even if we haven't finished the handshake
+		// as long as we have finished the first packet handshake and have the RSA keys
+		// this will help connections time out faster.
+		// maybe it should be canSend & also finishedHandshake in the sender enqueue
+		
 		if (connection->canSend())
 		{
 			auto packet = strong<Packet>();
@@ -78,7 +84,7 @@ bool requiresAck(TypeID typeID)
 		typeID == CLOSE_READ;
 }
 
-void Receiver::onPacket(Packet &packet)
+void Receiver::onReceive(Packet &packet)
 {
 	if (status != OPEN)
 		return;

@@ -23,7 +23,7 @@ bool ConnectionCrypto::canEncrypt ()
 	return (bool)remoteSessionKey;
 }
 	
-bool ConnectionCrypto::decrypt (Packet &packet)
+bool ConnectionCrypto::onReceive (Packet &packet)
 {
 	auto &type = packet.header.type;
 	
@@ -66,7 +66,7 @@ bool ConnectionCrypto::decrypt (Packet &packet)
 	return true;
 }
 
-bool ConnectionCrypto::encrypt (Packet &packet)
+bool ConnectionCrypto::onSend (Packet &packet)
 {
 	auto &type = packet.header.type;
 

@@ -50,7 +50,7 @@ struct Receiver
 	void processReceived(ReceiveQueue::Frame &frame, Reliability reliability);
 	
 	// Processes incoming packets
-	void onPacket (Packet &packet);
+	void onReceive (Packet &packet);
 };
 
 } // namespace

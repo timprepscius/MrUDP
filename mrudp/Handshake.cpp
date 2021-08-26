@@ -111,7 +111,7 @@ void Handshake::handlePacket(Packet &packet)
 	}
 }
 
-void Handshake::onPacket(Packet &packet)
+void Handshake::onReceive(Packet &packet)
 {
 	if (!isHandshake(packet.header.type))
 		return;

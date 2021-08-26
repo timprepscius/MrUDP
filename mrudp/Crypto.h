@@ -36,8 +36,8 @@ struct ConnectionCrypto
 	bool canEncrypt ();
 	bool canDecrypt ();
 
-	bool decrypt (Packet &packet);
-	bool encrypt (Packet &packet);
+	bool onReceive (Packet &packet);
+	bool onSend (Packet &packet);
 } ;
 
 

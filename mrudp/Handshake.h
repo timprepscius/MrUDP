@@ -33,7 +33,7 @@ struct Handshake
 	
 	void handlePacket (Packet &packet);
 	
-	void onPacket(Packet &packet);
+	void onReceive(Packet &packet);
 	void onHandshakeComplete ();
 } ;
 
