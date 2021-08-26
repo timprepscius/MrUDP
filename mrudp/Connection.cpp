@@ -254,8 +254,6 @@ void Connection::send_(const PacketPtr &packet)
 	
 	if (packet->header.connection == 0)
 	{
-		debug_assert(packet->header.type != DATA_RELIABLE && packet->header.type != DATA_UNRELIABLE);
-		
 		auto packet_ = strong<Packet>();
 		*packet_ = *packet;
 		pushData(*packet_, id);
@@ -279,6 +277,12 @@ void Connection::send(const PacketPtr &packet)
 	xTraceChar(this, packet->header.id, (char)packet->header.type);
 
 	statistics.onSend(*packet);
+
+	// the only time we should be using the longID, is when we are sending control packets
+	debug_assert(
+		(remoteID == 0 && (packet->header.type != DATA_RELIABLE && packet->header.type != DATA_UNRELIABLE)) ||
+		(remoteID != 0)
+	);
 
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (!crypto->onSend(*packet))
