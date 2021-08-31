@@ -60,27 +60,35 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: error with connections timing out&quot;"
+            argument = "&quot;Scenario: error with connections timing out&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: basics&quot;"
+            argument = "&quot;Scenario: basics&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;Scenario: packet transmission rate&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: packet transmission rate&quot;"
+            argument = "&quot;Scenario: crypto&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: crypto&quot;"
+            argument = "&quot;Scenario: connections&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: connections&quot;"
+            argument = "&quot;Scenario: streams&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s &quot;Scenario: streams&quot;"
+            argument = "&quot;Scenario: frame id&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;Scenario: packet id&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

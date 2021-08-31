@@ -29,19 +29,17 @@ void Socket::open (const Address &address)
 
 bool Socket::isFull()
 {
-	return shortConnectionIDs.size() == std::numeric_limits<ShortConnectionID>().max();
+	return shortConnectionIDs.size() == std::numeric_limits<ShortConnectionID>().max()-1;
 }
 
 ShortConnectionID Socket::generateShortConnectionID()
 {
-	auto lock = lock_of(connectionsMutex);
-
 	ShortConnectionID id = service->random.next<ShortConnectionID>();
-	auto i = shortConnectionIDs.find(id);
-	while (i != shortConnectionIDs.end())
+
+	auto lock = lock_of(connectionsMutex);
+	while (id == 0 || !shortConnectionIDs.insert(id).second)
 	{
 		id++;
-		i = shortConnectionIDs.find(id);
 	}
 	
 	return id;
