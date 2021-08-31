@@ -25,15 +25,19 @@ struct Socket : StrongThis<Socket>
 	Socket (const StrongPtr<Service> &system);
 	~Socket ();
 	
-	void open (const Address &address);
-	
 	StrongPtr<Service> service;
 	StrongPtr<imp::SocketImp> imp;
 	
+	void open (const Address &address);
+
 	bool closeRequested = false;
+	void close ();
+	
+	Set<ShortConnectionID> shortConnectionIDs;
+	ShortConnectionID generateShortConnectionID ();
+	bool isFull();
 	
 	LongConnectionID generateLongConnectionID ();
-	Atomic<ShortConnectionID> nextConnectionID = 1;
 	
 	Mutex userDataMutex;
 	void *userData = nullptr;
@@ -73,8 +77,6 @@ struct Socket : StrongThis<Socket>
 		mrudp_close_callback_fn eventCallback
 	);
 	
-	void close ();
-
 	Address getLocalAddress();
 };
 

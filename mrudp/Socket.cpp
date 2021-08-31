@@ -10,8 +10,6 @@ Socket::Socket(const StrongPtr<Service> &service_) :
 	service(service_)
 {
 	xLogDebug(logOfThis(this));
-
-	nextConnectionID = (ShortConnectionID)rand();
 }
 
 Socket::~Socket ()
@@ -27,6 +25,26 @@ void Socket::open (const Address &address)
 {
 	imp = strong_thread(strong<imp::SocketImp>(strong_this(this), address));
 	imp->open();
+}
+
+bool Socket::isFull()
+{
+	return shortConnectionIDs.size() == std::numeric_limits<ShortConnectionID>().max();
+}
+
+ShortConnectionID Socket::generateShortConnectionID()
+{
+	auto lock = lock_of(connectionsMutex);
+
+	ShortConnectionID id = service->random.next<ShortConnectionID>();
+	auto i = shortConnectionIDs.find(id);
+	while (i != shortConnectionIDs.end())
+	{
+		id++;
+		i = shortConnectionIDs.find(id);
+	}
+	
+	return id;
 }
 
 LongConnectionID Socket::generateLongConnectionID()
@@ -53,7 +71,7 @@ StrongPtr<Connection> Socket::connect(
 		strong_this(this),
 		generateLongConnectionID(),
 		remoteAddress,
-		nextConnectionID++
+		generateShortConnectionID()
 	);
 	
 	connection->openUser(options, userData, receiveHandler_, closeHandler_);
@@ -93,6 +111,14 @@ void Socket::erase(Connection *connection)
 			sLogDebug("mrudp::overlap_io", "erase " << logVar(uint64_t(connection->id)) << logVar(connection) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())));
 		
 			connections.erase(i);
+		}
+	}
+	
+	{
+		auto i = shortConnectionIDs.find(connection->localID);
+		if (i != shortConnectionIDs.end())
+		{
+			shortConnectionIDs.erase(i);
 		}
 	}
 }
@@ -156,6 +182,11 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	
 	sLogDebug("mrudp::overlap_io", "G " << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())) << logVar((char)packet.header.type));
 	
+	if (isFull())
+	{
+		return nullptr;
+	}
+	
 	if (packet.header.type != H0)
 	{
 		sLogDebug("mrudp::overlap_io", "ERROR " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
@@ -187,7 +218,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 		return nullptr;
 	}
 	
-	auto localID = nextConnectionID++;
+	auto localID = generateShortConnectionID();
 	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID);
 	
 	insert(connection);

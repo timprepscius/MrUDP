@@ -11,13 +11,13 @@ SCENARIO("packet id")
     GIVEN( "a set of interesting packet id numbers" )
     {
 		auto test_packet_id_greater_than = [](auto l, auto r) {
-			REQUIRE(packet_id_greater_than(l,r));
-			REQUIRE(!packet_id_greater_than(r,l));
+			REQUIRE(id_greater_than(l,r));
+			REQUIRE(!id_greater_than(r,l));
 		} ;
 
 		auto test_packet_id_equal = [](auto l, auto r) {
-			REQUIRE(!packet_id_greater_than(l,r));
-			REQUIRE(!packet_id_greater_than(r,l));
+			REQUIRE(!id_greater_than(l,r));
+			REQUIRE(!id_greater_than(r,l));
 		};
 
 		auto PacketIDBits = sizeof(PacketID) * 8;

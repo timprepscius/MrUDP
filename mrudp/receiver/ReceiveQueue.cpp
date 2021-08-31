@@ -54,7 +54,7 @@ void ReceiveQueue::onReceive(Packet &packet)
 		}
 		else
 		{
-			if (packet_id_greater_than(frame->header.id, expectedID))
+			if (id_greater_than(frame->header.id, expectedID))
 			{
 				sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << expectedID);
 				enqueue(*frame);
