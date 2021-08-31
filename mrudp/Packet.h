@@ -107,9 +107,10 @@ const int MAX_PACKET_DATA_SIZE = MAX_PACKET_POST_FRAME_SIZE - MAX_FRAME_HEADER_S
 static_assert(MRUDP_MAX_PACKET_SIZE < MAX_PACKET_DATA_SIZE);
 
 // returns whether or not the lhs is greater than the rhs
-// when the packet number wraps around, the packet_id_greater_than will still
+// when the packet number wraps around, the id_greater_than will still
 // function correctly
-bool packet_id_greater_than(PacketID lhs, PacketID rhs);
+template<typename T>
+bool id_greater_than(T lhs, T rhs);
 
 bool popData(Packet &packet, u8 *data, size_t size);
 

@@ -3,10 +3,11 @@
 namespace timprepscius {
 namespace mrudp {
 
+template<typename T>
 inline
-bool packet_id_greater_than(PacketID lhs, PacketID rhs)
+bool id_greater_than(T lhs, T rhs)
 {
-	static const PacketID top_bit = (1 << (sizeof(PacketID) * 8 - 1));
+	static const T top_bit = (1 << (sizeof(T) * 8 - 1));
 
 	auto lhs_gtr_rhs = lhs > rhs;
 	auto diff = lhs_gtr_rhs ? (lhs - rhs) : (rhs - lhs);
