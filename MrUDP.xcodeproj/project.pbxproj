@@ -72,6 +72,8 @@
 		F6A176D426B42B0B003708D8 /* Crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0ACD26B03A3A0055F46D /* Crypto.cpp */; };
 		F6A176D526B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */; };
 		F6A176D626B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */; };
+		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
+		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */; };
 		F6BEFDA526CF206D008EB30E /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */; };
 		F6BEFDA626CF206D008EB30E /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */; };
@@ -174,6 +176,8 @@
 		F6A176BD26B1C0C4003708D8 /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F6A176BF26B3497F003708D8 /* Handshake.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Handshake.h; sourceTree = "<group>"; };
 		F6A176C326B41B2C003708D8 /* Handshake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Handshake.cpp; sourceTree = "<group>"; };
+		F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnreliableReceiveQueue.cpp; sourceTree = "<group>"; };
+		F6AF314926DE51FE003FCCAE /* UnreliableReceiveQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnreliableReceiveQueue.h; sourceTree = "<group>"; };
 		F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Streams.cpp; sourceTree = "<group>"; };
 		F6BEFDA326CF1A85008EB30E /* Statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statistics.h; sourceTree = "<group>"; };
 		F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Statistics.cpp; sourceTree = "<group>"; };
@@ -325,6 +329,8 @@
 			children = (
 				F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */,
 				F6915A3D26A4E128001C2E1E /* ReceiveQueue.h */,
+				F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */,
+				F6AF314926DE51FE003FCCAE /* UnreliableReceiveQueue.h */,
 				F6915A3A26A4E128001C2E1E /* Receiver.cpp */,
 				F6915A3B26A4E128001C2E1E /* Receiver.h */,
 			);
@@ -505,6 +511,7 @@
 				F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */,
 				F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */,
 				F6915A6326A4E129001C2E1E /* Service.cpp in Sources */,
+				F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
 				F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */,
 				F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */,
 				F6A176D426B42B0B003708D8 /* Crypto.cpp in Sources */,
@@ -547,6 +554,7 @@
 				F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */,
 				F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */,
 				F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */,
+				F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
 				F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */,
 				F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */,
 				F6A176D326B42B0B003708D8 /* Crypto.cpp in Sources */,

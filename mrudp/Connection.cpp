@@ -213,15 +213,12 @@ void Connection::receive(Packet &packet)
 	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 #endif
 
-	// this should be moved somewhere else
-	statistics.onReceive(packet);
-
 	xTraceChar(this, packet.header.id, (char)std::tolower((char)packet.header.type));
-	handshake.onReceive(packet);
-
 	auto now = socket->service->clock.now();
+
+	statistics.onReceive(packet);
+	handshake.onReceive(packet);
 	probe.onReceive(now);
-	
 	sender.onReceive(packet);
 	receiver.onReceive(packet);
 }

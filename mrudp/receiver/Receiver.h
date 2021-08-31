@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ReceiveQueue.h"
+#include "UnreliableReceiveQueue.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -34,7 +35,8 @@ struct Receiver
 	
 	Receiver(Connection *connection);
 	
-	ReceiveQueue receiveQueue, unreliableReceiveQueue;
+	ReceiveQueue receiveQueue;
+	UnreliableReceiveQueue unreliableReceiveQueue;
 	
 	// Called on a SYN packet, sets the status to Open, and
 	// sets the expected packet id.

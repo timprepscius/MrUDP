@@ -34,7 +34,7 @@ bool ReceiveQueue::processNext()
 	return false;
 }
 
-void ReceiveQueue::process(Packet &packet)
+void ReceiveQueue::onReceive(Packet &packet)
 {
 	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.connection) << logVar(packet.header.id) );
 

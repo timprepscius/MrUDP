@@ -11,8 +11,8 @@ namespace mrudp {
 // For packets which arrive out of order, the ReceiveQueue acts as an ordering
 // mechansism.
 //
-// ReceiveQueue::process is called with a handler-function, and for each packet
-// waiting and in order as expected, the given function is called.
+// ReceiveQueue::onReceive is called for each incoming packet, which in turn
+// calls the processor function for each frame in each packet in order;
 // --------------------------------------------------------------------------------
 
 struct ReceiveQueue
@@ -36,7 +36,7 @@ struct ReceiveQueue
 	
 	// either process the packet immediately, enqueue it or
 	// discard it
-	void process(Packet &packet);
+	void onReceive(Packet &packet);
 	
 	// processes all in order and as expected packets with the given function
 	void processQueue ();

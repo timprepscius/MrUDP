@@ -104,12 +104,12 @@ void Receiver::onReceive(Packet &packet)
 
 	if (packet.header.type == DATA_RELIABLE)
 	{
-		receiveQueue.process(packet);
+		receiveQueue.onReceive(packet);
 	}
 	else
 	if (packet.header.type == DATA_UNRELIABLE)
 	{
-		unreliableReceiveQueue.process(packet);
+		unreliableReceiveQueue.onReceive(packet);
 	}
 }
 

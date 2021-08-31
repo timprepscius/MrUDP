@@ -14,11 +14,6 @@ SCENARIO("packet transmission rate")
 	auto X = 256;
 	auto Y = 128;
 
-//	xLogActivateStory("mrudp::retry");
-//	xLogActivateStory("mrudp::life_cycle");
-//	xLogActivateStory("mrudp::retry");
-//	xLogActivateStory("mrudp::overlap_io");
-
 	mrudp_options_asio_t options;
 	mrudp_default_options(MRUDP_IMP_ASIO, &options);
 	options.connection.coalesce_reliable.mode = MRUDP_COALESCE_NONE;

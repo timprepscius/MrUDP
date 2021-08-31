@@ -12,11 +12,6 @@ int main( int argc, char* argv[] )
 {
 	xLogInitialize("mrudp-test.log");
 	
-	//xLogActivateStory(LogAllStories);
-//	xLogActivateStory("mrudp::send");
-//	xLogActivateStory("mrudp::receive");
-//	xLogActivateStory("mrudp::retry");
-	
 	using namespace Catch::clara;
 
 	Catch::Session session;
