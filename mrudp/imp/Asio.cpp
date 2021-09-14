@@ -294,6 +294,17 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 	});
 }
 
+void ConnectionImp::relocate ()
+{
+	connectedSocket = nullptr;
+
+	auto parent_ = strong(parent);
+	debug_assert(parent_);
+	
+	if (parent_->socket->imp->options.overlapped_io)
+		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
+}
+
 // -------------------------------------
 
 void SocketNative::send(const Send &send, Function<void (const error_code &)> &&f)
@@ -434,6 +445,14 @@ SocketImp::SocketImp(const StrongPtr<Socket> &parent_, const Address &address) :
 	socket(strong<SocketNative>(*parent_->service->imp->service)),
 	options(parent_->service->imp->options)
 {
+	acquireAddress(address);
+}
+
+void SocketImp::acquireAddress(const Address &address)
+{
+	auto parent_ = strong(parent);
+	debug_assert(parent_);
+	
 	bool acquiredAddress = false;
 	while (!acquiredAddress)
 	{
@@ -538,6 +557,9 @@ void SocketImp::handleReceiveFrom(const Address &remoteAddress, Packet &receiveP
 
 void SocketImp::open()
 {
+	debug_assert(running == false);
+	running = true;
+	
 	doReceive(socket, strong<Receive>());
 }
 
@@ -622,6 +644,22 @@ void SocketImp::close ()
 				socket->handle.close();
 			}
 		}
+	}
+}
+
+void SocketImp::relocate(const Address &address)
+{
+	auto parent_ = strong(parent);
+	
+	auto lock = lock_of(parent_->connectionsMutex);
+	
+	close();
+	acquireAddress(address);
+	open();
+	
+	for (auto &[id, connection] : parent_->connections)
+	{
+		connection->imp->relocate();
 	}
 }
 

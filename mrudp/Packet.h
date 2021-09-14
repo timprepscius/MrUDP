@@ -14,13 +14,17 @@ enum TypeID : uint8_t {
 	HANDSHAKE_COMPLETE = 'E',
 	
 	ACK = 'K',
-	DATA_RELIABLE = 'V',
-	DATA_UNRELIABLE = 'Q',
+	DATA_RELIABLE = 'R',
+	DATA_UNRELIABLE = 'U',
 	PROBE = 'P',
-	CLOSE_READ = 'R',
+	CLOSE_READ = 'I',
+
+	AUTHENTICATE_CHALLENGE = 'M',
+	AUTHENTICATE_RESPONSE = 'W',
 	
-	ENCRYPTED_VIA_PUBLIC_KEY = 'X',
-	ENCRYPTED_VIA_AES = 'Z',
+	ENCRYPTED_VIA_PUBLIC_KEY = 'Z',
+	ENCRYPTED_VIA_AES = 'Y',
+	
 } ;
 
 inline
@@ -96,6 +100,13 @@ struct Packet
 typedef StrongPtr<Packet> PacketPtr;
 
 bool operator==(const Packet &lhs, const Packet &rhs);
+
+struct PacketPath {
+	PacketPtr packet;
+	Optional<Address> address;
+} ;
+
+using MultiPacketPath = StackArray<PacketPath, 2>;
 
 // TODO: these constants, especially size constants should be located somewhere else
 const int MAX_ROUTE_SIZE = 0;

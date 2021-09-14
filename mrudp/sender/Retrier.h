@@ -29,11 +29,24 @@ struct Sender;
 
 struct Retry
 {
-	PacketPtr packet;
-	
+	MultiPacketPath paths;
 	Timepoint sentAt, retryAt;
+	
 	size_t attempts = 0;
+	bool priority = false;
 } ;
+
+//inline
+//bool operator<(const RetryPaths &lhs, const RetryPaths &rhs)
+//{
+//	auto &l = std::get<0>(lhs);
+//	auto &r = std::get<0>(rhs);
+//
+//	if (l.priority != r.priority)
+//		return l.priority < r.priority;
+//
+//	return l.sentAt > r.sentAt;
+//}
 
 struct Retrier
 {
@@ -54,6 +67,8 @@ struct Retrier
 
 	// The window of reliable packets that have been sent, but not acked.
 	OrderedMap<PacketID, StrongPtr<Retry>> window;
+	Set<PacketID> priority;
+	
 	StrongPtr<Retry> getNextRetry();
 
 	struct InsertResult {
@@ -63,7 +78,7 @@ struct Retrier
 	// Inserts a packet into the Retrier.
 	// Returns the InsertResult, where .wasFirst signifies that
 	// the recalculateRetryTimeout should be called
-	InsertResult insert(const PacketPtr &, const Timepoint &now);
+	InsertResult insert(const MultiPacketPath &packetPaths, const Timepoint &now, bool priority);
 	
 	struct AckResult
 	{

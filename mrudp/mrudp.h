@@ -132,7 +132,10 @@ void mrudp_close_service(mrudp_service_t mrudp, int waitForFinish);
 mrudp_error_code_t mrudp_resolve(mrudp_service_t mrudp, const char *address, mrudp_resolve_callback_fn, void *userData);
  
  // creates a socket using the given service and address
-mrudp_socket_t mrudp_socket(mrudp_service_t service, mrudp_addr_t *address);
+mrudp_socket_t mrudp_socket(mrudp_service_t service, const mrudp_addr_t *address);
+
+ // creates a socket using the given service and address
+mrudp_error_code_t mrudp_relocate_socket(mrudp_socket_t socket, const mrudp_addr_t *address);
 
 // closes a given socket, after closing the socket handle is invalid
 mrudp_error_code_t mrudp_close_socket(mrudp_socket_t socket);

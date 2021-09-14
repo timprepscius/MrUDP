@@ -39,11 +39,12 @@ StrongPtr<Retry> Retrier::getNextRetry()
 	return window.begin()->second;
 }
 
-Retrier::InsertResult Retrier::insert(const PacketPtr &packet, const Timepoint &now)
+Retrier::InsertResult Retrier::insert(const MultiPacketPath &packetPaths, const Timepoint &now, bool priority)
 {
 	bool wasEmpty = false;
+	debug_assert(!packetPaths.empty());
 	
-	// lock
+	// scoped lock
 	{
 		auto lock = lock_of(mutex);
 
@@ -51,8 +52,21 @@ Retrier::InsertResult Retrier::insert(const PacketPtr &packet, const Timepoint &
 			return { false };
 			
 		wasEmpty = window.empty();
-		auto insertion = window.try_emplace(packet->header.id, strong<Retry>(Retry { packet, now }));
+		
+		auto id = packetPaths.front().packet->header.id;
+		
+		Retry retry {
+			.paths = packetPaths,
+			.sentAt = now
+		};
+		
+		auto insertion = window.try_emplace(id, strong<Retry>(retry));
 		debug_assert(insertion.second);
+		
+		if (priority)
+		{
+			this->priority.insert(id);
+		}
 	}
 	
 	if (wasEmpty)
@@ -79,6 +93,13 @@ Retrier::AckResult Retrier::ack(PacketID packetID, const Timepoint &now)
 
 		auto duration = now - retry->sentAt;
 		rtt = std::chrono::duration_cast<std::chrono::duration<float>>(duration).count();
+
+		if (retry->priority)
+		{
+			auto j = priority.find(packetID);
+			if (j != priority.end())
+				priority.erase(j);
+		}
 
 		window.erase(i);
 	}
@@ -132,29 +153,39 @@ void Retrier::onRetryTimeout()
 	if (now > retry->retryAt)
 	{
 		xLogDebug(logOfThis(this) << logVar(retry));
-
-		auto &header = retry->packet->header;
-		(void)header;
 		
-		auto connection = sender->connection;
-		
-		if(retry->attempts >= maximumAttempts)
+		for (auto &path: retry->paths)
 		{
-			sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress)) << logLabel("FAILING") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
-
-			xTraceChar(this, retry->packet->header.id, 'F', (char)retry->packet->header.type);
-			connection->fail(MRUDP_EVENT_TIMEOUT);
-		}
-		else
-		{
-			retry->attempts++;
-			retry->sentAt = connection->socket->service->clock.now();
+			auto &header = path.packet->header;
+			(void)header;
 			
-			sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress))<< logLabel("retrying") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
-
-			xTraceChar(this, retry->packet->header.id, '0' + (char)retry->attempts, (char)retry->packet->header.type);
-			connection->resend(retry->packet);
+			auto connection = sender->connection;
 			
+			if(retry->attempts >= maximumAttempts)
+			{
+				sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress)) << logLabel("FAILING") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
+
+				xTraceChar(this, retry->packet->header.id, 'F', (char)retry->packet->header.type);
+				connection->fail(MRUDP_EVENT_TIMEOUT);
+			}
+			else
+			{
+				retry->attempts++;
+				retry->sentAt = connection->socket->service->clock.now();
+				
+				sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress))<< logLabel("retrying") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
+
+				xTraceChar(this, retry->packet->header.id, '0' + (char)retry->attempts, (char)retry->packet->header.type);
+				if (path.address)
+				{
+					connection->resend(path.packet, &*path.address);
+				}
+				else
+				{
+					connection->resend(path.packet);
+				}
+			}
+
 			sender->rtt.onAckFailure();
 			recalculateRetryTimeout();
 		}

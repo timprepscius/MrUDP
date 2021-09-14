@@ -174,7 +174,7 @@ StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packe
 	return nullptr;
 }
 
-StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress)
+StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress)
 {
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "new connection");
 	
@@ -240,7 +240,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	return connection;
 }
 
-StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress)
+StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress)
 {
 	auto lock = lock_of(connectionsMutex);
 	auto connection = findConnection(lookup, packet, remoteAddress);
@@ -254,7 +254,7 @@ StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Pac
 }
 
 
-void Socket::receive(Packet &packet, const mrudp_addr_t &remoteAddress)
+void Socket::receive(Packet &packet, const Address &remoteAddress)
 {
 	xLogDebug(logOfThis(this) << logLabel("begin") << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id));
 
@@ -262,7 +262,7 @@ void Socket::receive(Packet &packet, const mrudp_addr_t &remoteAddress)
 	
 	if (auto connection = findOrGenerateConnection(lookup, packet, remoteAddress))
 	{
-		connection->receive(packet);
+		connection->receive(packet, remoteAddress);
 	}
 	
 	xLogDebug(logOfThis(this) << "end");

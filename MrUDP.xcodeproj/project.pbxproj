@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F61D252526D0286A00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */; };
+		F61FD09526F1566300F58003 /* NetworkPathChange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61FD09426F153F800F58003 /* NetworkPathChange.cpp */; };
 		F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634A8EB26A613AC00869A6F /* Connections.cpp */; };
 		F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2626A4E128001C2E1E /* Socket.cpp */; };
 		F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3426A4E128001C2E1E /* Packet.cpp */; };
@@ -63,6 +64,8 @@
 		F6915A8526A4E2B3001C2E1E /* MaximumTransferRate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4C26A4E128001C2E1E /* MaximumTransferRate.cpp */; };
 		F6915A8626A4E2B3001C2E1E /* Basics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4726A4E128001C2E1E /* Basics.cpp */; };
 		F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4B26A4E128001C2E1E /* PacketID.cpp */; };
+		F6960F4926E926A7007C3EB5 /* NetworkPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */; };
+		F6960F4A26E926A7007C3EB5 /* NetworkPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */; };
 		F6A176BA26B1B80E003708D8 /* Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FB586626AA0D6E00C24EAA /* Base.cpp */; };
 		F6A176BB26B1B80E003708D8 /* Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FB586626AA0D6E00C24EAA /* Base.cpp */; };
 		F6A176C826B4207C003708D8 /* Handshake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A176C326B41B2C003708D8 /* Handshake.cpp */; };
@@ -113,6 +116,7 @@
 
 /* Begin PBXFileReference section */
 		F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionTimesOutAtBeginning.cpp; sourceTree = "<group>"; };
+		F61FD09426F153F800F58003 /* NetworkPathChange.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkPathChange.cpp; sourceTree = "<group>"; };
 		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
 		F66B0ACB26B0338C0055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
 		F66B0ACD26B03A3A0055F46D /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
@@ -173,6 +177,8 @@
 		F6915A7426A4E181001C2E1E /* Makefile.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.def; sourceTree = "<group>"; };
 		F6915A7926A4E277001C2E1E /* MrUDP-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMrUDP-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6960F4726E92594007C3EB5 /* NetworkPath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkPath.h; sourceTree = "<group>"; };
+		F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkPath.cpp; sourceTree = "<group>"; };
 		F6A176BD26B1C0C4003708D8 /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F6A176BF26B3497F003708D8 /* Handshake.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Handshake.h; sourceTree = "<group>"; };
 		F6A176C326B41B2C003708D8 /* Handshake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Handshake.cpp; sourceTree = "<group>"; };
@@ -279,6 +285,8 @@
 				F66B0ACB26B0338C0055F46D /* Crypto.h */,
 				F66B0ACD26B03A3A0055F46D /* Crypto.cpp */,
 				F6A176BF26B3497F003708D8 /* Handshake.h */,
+				F6960F4726E92594007C3EB5 /* NetworkPath.h */,
+				F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */,
 				F6A176C326B41B2C003708D8 /* Handshake.cpp */,
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
@@ -351,6 +359,7 @@
 				F6915A4726A4E128001C2E1E /* Basics.cpp */,
 				F6915A4A26A4E128001C2E1E /* Common.h */,
 				F634A8EB26A613AC00869A6F /* Connections.cpp */,
+				F61FD09426F153F800F58003 /* NetworkPathChange.cpp */,
 				F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */,
 				F6A176BD26B1C0C4003708D8 /* Crypto.cpp */,
 				F6915A4926A4E128001C2E1E /* Makefile.project */,
@@ -501,6 +510,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6960F4A26E926A7007C3EB5 /* NetworkPath.cpp in Sources */,
 				F6915A5926A4E128001C2E1E /* IDGenerator.inl in Sources */,
 				F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */,
 				F6BEFDA626CF206D008EB30E /* Statistics.cpp in Sources */,
@@ -535,6 +545,7 @@
 				F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */,
 				F6A176D126B42AF7003708D8 /* Crypto.cpp in Sources */,
 				F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */,
+				F61FD09526F1566300F58003 /* NetworkPathChange.cpp in Sources */,
 				F61D252526D0286A00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp in Sources */,
 				F6915A8526A4E2B3001C2E1E /* MaximumTransferRate.cpp in Sources */,
 			);
@@ -544,6 +555,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6960F4926E926A7007C3EB5 /* NetworkPath.cpp in Sources */,
 				F64AC0F126A63FAE001829A0 /* IDGenerator.inl in Sources */,
 				F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */,
 				F6BEFDA526CF206D008EB30E /* Statistics.cpp in Sources */,

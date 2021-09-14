@@ -117,12 +117,26 @@ void Sender::fail()
 	unreliableDataQueue.close();
 }
 
-void Sender::sendReliably(const PacketPtr &packet)
+void Sender::sendReliablyMultipath(MultiPacketPath &multipath, bool priority)
 {
-	packet->header.id = packetIDGenerator.nextID();
+	auto id = packetIDGenerator.nextID();
+	
+	for (auto &path: multipath)
+		path.packet->header.id = id;
 
-	retrier.insert(packet, connection->socket->service->clock.now());
-	connection->send(packet);
+	retrier.insert(multipath, connection->socket->service->clock.now(), priority);
+
+	for (auto &path: multipath)
+		connection->send(path.packet, path.address ? &*path.address : nullptr);
+}
+
+void Sender::sendReliably(const PacketPtr &packet, const Address *address)
+{
+	MultiPacketPath multipath = { PacketPath { packet }};
+	if (address)
+		multipath.front().address = *address;
+		
+	sendReliablyMultipath(multipath, false);
 }
 
 void Sender::enqueue(FrameTypeID typeID, const u8 *data, size_t size, Reliability reliability, SendQueue::CoalesceMode mode)

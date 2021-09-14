@@ -59,7 +59,8 @@ struct Sender
 
 	ErrorCode send(const u8 *data, size_t size, Reliability reliability);
 	
-	void sendReliably(const PacketPtr &packet);
+	void sendReliablyMultipath(MultiPacketPath &multipath, bool priority);
+	void sendReliably(const PacketPtr &packet, const Address *address = nullptr);
 	void onReceive (Packet &packet);
 	void onAck(Packet &packet);
 	void close ();

@@ -17,6 +17,7 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 	receiver(this),
 	probe(this),
 	handshake(this),
+	networkPath(this),
 	options(socket->service->imp->options.connection)
 {
 	#ifdef MRUDP_ENABLE_CRYPTO
@@ -195,7 +196,7 @@ void Connection::finish ()
 	socket->erase(this);
 }
 
-void Connection::receive(Packet &packet)
+void Connection::receive(Packet &packet, const Address &remoteAddress)
 {
 	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 
@@ -217,6 +218,7 @@ void Connection::receive(Packet &packet)
 	auto now = socket->service->clock.now();
 
 	statistics.onReceive(packet);
+	networkPath.onReceive(packet, remoteAddress);
 	handshake.onReceive(packet);
 	probe.onReceive(now);
 	sender.onReceive(packet);
@@ -245,7 +247,7 @@ bool Connection::canSend ()
 #endif
 }
 
-void Connection::send_(const PacketPtr &packet)
+void Connection::send_(const PacketPtr &packet, Address *address)
 {
 	packet->header.connection = remoteID;
 	
@@ -257,19 +259,19 @@ void Connection::send_(const PacketPtr &packet)
 		
 		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet_->header.connection) << logVar(packet_->header.type) << logVar(packet_->header.id) << logVar(packet_->dataSize) << " with long ID");
 
-		socket->send(packet_, remoteAddress, this);
+		socket->send(packet_, address ? *address : remoteAddress, this);
 	}
 	else
 	{
 		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logVar(packet->dataSize));
 
-		socket->send(packet, remoteAddress, this);
+		socket->send(packet, address ? *address : remoteAddress, this);
 	}
 
 	probe.onSend(socket->service->clock.now());
 }
 
-void Connection::send(const PacketPtr &packet)
+void Connection::send(const PacketPtr &packet, Address *address)
 {
 	xTraceChar(this, packet->header.id, (char)packet->header.type);
 
@@ -292,13 +294,13 @@ void Connection::send(const PacketPtr &packet)
 	}
 #endif
 
-	send_(packet);
+	send_(packet, address);
 }
 
-void Connection::resend(const PacketPtr &packet)
+void Connection::resend(const PacketPtr &packet, Address *address)
 {
 	// xTraceChar(this, packet->header.id, 'R', (char)packet->header.type);
-	send_(packet);
+	send_(packet, address);
 	
 	statistics.onResend(*packet);
 }

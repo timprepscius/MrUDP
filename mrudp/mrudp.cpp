@@ -19,7 +19,7 @@ mrudp_error_code_t mrudp_default_options (mrudp_imp_selector imp, void *options_
 	
 mrudp_socket_t mrudp_socket(
 	mrudp_service_t service_,
-	mrudp_addr_t *address
+	const mrudp_addr_t *address
 )
 {
 	auto service = toNative(service_);
@@ -108,6 +108,17 @@ mrudp_error_code_t mrudp_connection_statistics (mrudp_connection_t connection_, 
 
 	*statistics = connection->statistics.query();
 	
+	return MRUDP_OK;
+}
+
+mrudp_error_code_t mrudp_relocate_socket(mrudp_socket_t socket_, const mrudp_addr_t *address)
+{
+	auto socket = toNative(socket_);
+	if (!socket)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+
+	socket->imp->relocate(*address);
+
 	return MRUDP_OK;
 }
 

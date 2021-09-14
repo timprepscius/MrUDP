@@ -6,6 +6,7 @@
 #include "Crypto.h"
 #include "Handshake.h"
 #include "Statistics.h"
+#include "NetworkPath.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -42,6 +43,7 @@ struct Connection : StrongThis<Connection>
 
 	// connection mechanisms
 	Handshake handshake;
+	NetworkPath networkPath;
 	Sender sender;
 	Receiver receiver;
 	Probe probe;
@@ -77,11 +79,11 @@ struct Connection : StrongThis<Connection>
 	void open ();
 
 	bool canSend ();
-	void send(const PacketPtr &packet);
-	void resend(const PacketPtr &packet);
-	void send_(const PacketPtr &packet);
+	void send(const PacketPtr &packet, Address *address=nullptr);
+	void resend(const PacketPtr &packet, Address *address=nullptr);
+	void send_(const PacketPtr &packet, Address *address);
 	
-	void receive(Packet &p);
+	void receive(Packet &p, const Address &remoteAddress);
 	void receive(char *buffer, int size, Reliability reliable);
 	
 	void possiblyClose ();

@@ -84,6 +84,7 @@ struct SocketNative
 	udp::socket handle;
 	SendQueue queue;
 
+	// TODO: rename isOverlapped
 	bool isConnected;
 	udp::endpoint remoteEndpoint;
 	
@@ -124,6 +125,7 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 	
 	RecursiveMutex setTimeoutMutex;
 	
+	// TODO: rename overlappedSocket
 	StrongPtr<SocketNative> connectedSocket;
 
 	ConnectionImp(const StrongPtr<Connection> &parent_);
@@ -133,6 +135,7 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 	void stop ();
 
 	void setTimeout (const String &name, const Timepoint &then, Function<void()> &&f);
+	void relocate ();
 } ;
 
 struct SocketImp : StrongThis<SocketImp>
@@ -144,16 +147,19 @@ struct SocketImp : StrongThis<SocketImp>
 	StrongPtr<SocketNative> socket;
 	udp::endpoint localEndpoint;
 	
+	// TODO: rename connected to overlapped
 	Mutex connectedSocketsMutex;
 	OrderedMap<Address, WeakPtr<SocketNative>> connectedSockets;
 	StrongPtr<SocketNative> getConnectedSocket(const Address &);
 	void releaseConnectedSocket(const Address &);
 
-	bool running = true;
+	bool running = false;
 	void doReceive(const StrongPtr<SocketNative> &, const StrongPtr<Receive> &packet);
 	
 	SocketImp(const StrongPtr<Socket> &parent, const Address &address);
 	~SocketImp ();
+	
+	void acquireAddress(const Address &address);
 	
 	void open();
 	void connect(const Address &address);
@@ -164,6 +170,8 @@ struct SocketImp : StrongThis<SocketImp>
 	void sendViaQueue(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void doSend(const StrongPtr<SocketNative> &);
 	void close ();
+	
+	void relocate(const Address &address);
 	
 	mrudp_addr_t getLocalAddress ();
 	

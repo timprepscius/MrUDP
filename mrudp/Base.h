@@ -4,6 +4,7 @@
 
 #include <list>
 #include <map>
+#include <array>
 #include <unordered_map>
 #include <algorithm>
 #include <functional>
@@ -11,6 +12,9 @@
 #include <vector>
 #include <thread>
 #include <set>
+#include <optional>
+#include <initializer_list>
+#include <queue>
 #include "base/Random.h"
 #include "base/Mutex.h"
 #include "base/Core.h"
@@ -44,6 +48,74 @@ template<typename V>
 using Atomic = std::atomic<V>;
 
 using Thread = std::thread;
+
+template<typename T>
+using Optional = std::optional<T>;
+
+template<typename ... T>
+using Tuple = std::tuple<T...>;
+
+template<typename ... T>
+using PriorityQueue = std::priority_queue<T...>;
+
+template<typename T, size_t N>
+struct StackArray
+{
+	size_t size_;
+	std::array<T, N> array;
+	
+	template<typename ... TS>
+	StackArray(TS && ...list) :
+		size_(sizeof...(list)),
+		array {{ std::forward<TS>(list)... }}
+	{
+	}
+
+	auto begin()
+	{
+		return array.begin();
+	}
+	
+	auto end ()
+	{
+		return array.begin() + size_;
+	}
+	
+	auto begin() const
+	{
+		return array.begin();
+	}
+	
+	auto end () const
+	{
+		return array.begin() + size_;
+	}
+	
+	auto front() const
+	{
+		return array.front();
+	}
+
+	auto front()
+	{
+		return array.front();
+	}
+
+	auto empty() const
+	{
+		return array.empty();
+	}
+	
+	auto push_back(T &&t)
+	{
+		debug_assert(size_ < N);
+		array[size_++] = std::move(t);
+	}
+
+	size_t size() const {
+		return size_;
+	}
+} ;
 
 typedef std::chrono::system_clock Clock;
 typedef std::chrono::time_point<Clock> Timepoint;
