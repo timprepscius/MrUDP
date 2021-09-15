@@ -28,8 +28,8 @@ void NetworkPath::sendChallenge(const Vector<Address> &addresses)
 		
 		// TODO:
 		// this should
-		// 1. generate a random number
-		// 2. encrypt the random number with a secret key
+		// 1. generate a random number based on the address
+		// 2. encrypt the address + random number with a secret key
 		// 3. push the random number and the encrypted number on the packet
 		
 		packets.push_back(std::move(packetPath));
