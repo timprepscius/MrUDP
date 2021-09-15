@@ -33,10 +33,14 @@ bool isHandshake(TypeID typeID)
 	return typeID >= H0 && typeID < HANDSHAKE_COMPLETE;
 }
 
+// TODO:
+// these really should be modifications of the typeID for instance typeID & ACK_BIT
+// but it is harder to debug, because of not nice printability
+// I suppose, I will make a "toPrintable(TypeID)" and use that, but for now not.
 inline
 bool isAck(TypeID typeID)
 {
-	return typeID == ACK || typeID == H1 || typeID == H3;
+	return typeID == ACK || typeID == H1 || typeID == H3 || typeID == AUTHENTICATE_RESPONSE;
 }
 
 enum FrameTypeID : uint8_t {

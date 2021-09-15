@@ -25,6 +25,28 @@ struct Probe
 
 	Connection *connection;
 	Timepoint nextProbeTime;
+	
+	// Probe interval is dependent on rtt such that
+	// a probe must be sent before the final retry is determined to have failed
+	// or rather, it must be sent out at the time a packet would be on the last
+	// retry.
+	//
+	// Hmmm, this is not a very clear explanation.
+	//
+	// Basically it goes like this:
+	// Client A connects to server B
+	// Server B sends an update packet X to client A
+	// however client A has changed IP, because of some network path change
+	//
+	// Packet X is going to be retried N times
+	// and after the Nth time expires the connection between the server
+	// and the client will timeout
+	//
+	// To prevent this, the client must send a probe packet at the time
+	// when the packet X's (N-1)th retry.
+	//
+	// Since the retry is based on rtt, and the probe is based on the retry
+	// then the probe is based on rtt.	
 	Duration probeInterval;
 	
 	Probe (Connection *connection_);
@@ -42,10 +64,15 @@ struct Probe
 	void onProbe(const Timepoint &now);
 	
 	// registers when the probe timeout with the imp
-	void registerTimeout ();
+	bool isRegistered = false;
+	void registerTimeout (const Timepoint &at);
 	
 	// decides whether or not to send a probe at a given time
 	void onTimeout();
+	
+	// calculates how much time will elapse until the (last-1) retry of a packet sent exactly when the
+	// last event was was
+	void recalculateProbeTimeout();
 } ;
 
 

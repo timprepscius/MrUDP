@@ -27,7 +27,9 @@ struct NetworkPath
 	
 	Connection *connection;
 	
-	void challengePaths(const Vector<Address> &paths);
+	void sendChallenge(const Vector<Address> &paths);
+	void sendChallengeResponse(Packet &challenge);
+	
 	bool verifyChallengeResponse(Packet &packet, const Address &path);
 	
 	void onReceive(Packet &packet, const Address &from);

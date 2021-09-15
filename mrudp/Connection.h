@@ -95,6 +95,8 @@ struct Connection : StrongThis<Connection>
 	
 	void finishWhenReady ();
 	void finish ();
+	
+	void onRemoteAddressChanged (const Address &remoteAddress);
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK
 	void __debugHook ();

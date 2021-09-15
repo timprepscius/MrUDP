@@ -64,7 +64,7 @@ struct Socket : StrongThis<Socket>
 	StrongPtr<Connection> getConnection();
 
 	Drop drop;
-	void send(const PacketPtr &packet, const Address &to, Connection *connection);
+	void send(const PacketPtr &packet, Connection *connection, const Address *to);
 	void receive(Packet &packet, const Address &from);
 	
 	void listen(void *userData, mrudp_accept_callback_fn acceptCallback, mrudp_close_callback_fn closeCallback);

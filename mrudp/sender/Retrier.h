@@ -105,6 +105,9 @@ struct Retrier
 	// recalculates the retry timeout for the getNextRetry packet
 	void recalculateRetryTimeout ();
 	
+	// calculates the retry duration given an rtt
+	float calculateRetryDuration(float rtt);
+	
 	// does the retry mechanism, after checking that it should be done
 	void onRetryTimeout ();
 };

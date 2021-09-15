@@ -129,16 +129,16 @@ void Socket::close ()
 	closeHandler = nullptr;
 }
 
-void Socket::send(const PacketPtr &packet, const Address &to, Connection *connection)
+void Socket::send(const PacketPtr &packet, Connection *connection, const Address *to)
 {
-	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(to)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id));
+	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id));
 
 	if (drop.shouldDrop())
 	{
-		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(to)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
+		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
 	}
 	
-	imp->send(to, packet, connection);
+	imp->send(packet, connection, to);
 }
 
 Socket::LookUp Socket::getLookUp(Packet &packet)

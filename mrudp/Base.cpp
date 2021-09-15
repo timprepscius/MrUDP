@@ -6,7 +6,7 @@ namespace timprepscius {
 namespace mrudp {
 
 #if defined(MRUDP_SINGLE_CHAR_TRACE)
-#if 0
+#if 1
 
 void xTraceChar_(void *self, uint32_t id, char c)
 {

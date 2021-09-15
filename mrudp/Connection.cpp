@@ -259,13 +259,13 @@ void Connection::send_(const PacketPtr &packet, Address *address)
 		
 		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet_->header.connection) << logVar(packet_->header.type) << logVar(packet_->header.id) << logVar(packet_->dataSize) << " with long ID");
 
-		socket->send(packet_, address ? *address : remoteAddress, this);
+		socket->send(packet_, this, address);
 	}
 	else
 	{
 		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logVar(packet->dataSize));
 
-		socket->send(packet, address ? *address : remoteAddress, this);
+		socket->send(packet, this, address);
 	}
 
 	probe.onSend(socket->service->clock.now());
@@ -313,6 +313,13 @@ ErrorCode Connection::send(const char *buffer, int size, Reliability reliability
 
 	return sender.send((const u8 *)buffer, size, reliability);
 }
+
+void Connection::onRemoteAddressChanged (const Address &remoteAddress_)
+{
+	remoteAddress = remoteAddress_;
+	imp->onRemoteAddressChanged();
+}
+
 
 // -----------------------
 

@@ -24,10 +24,15 @@ struct RTTSimple
 	float duration = maximum;
 	float minimum = 0.005f;
 	
+	float calculate(float duration, float sample)
+	{
+		return std::min(maximum, std::max(minimum, 0.8f * duration + 0.2f * sample));
+	}
+	
 	// Recalculates the rtt duration given a new sample
 	void onSample(float sample)
 	{
-		duration = std::min(maximum, std::max(minimum, 0.8f * duration + 0.2f * sample));
+		duration = calculate(duration, sample);
 	}
 	
 	// Recalculates the rtt duration given a failure, which is evaluated as

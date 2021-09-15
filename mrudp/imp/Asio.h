@@ -135,6 +135,9 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 	void stop ();
 
 	void setTimeout (const String &name, const Timepoint &then, Function<void()> &&f);
+
+	void reacquireConnectedSocket ();
+	void onRemoteAddressChanged();
 	void relocate ();
 } ;
 
@@ -165,7 +168,7 @@ struct SocketImp : StrongThis<SocketImp>
 	void connect(const Address &address);
 	void handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket);
 	
-	void send(const Address &addr, const PacketPtr &packet, Connection *connection);
+	void send(const PacketPtr &packet, Connection *connection, const Address *addr);
 	void sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void sendViaQueue(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void doSend(const StrongPtr<SocketNative> &);

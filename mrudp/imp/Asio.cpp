@@ -296,11 +296,20 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 
 void ConnectionImp::relocate ()
 {
-	connectedSocket = nullptr;
+	reacquireConnectedSocket();
+}
 
+void ConnectionImp::onRemoteAddressChanged ()
+{
+	reacquireConnectedSocket();
+}
+
+void ConnectionImp::reacquireConnectedSocket ()
+{
 	auto parent_ = strong(parent);
 	debug_assert(parent_);
 	
+	connectedSocket = nullptr;
 	if (parent_->socket->imp->options.overlapped_io)
 		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
 }
@@ -588,17 +597,19 @@ void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr
 	);
 }
 
-void SocketImp::send(const Address &addr, const PacketPtr &packet, Connection *connection)
+void SocketImp::send(const PacketPtr &packet, Connection *connection, const Address *address_)
 {
 	auto *socket = &this->socket;
 	
-	if (options.overlapped_io == 1)
+	if (options.overlapped_io == 1 && !address_)
 		socket = &connection->imp->connectedSocket;
 	
+	auto *address = address_ ? address_ : &connection->remoteAddress;
+	
 	if (options.send_via_queue == 1)
-		sendViaQueue(*socket, addr, packet, connection);
+		sendViaQueue(*socket, *address, packet, connection);
 	else
-		sendDirect(*socket, addr, packet, connection);
+		sendDirect(*socket, *address, packet, connection);
 }
 
 void SocketImp::sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)

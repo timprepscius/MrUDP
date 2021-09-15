@@ -12,7 +12,7 @@ NetworkPath::NetworkPath(Connection *connection_) :
 	
 }
 
-void NetworkPath::challengePaths(const Vector<Address> &addresses)
+void NetworkPath::sendChallenge(const Vector<Address> &addresses)
 {
 	// paths can only be two right now
 	// if this changes, you need to modify MultiPacketPath
@@ -38,6 +38,21 @@ void NetworkPath::challengePaths(const Vector<Address> &addresses)
 	connection->sender.sendReliablyMultipath(packets, true);
 }
 
+void NetworkPath::sendChallengeResponse(Packet &packet)
+{
+	auto ack = strong<Packet>();
+	ack->header.type = AUTHENTICATE_RESPONSE;
+	ack->header.id = packet.header.id;
+	
+	// TODO:
+	// this should
+	// 1. pop the random number encrypted number pair
+	// 2. push them on the authentication response pair
+	
+	connection->send(ack);
+}
+
+
 bool NetworkPath::verifyChallengeResponse(Packet &packet, const Address &path)
 {
 	// TODO:
@@ -53,18 +68,22 @@ void NetworkPath::onReceive(Packet &packet, const Address &from)
 {
 	if (from != connection->remoteAddress)
 	{
-		if (packet.header.type != AUTHENTICATE_RESPONSE)
-		{
-			challengePaths(Vector<Address> { connection->remoteAddress, from });
-		}
-		else
+		if (packet.header.type == AUTHENTICATE_RESPONSE)
 		{
 			if (verifyChallengeResponse(packet, from))
 			{
-				// lock some mutex
-				connection->remoteAddress = from;
+				connection->onRemoteAddressChanged(from);
 			}
 		}
+		else
+		{
+			sendChallenge(Vector<Address> { connection->remoteAddress, from });
+		}
+	}
+	
+	if (packet.header.type == AUTHENTICATE_CHALLENGE)
+	{
+		sendChallengeResponse(packet);
 	}
 }
 

@@ -7,6 +7,8 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
+#define NO_THEN(...) if (false)
+
 SCENARIO("network path change")
 {
 	auto numConnectionsToCreate = 1;
@@ -127,111 +129,107 @@ SCENARIO("network path change")
 
 						REQUIRE(remote.packetsReceived == packetsSent);
 						
-						auto l = lock_of(remote.packetsMutex);
-						
-						bool allMatch = std::all_of(
-							remote.packets.begin(), remote.packets.end(),
-							[&packet](auto &v) { return v == packet; }
-						);
-						
-						REQUIRE(allMatch);
-					}
-					
-					WHEN("client sockets moves to new port")
-					{
-						// todo should lock a different mutex?
-						auto l = lock_of(local.connectionsMutex);
-						for (auto &socket: local.sockets)
+						WHEN("client sockets moves to new port")
 						{
-							mrudp_relocate_socket(socket, &anyAddress);
-						}
-						
-						WHEN("packets are sent again")
-						{
-							// clear out variables
 							{
-								auto l = lock_of(remote.packetsMutex);
-								remote.packets.clear();
-								remote.packetsReceived = 0;
-							}
-							
-							for (auto &connection: local.connections)
-							{
-								for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+								// todo should lock a different mutex?
+								auto l = lock_of(local.connectionsMutex);
+								for (auto &socket: local.sockets)
 								{
-									mrudp_send(connection, packet.data(), (int)packet.size(), 1);
-									packetsSent++;
+									mrudp_relocate_socket(socket, &anyAddress);
 								}
 							}
 							
-							THEN("packets show up and are correct")
+							WHEN("packets are sent again")
 							{
-								wait_until(
-									std::chrono::seconds(10),
-									[&]() { return remote.packetsReceived == packetsSent; }
-								);
-
-								REQUIRE(remote.packetsReceived == packetsSent);
-								
-								auto l = lock_of(remote.packetsMutex);
-								
-								bool allMatch = std::all_of(
-									remote.packets.begin(), remote.packets.end(),
-									[&packet](auto &v) { return v == packet; }
-								);
-								
-								REQUIRE(allMatch);
-							}
-						
-						}
-					}
-
-					WHEN("server socket moves to another port")
-					{
-						// todo should lock a different mutex?
-						auto l = lock_of(remote.connectionsMutex);
-						for (auto &socket: remote.sockets)
-						{
-							mrudp_relocate_socket(socket, &anyAddress);
-						}
-						
-						WHEN("packets are sent again")
-						{
-							// clear out variables
-							{
-								auto l = lock_of(remote.packetsMutex);
-								remote.packets.clear();
-								remote.packetsReceived = 0;
-							}
-							
-							for (auto &connection: local.connections)
-							{
-								for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+								// clear out variables
 								{
-									mrudp_send(connection, packet.data(), (int)packet.size(), 1);
-									packetsSent++;
+									auto l = lock_of(remote.packetsMutex);
+									remote.packets.clear();
+									remote.packetsReceived = 0;
+								}
+								
+								for (auto &connection: local.connections)
+								{
+									for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+									{
+										mrudp_send(connection, packet.data(), (int)packet.size(), 1);
+										packetsSent++;
+									}
+								}
+								
+								NO_THEN("packets show up and are correct")
+								{
+									wait_until(
+										std::chrono::seconds(10),
+										[&]() { return remote.packetsReceived == packetsSent; }
+									);
+
+									REQUIRE(remote.packetsReceived == packetsSent);
+									
+									auto l = lock_of(remote.packetsMutex);
+									
+									bool allMatch = std::all_of(
+										remote.packets.begin(), remote.packets.end(),
+										[&packet](auto &v) { return v == packet; }
+									);
+									
+									REQUIRE(allMatch);
+								}
+							
+							}
+						}
+
+						WHEN("server socket moves to another port")
+						{
+							{
+								// todo should lock a different mutex?
+								auto l = lock_of(remote.connectionsMutex);
+								for (auto &socket: remote.sockets)
+								{
+									mrudp_relocate_socket(socket, &anyAddress);
 								}
 							}
 							
-							THEN("packets show up and are correct")
+							WHEN("packets are sent again")
 							{
-								wait_until(
-									std::chrono::seconds(10),
-									[&]() { return remote.packetsReceived == packetsSent; }
-								);
+								// clear out variables
+								{
+									auto l = lock_of(remote.packetsMutex);
+									remote.packets.clear();
+									remote.packetsReceived = 0;
+									packetsSent = 0;
+								}
+								
+								for (auto &connection: local.connections)
+								{
+									for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+									{
+										mrudp_send(connection, packet.data(), (int)packet.size(), 1);
+										packetsSent++;
+									}
+								}
+								
+								THEN("packets show up and are correct")
+								{
+									wait_until(
+										std::chrono::seconds(10),
+										[&]() { return remote.packetsReceived == packetsSent; }
+									);
 
-								REQUIRE(remote.packetsReceived == packetsSent);
-								
-								auto l = lock_of(remote.packetsMutex);
-								
-								bool allMatch = std::all_of(
-									remote.packets.begin(), remote.packets.end(),
-									[&packet](auto &v) { return v == packet; }
-								);
-								
-								REQUIRE(allMatch);
+									REQUIRE(remote.packetsReceived == packetsSent);
+									
+									auto l = lock_of(remote.packetsMutex);
+									
+									bool allMatch = std::all_of(
+										remote.packets.begin(), remote.packets.end(),
+										[&packet](auto &v) { return v == packet; }
+									);
+									
+									REQUIRE(allMatch);
+								}
+							
 							}
-						
 						}
 					}
 
