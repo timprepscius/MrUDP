@@ -63,8 +63,8 @@ SCENARIO("crypto")
 				p.dataSize = 0;
 				auto c = p;
 				
-				REQUIRE(connectionA->onSend(p));
-				REQUIRE(connectionB->onReceive(p));
+				REQUIRE(connectionA->onSend(p) == Keep);
+				REQUIRE(connectionB->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 
@@ -75,8 +75,8 @@ SCENARIO("crypto")
 				p.dataSize = 0;
 				auto c = p;
 				
-				REQUIRE(connectionB->onSend(p));
-				REQUIRE(connectionA->onReceive(p));
+				REQUIRE(connectionB->onSend(p) == Keep);
+				REQUIRE(connectionA->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 			
@@ -87,8 +87,8 @@ SCENARIO("crypto")
 				p.dataSize = 0;
 				auto c = p;
 				
-				REQUIRE(connectionA->onSend(p));
-				REQUIRE(connectionB->onReceive(p));
+				REQUIRE(connectionA->onSend(p) == Keep);
+				REQUIRE(connectionB->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 
@@ -99,8 +99,8 @@ SCENARIO("crypto")
 				p.dataSize = 0;
 				auto c = p;
 				
-				REQUIRE(connectionB->onSend(p));
-				REQUIRE(connectionA->onReceive(p));
+				REQUIRE(connectionB->onSend(p) == Keep);
+				REQUIRE(connectionA->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 			
@@ -112,8 +112,8 @@ SCENARIO("crypto")
 				p.dataSize = 1;
 				auto c = p;
 
-				REQUIRE(connectionA->onSend(p));
-				REQUIRE(connectionB->onReceive(p));
+				REQUIRE(connectionA->onSend(p) == Keep);
+				REQUIRE(connectionB->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 
@@ -125,8 +125,8 @@ SCENARIO("crypto")
 				p.dataSize = 1;
 				auto c =  p;
 
-				REQUIRE(connectionB->onSend(p));
-				REQUIRE(connectionA->onReceive(p));
+				REQUIRE(connectionB->onSend(p) == Keep);
+				REQUIRE(connectionA->onReceive(p) == Keep);
 				REQUIRE(c == p);
 			}
 		}
