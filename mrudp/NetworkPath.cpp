@@ -136,8 +136,17 @@ bool NetworkPath::verifyChallengeResponse(Packet &packet, const Address &path)
 	return true;
 }
 
-void NetworkPath::onReceive(Packet &packet, const Address &from)
+PacketDiscard NetworkPath::onReceive(Packet &packet, const Address &from)
 {
+	// TODO: go through whether to return false(discard) or not
+	// again, think about what it means
+
+	if (packet.header.type == AUTHENTICATE_CHALLENGE)
+	{
+		sendChallengeResponse(packet);
+		return Keep;
+	}
+	else
 	if (from != connection->remoteAddress)
 	{
 		if (packet.header.type == AUTHENTICATE_RESPONSE)
@@ -145,18 +154,18 @@ void NetworkPath::onReceive(Packet &packet, const Address &from)
 			if (verifyChallengeResponse(packet, from))
 			{
 				connection->onRemoteAddressChanged(from);
+				return Keep;
 			}
 		}
 		else
 		{
 			sendChallenge(from);
 		}
+
+		return Discard;
 	}
 	
-	if (packet.header.type == AUTHENTICATE_CHALLENGE)
-	{
-		sendChallengeResponse(packet);
-	}
+	return Keep;
 }
 
 } // namespace

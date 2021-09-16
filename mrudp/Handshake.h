@@ -32,9 +32,9 @@ struct Handshake
 	void initiate();
 	
 	void handlePacket (Packet &packet);
-	
-	void onReceive(Packet &packet);
 	void onHandshakeComplete ();
+
+	PacketDiscard onReceive(Packet &packet);
 } ;
 
 } // namespace

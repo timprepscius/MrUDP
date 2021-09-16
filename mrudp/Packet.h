@@ -112,6 +112,11 @@ struct PacketPath {
 
 using MultiPacketPath = StackArray<PacketPath, 2>;
 
+enum PacketDiscard {
+	Keep,
+	Discard
+} ;
+
 // TODO: these constants, especially size constants should be located somewhere else
 const int MAX_ROUTE_SIZE = 0;
 const int MAX_PACKET_POST_CRYPTO_SIZE = MAX_PACKET_SIZE - MAX_ROUTE_SIZE;

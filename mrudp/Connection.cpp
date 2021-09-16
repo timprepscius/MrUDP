@@ -201,7 +201,7 @@ void Connection::receive(Packet &packet, const Address &remoteAddress)
 	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
 
 #ifdef MRUDP_ENABLE_CRYPTO
-	if (!crypto->onReceive(packet))
+	if (crypto->onReceive(packet) == Discard)
 	{
 		sLogDebug("mrudp::receive", "decryption failed");
 		xTraceChar(this, packet.header.id, '^');
@@ -218,8 +218,13 @@ void Connection::receive(Packet &packet, const Address &remoteAddress)
 	auto now = socket->service->clock.now();
 
 	statistics.onReceive(packet);
-	networkPath.onReceive(packet, remoteAddress);
-	handshake.onReceive(packet);
+
+	if (networkPath.onReceive(packet, remoteAddress) == Discard)
+		return ;
+
+	if (handshake.onReceive(packet) == Discard)
+		return ;
+		
 	probe.onReceive(now);
 	sender.onReceive(packet);
 	receiver.onReceive(packet);
@@ -284,7 +289,7 @@ void Connection::send(const PacketPtr &packet, Address *address)
 	);
 
 #ifdef MRUDP_ENABLE_CRYPTO
-	if (!crypto->onSend(*packet))
+	if (crypto->onSend(*packet) == Discard)
 	{
 		sLogDebug("mrudp::send", "encryption failed");
 		

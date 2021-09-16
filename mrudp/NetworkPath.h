@@ -39,7 +39,7 @@ struct NetworkPath
 	
 	bool verifyChallengeResponse(Packet &packet, const Address &path);
 	
-	void onReceive(Packet &packet, const Address &from);
+	PacketDiscard onReceive(Packet &packet, const Address &from);
 } ;
 
 } // namespace

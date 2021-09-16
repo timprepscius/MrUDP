@@ -37,8 +37,8 @@ struct ConnectionCrypto
 	bool canSend ();
 	bool canReceive ();
 
-	bool onReceive (Packet &packet);
-	bool onSend (Packet &packet);
+	PacketDiscard onReceive (Packet &packet);
+	PacketDiscard onSend (Packet &packet);
 } ;
 
 

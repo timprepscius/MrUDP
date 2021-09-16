@@ -28,27 +28,27 @@ bool ConnectionCrypto::canReceive ()
 	return (bool)localSessionKey;
 }
 	
-bool ConnectionCrypto::onReceive (Packet &packet)
+PacketDiscard ConnectionCrypto::onReceive (Packet &packet)
 {
 	auto &type = packet.header.type;
 	
 	if (type == ENCRYPTED_VIA_PUBLIC_KEY)
 	{
 		if (!host->privateKey || !host->privateKey->decrypt(packet))
-			return false;
+			return Discard;
 	}
 	else
 	if (type == ENCRYPTED_VIA_AES)
 	{
 		if (!localSessionKey || !localSessionKey->decrypt(packet))
-			return false;
+			return Discard;
 	}
 
 	if (type == H0_CLIENT_PUBLIC_KEY || type == H1_CLIENT_PUBLIC_KEY)
 	{
 		RSAPublicKey remotePublicKey_;
 		if (!popData(packet, remotePublicKey_))
-			return false;
+			return Discard;
 			
 		if (!remotePublicKey)
 		{
@@ -60,7 +60,7 @@ bool ConnectionCrypto::onReceive (Packet &packet)
 	{
 		AESKey remoteSessionKey_;
 		if (!popData(packet, remoteSessionKey_))
-			return false;
+			return Discard;
 			
 		if (!remoteSessionKey)
 		{
@@ -68,36 +68,38 @@ bool ConnectionCrypto::onReceive (Packet &packet)
 		}
 	}
 	
-	return true;
+	return Keep;
 }
 
-bool ConnectionCrypto::onSend (Packet &packet)
+PacketDiscard ConnectionCrypto::onSend (Packet &packet)
 {
 	auto &type = packet.header.type;
 
 	if (type == H0_CLIENT_PUBLIC_KEY || type == H1_CLIENT_PUBLIC_KEY)
 	{
 		if (!pushData(packet, *host->publicKey))
-			return false;
+			return Discard;
 	}
 	else
 	if (type == H2_SESSION_KEY || type == H3_SESSION_KEY)
 	{
 		if (!pushData(packet, *localSessionKey))
-			return false;
+			return Discard;
 	}
 	
 	if (remoteSessionKey)
 	{
-		return remoteSessionKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random);
+		if (!remoteSessionKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random))
+			return Discard;
 	}
 	else
 	if (remotePublicKey)
 	{
-		return remotePublicKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random);
+		if (!remotePublicKey->encrypt(packet, MAX_PACKET_POST_CRYPTO_SIZE, *host->random))
+			return Discard;
 	}
 	
-	return true;
+	return Keep;
 }
 
 } // namespace

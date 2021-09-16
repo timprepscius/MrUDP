@@ -111,12 +111,18 @@ void Handshake::handlePacket(Packet &packet)
 	}
 }
 
-void Handshake::onReceive(Packet &packet)
+PacketDiscard Handshake::onReceive(Packet &packet)
 {
+	// TODO:
+	// should the handshake return false(discard) if the handshake has not completed
+	// and we receive a non handshake packet?
+
 	if (!isHandshake(packet.header.type))
-		return;
+		return Keep;
 
 	handlePacket(packet);
+	
+	return Keep;
 }
 
 void Handshake::onHandshakeComplete()
