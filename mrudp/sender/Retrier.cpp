@@ -36,6 +36,13 @@ StrongPtr<Retry> Retrier::getNextRetry()
 	if (window.empty())
 		return nullptr;
 		
+	if (!priority.empty())
+	{
+		auto i = window.find(*priority.begin());
+		debug_assert(i != window.end());
+		return i->second;
+	}
+	
 	return window.begin()->second;
 }
 

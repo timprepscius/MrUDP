@@ -72,18 +72,33 @@ struct AESKey
 	bool decrypt(Packet &packet);
 } ;
 
-const int DefaultRSAKeySize = 1024;
-const int DefaultAESKeySize = 256;
+template<int N>
+struct SHAKey
+{
+	static constexpr int BitSize = N;
+	static constexpr int ByteSize = BitSize / 8;
+	
+	u8 data[ByteSize];
+	
+	bool sign(u8 *data, size_t size, u8 *signature, size_t signatureSize);
+	bool verify(u8 *data, size_t size, u8 *signature, size_t signatureSize);
+} ;
+
+constexpr int DefaultRSAKeySize = 1024;
+constexpr int DefaultAESKeySize = 256;
+constexpr int DefaultSHAKeySize = 256;
 
 using RSAKeyDefault = RSAKey<DefaultRSAKeySize>;
 using AESKeyDefault = AESKey<DefaultAESKeySize>;
 using AESIVDefault = AESIV<DefaultAESKeySize>;
+using SHAKeyDefault = SHAKey<DefaultSHAKeySize>;
 
 } // namespace
 
 struct RSAPublicKey : imp::RSAKeyDefault {};
 struct RSAPrivateKey : imp::RSAKeyDefault {};
 struct AESKey : imp::AESKeyDefault {};
+struct SHAKey : imp::SHAKeyDefault {};
 struct SecureRandom : imp::SecureRandom {};
 
 template<>
@@ -100,6 +115,7 @@ struct RSAPrivatePublicKeyPair
 
 RSAPrivatePublicKeyPair generateRSAPrivatePublicKeyPair(SecureRandom &random);
 StrongPtr<AESKey> generateAESKey (SecureRandom &random);
+StrongPtr<SHAKey> generateSHAKey (SecureRandom &random);
 
 } // namespace
 } // namespace

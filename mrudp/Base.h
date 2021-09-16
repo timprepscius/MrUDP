@@ -59,10 +59,13 @@ template<typename ... T>
 using PriorityQueue = std::priority_queue<T...>;
 
 template<typename T, size_t N>
+using Array = std::array<T, N>;
+
+template<typename T, size_t N>
 struct StackArray
 {
 	size_t size_;
-	std::array<T, N> array;
+	Array<T, N> array;
 	
 	template<typename ... TS>
 	StackArray(TS && ...list) :

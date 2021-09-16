@@ -6,6 +6,7 @@
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
+#include <openssl/sha.h>
 #include <openssl/engine.h>
 
 namespace timprepscius {
@@ -86,7 +87,7 @@ bool construct_(RSAKeyDefault &public_, Vector<u8> &&bytes)
 	return true;
 }
 
-template<>
+//template<>
 bool construct_(SecureRandom &random, RSAKeyDefault &private_, RSAKeyDefault &public_)
 {
 	// generate the private key
@@ -129,7 +130,7 @@ bool construct_(SecureRandom &random, RSAKeyDefault &private_, RSAKeyDefault &pu
 	return true;
 }
 
-template<>
+//template<>
 void destruct_(RSAKeyDefault &key)
 {
 	if (key.i)
@@ -141,7 +142,7 @@ void destruct_(RSAKeyDefault &key)
 
 // ------------------------------------------
 
-template<>
+//template<>
 bool encrypt_(RSAKeyDefault &rsa, const AESKey<DefaultAESKeySize> &in, Vector<u8> &out, SecureRandom &random)
 {
 	// https://www.openssl.org/docs/man1.1.0/man3/EVP_PKEY_encrypt.html
@@ -173,7 +174,7 @@ bool encrypt_(RSAKeyDefault &rsa, const AESKey<DefaultAESKeySize> &in, Vector<u8
 	return true;
 }
 
-template<>
+//template<>
 bool decrypt_(RSAKeyDefault &rsa, const Vector<u8> &in, AESKey<DefaultAESKeySize> &out)
 {
 	auto &i = *rsa.i;
@@ -211,7 +212,7 @@ bool decrypt_(RSAKeyDefault &rsa, const Vector<u8> &in, AESKey<DefaultAESKeySize
 
 using EVP_CIPHER_CTX_ptr = std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
 
-template<>
+//template<>
 bool construct_(SecureRandom &random, AESKeyDefault &key)
 {
 	return random.generate(key.data, key.ByteSize);
@@ -223,7 +224,7 @@ bool construct_(SecureRandom &random, AESIV<N> &iv)
 	return random.generate(iv.data, iv.ByteSize);
 }
 
-template<>
+//template<>
 bool encrypt_(RSAKeyDefault &rsa, Packet &packet, size_t maxPadTo, SecureRandom &random)
 {
 	// generate SHAKeys
@@ -246,7 +247,7 @@ bool encrypt_(RSAKeyDefault &rsa, Packet &packet, size_t maxPadTo, SecureRandom 
 	return true;
 }
 
-template<>
+//template<>
 bool decrypt_(RSAKeyDefault &rsa, Packet &packet)
 {
 	Vector<u8> encryptedAESKey;
@@ -315,7 +316,7 @@ bool popPadding(Packet &packet)
 	return true;
 }
 
-template<>
+//template<>
 bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom &random)
 {
 	// generate the public IV
@@ -390,7 +391,7 @@ bool encrypt_(AESKeyDefault &key, Packet &packet, size_t maxPadTo, SecureRandom 
 	return true;
 }
 
-template<>
+//template<>
 bool decrypt_(AESKeyDefault &key, Packet &packet)
 {
 	AESIVDefault iv;
@@ -455,6 +456,112 @@ bool decrypt_(AESKeyDefault &key, Packet &packet)
 	return true;
 }
 
+// -----------------
+
+using EVP_MD_CTX_ptr = std::unique_ptr<EVP_MD_CTX, decltype(&::EVP_MD_CTX_free)>;
+
+//template<>
+bool construct_(SecureRandom &random, SHAKeyDefault &key)
+{
+	return random.generate(key.data, key.ByteSize);
+}
+
+bool sign_(SHAKeyDefault &key, u8 *data, size_t size, u8 *signature, size_t signatureSize)
+{
+	auto doCrypto = true;
+	if (doCrypto)
+	{
+		EVP_MD_CTX_ptr ctx_ = EVP_MD_CTX_ptr(EVP_MD_CTX_new(), ::EVP_MD_CTX_free);
+		auto ctx = ctx_.get();
+		
+		if (!ctx)
+			return false;
+
+		// I believe, that because BitSize is a constexpr, one of the below statements will
+		// optimized out
+		if (key.BitSize == 256)
+		{
+			if(SSL_FAIL(EVP_DigestInit_ex(ctx, EVP_sha256(), NULL)))
+				return false;
+		}
+		else
+		if (key.BitSize == 128)
+		{
+			if(SSL_FAIL(EVP_DigestInit_ex(ctx, EVP_sha1(), NULL)))
+				return false;
+		}
+		else
+		{
+			return false;
+		}
+
+		if(SSL_FAIL(EVP_DigestUpdate(ctx, data, size)))
+			return false;
+
+		memset(signature, 0, signatureSize);
+		unsigned int signatureSize_ = signatureSize;
+		if(SSL_FAIL(EVP_DigestFinal_ex(ctx, signature, &signatureSize_)))
+			return false;
+			
+		if (signatureSize_ != signatureSize)
+			return false;
+	}
+
+	return true;
+}
+
+//template<>
+bool verify_(SHAKeyDefault &key, u8 *data, size_t size, u8 *compare, size_t compareSize)
+{
+	auto doCrypto = true;
+	if (doCrypto)
+	{
+		EVP_MD_CTX_ptr ctx_ = EVP_MD_CTX_ptr(EVP_MD_CTX_new(), ::EVP_MD_CTX_free);
+		auto ctx = ctx_.get();
+		
+		if (!ctx)
+			return false;
+
+		// I believe, that because BitSize is a constexpr, one of the below statements will
+		// optimized out
+		if (key.BitSize == 256)
+		{
+			if(SSL_FAIL(EVP_DigestInit_ex(ctx, EVP_sha256(), NULL)))
+				return false;
+		}
+		else
+		if (key.BitSize == 128)
+		{
+			if(SSL_FAIL(EVP_DigestInit_ex(ctx, EVP_sha1(), NULL)))
+				return false;
+		}
+		else
+		{
+			return false;
+		}
+
+		if(SSL_FAIL(EVP_DigestUpdate(ctx, data, size)))
+			return false;
+
+		u8 *signature = (u8 *)alloca(key.ByteSize);
+		unsigned int signatureSize_ = key.ByteSize;
+		memset(signature, 0, signatureSize_);
+		
+		if(SSL_FAIL(EVP_DigestFinal_ex(ctx, signature, &signatureSize_)))
+			return false;
+			
+		if (signatureSize_ != compareSize)
+			return false;
+			
+		if (memcmp(signature, compare, compareSize) != 0)
+			return false;
+	}
+
+	return true;
+}
+
+// -----------------
+
 } // namespace
 
 template<>
@@ -491,6 +598,13 @@ StrongPtr<AESKey> generateAESKey (SecureRandom &random)
 	return aesKey;
 }
 
+StrongPtr<SHAKey> generateSHAKey (SecureRandom &random)
+{
+	auto shaKey = strong<SHAKey>();
+	imp::construct_(random, *shaKey);
+
+	return shaKey;
+}
 
 } // namespace
 } // namespace

@@ -9,6 +9,7 @@ struct RSAPublicKey;
 struct RSAPrivateKey;
 struct AESKey;
 struct SecureRandom;
+struct SHAKey;
 
 struct HostCrypto
 {

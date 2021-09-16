@@ -2,6 +2,7 @@
 
 #include "Packet.h"
 #include "base/Core.h"
+#include "Crypto.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -27,8 +28,14 @@ struct NetworkPath
 	
 	Connection *connection;
 	
-	void sendChallenge(const Vector<Address> &paths);
-	void sendChallengeResponse(Packet &challenge);
+#ifdef MRUDP_ENABLE_CRYPTO
+	StrongPtr<SHAKey> signer;
+#endif
+	
+	typedef uint64_t Time;
+	
+	bool sendChallenge(const Address &path);
+	bool sendChallengeResponse(Packet &challenge);
 	
 	bool verifyChallengeResponse(Packet &packet, const Address &path);
 	
