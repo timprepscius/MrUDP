@@ -84,6 +84,7 @@ add_executable(MrUDP-Tests
     tests/Connections.cpp
     tests/ConnectionTimesOutAtBeginning.cpp
     tests/MaximumTransferRate.cpp
+    tests/NetworkPathChange.cpp
     tests/PacketID.cpp
     tests/StandaloneCore.cpp
     tests/Streams.cpp
