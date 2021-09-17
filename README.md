@@ -28,3 +28,4 @@ make
 ```
 
 ## In Progress
+  * Some cleanup, renamings
