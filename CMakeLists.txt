@@ -43,6 +43,7 @@ add_library(MrUDP STATIC
     mrudp/Base.cpp
     mrudp/Connection.cpp
     mrudp/Handshake.cpp
+    mrudp/NetworkPath.cpp
     mrudp/Packet.cpp
     mrudp/Service.cpp
     mrudp/Socket.cpp
@@ -55,6 +56,7 @@ add_library(MrUDP STATIC
     mrudp/sender/Retrier.cpp
     mrudp/sender/Sender.cpp
     mrudp/sender/SendQueue.cpp
+    mrudp/receiver/UnreliableReceiveQueue.cpp
 )
 
 if(USE_CRYPTO)
