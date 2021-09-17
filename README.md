@@ -14,8 +14,9 @@ MrUDP has many benefits when compared to TCP:
   * One socket can both accept and connect.
   * Encryption using OpenSSL: RSA Handshake -> AES Session Keys
   * Send coalescing via contiguous data frames or a continuous stream
-  * Extremely small code base
+  * Survives a change in the clients' IP address or port.
   * Provided backend uses boost asio for cross platform sockets.
+  * Extremely small code base
   
 ## Building
 ```
@@ -27,9 +28,3 @@ make
 ```
 
 ## In Progress
-  
-  * Survives a change in the clients' IP address or port.
-  
-  It is unclear to me how I want to implement this.  It is easy to implement so that it works, 
-  but it seems difficult to implement and prevent MITM attacks.
-  
