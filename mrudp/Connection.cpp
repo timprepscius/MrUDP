@@ -6,7 +6,9 @@
 namespace timprepscius {
 namespace mrudp {
 
-static std::atomic<size_t> NumConnection = 0;
+#ifdef LOG_DEBUG
+	static std::atomic<size_t> NumConnection = 0;
+#endif
 
 Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_) :
 	socket(socket_),
@@ -24,7 +26,10 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 		crypto = strong<ConnectionCrypto>(socket->service->crypto);
 	#endif
 
-	sLogDebug("mrudp::life_cycle", logOfThis(this) << ++NumConnection);
+	#ifdef LOG_DEBUG
+		++NumConnection;
+	#endif
+	sLogDebug("mrudp::life_cycle", logOfThis(this) << NumConnection);
 	xLogDebug(logOfThis(this) << logLabel("socket connection") << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)));
 }
 
@@ -32,32 +37,49 @@ Connection::~Connection ()
 {
 	xTraceChar(this, 0, '~');
 	
+	#ifdef LOG_DEBUG
+		--NumConnection;
+	#endif
 
 	xLogDebug(logOfThis(this));
-	sLogDebug("mrudp::life_cycle", logOfThis(this) << --NumConnection);
+	sLogDebug("mrudp::life_cycle", logOfThis(this) << NumConnection);
+	sLogDebug("com::closes", logOfThis(this) << NumConnection)
 	
 	imp = nullptr;
 }
 
-void Connection::openUser(const ConnectionOptions *options_, void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_)
+void Connection::openUser(const ConnectionOptions *options_, void *userData_, mrudp_receive_callback &&receiveHandler_, mrudp_close_callback &&closeHandler_)
 {
 	if (options_)
 		options = merge(*options_, options);
 
-	auto lock = lock_of(userDataMutex);
-	
-	userData = userData_;
-	receiveHandler = receiveHandler_;
-	closeHandler = closeHandler_;
+	auto expected = true;
+	if (userDataDisposed.compare_exchange_strong(expected, false))
+	{
+		userData = userData_;
+		receiveHandler = std::move(receiveHandler_);
+		closeHandler = std::move(closeHandler_);
+	}
 }
 
-void Connection::closeUser ()
+void Connection::closeUser (mrudp_event_t event)
 {
-	auto lock = lock_of(userDataMutex);
-	
-	userData = nullptr;
-	receiveHandler = nullptr;
-	closeHandler = nullptr;
+	auto expected = false;
+	if (userDataDisposed.compare_exchange_strong(expected, true))
+	{
+		auto closeHandler_ = std::move(closeHandler);
+		auto userData_ = std::move(userData);
+			
+		userData = nullptr;
+		closeHandler = nullptr;
+		receiveHandler = nullptr;
+
+		if (closeHandler_)
+		{
+			xTraceChar(this, 0, '*');
+			closeHandler_(userData_, event);
+		}
+	}
 }
 
 void Connection::open ()
@@ -147,29 +169,12 @@ void Connection::close (mrudp_event_t event)
 {
 	xTraceChar(this, 0, '#');
 
-	xLogDebug(logOfThis(this) << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) logVar(closeHandler) << logVar(userData));
+	xLogDebug(logOfThis(this) << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(userData));
 
 	auto expected = false;
 	if (closed.compare_exchange_strong(expected, true))
 	{
-		mrudp_close_callback_fn closeHandler_ = nullptr;
-		void *userData_ = nullptr;
-
-		{
-			auto lock = lock_of(userDataMutex);
-			closeHandler_ = std::move(closeHandler);
-			userData_ = std::move(userData);
-				
-			userData = nullptr;
-			closeHandler = nullptr;
-			receiveHandler = nullptr;
-		}
-
-		if (closeHandler_)
-		{
-			xTraceChar(this, 0, '*');
-			closeHandler_(userData_, event);
-		}
+		closeUser(event);
 			
 		finishWhenReady();
 	}

@@ -32,6 +32,7 @@ struct Socket : StrongThis<Socket>
 
 	bool closeRequested = false;
 	void close ();
+	void closeUser ();
 	
 	Set<ShortConnectionID> shortConnectionIDs;
 	ShortConnectionID generateShortConnectionID ();
@@ -40,9 +41,11 @@ struct Socket : StrongThis<Socket>
 	LongConnectionID generateLongConnectionID ();
 	
 	Mutex userDataMutex;
+	Atomic<bool> userDataDisposed = true;
+
 	void *userData = nullptr;
-	mrudp_accept_callback_fn acceptHandler = nullptr;
-	mrudp_close_callback_fn closeHandler = nullptr;
+	mrudp_accept_callback acceptHandler;
+	mrudp_close_callback closeHandler;
 	
 	struct LookUp
 	{
@@ -67,14 +70,14 @@ struct Socket : StrongThis<Socket>
 	void send(const PacketPtr &packet, Connection *connection, const Address *to);
 	void receive(Packet &packet, const Address &from);
 	
-	void listen(void *userData, mrudp_accept_callback_fn acceptCallback, mrudp_close_callback_fn closeCallback);
+	void listen(void *userData, mrudp_accept_callback &&acceptCallback, mrudp_close_callback &&closeCallback);
 	
 	StrongPtr<Connection> connect(
 		const Address &address,
 		const ConnectionOptions *options,
 		void *userData,
-		mrudp_receive_callback_fn receiveCallback,
-		mrudp_close_callback_fn eventCallback
+		mrudp_receive_callback &&receiveCallback,
+		mrudp_close_callback &&eventCallback
 	);
 	
 	Address getLocalAddress();

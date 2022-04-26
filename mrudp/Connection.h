@@ -54,14 +54,14 @@ struct Connection : StrongThis<Connection>
 #endif
 
 	// data for callbacks
-	Mutex userDataMutex;
 	void *userData = nullptr;
-	mrudp_receive_callback_fn receiveHandler = nullptr;
-	mrudp_close_callback_fn closeHandler = nullptr;
+	mrudp_receive_callback receiveHandler;
+	mrudp_close_callback closeHandler;
 	mrudp_event_t closeReason = MRUDP_EVENT_CLOSED;
 
 	// state data
 	Atomic<bool> closed = false;
+	Atomic<bool> userDataDisposed = true;
 
 	Connection(
 		const StrongPtr<Socket> &socket_,
@@ -73,8 +73,8 @@ struct Connection : StrongThis<Connection>
 
 	ErrorCode send(const char *buffer, int size, Reliability reliable);
 
-	void openUser(const ConnectionOptions *options, void *userData_, mrudp_receive_callback_fn receiveHandler_, mrudp_close_callback_fn closeHandler_);
-	void closeUser ();
+	void openUser(const ConnectionOptions *options, void *userData_, mrudp_receive_callback &&receiveHandler_, mrudp_close_callback &&closeHandler_);
+	void closeUser (mrudp_event_t event);
 
 	void open ();
 

@@ -16,9 +16,8 @@ Socket::~Socket ()
 {
 	imp->close();
 	imp = nullptr;
-	
-	if (closeHandler)
-		closeHandler(userData, MRUDP_EVENT_CLOSED);
+
+	closeUser();
 }
 
 void Socket::open (const Address &address)
@@ -50,19 +49,23 @@ LongConnectionID Socket::generateLongConnectionID()
 	return service->random.next<LongConnectionID>();
 }
 
-void Socket::listen(void *userData_, mrudp_accept_callback_fn acceptHandler_, mrudp_close_callback_fn closeHandler_)
+void Socket::listen(void *userData_, mrudp_accept_callback &&acceptHandler_, mrudp_close_callback &&closeHandler_)
 {
-	userData = userData_;
-	acceptHandler = acceptHandler_;
-	closeHandler = closeHandler_;
+	auto expected = true;
+	if (userDataDisposed.compare_exchange_strong(expected, false))
+	{
+		userData = userData_;
+		acceptHandler = std::move(acceptHandler_);
+		closeHandler = std::move(closeHandler_);
+	}
 }
 
 StrongPtr<Connection> Socket::connect(
 	const Address &remoteAddress,
 	const ConnectionOptions *options,
 	void *userData,
-	mrudp_receive_callback_fn receiveHandler_,
-	mrudp_close_callback_fn closeHandler_
+	mrudp_receive_callback &&receiveHandler_,
+	mrudp_close_callback &&closeHandler_
 )
 {
 	auto connection = strong<Connection>(
@@ -72,7 +75,7 @@ StrongPtr<Connection> Socket::connect(
 		generateShortConnectionID()
 	);
 	
-	connection->openUser(options, userData, receiveHandler_, closeHandler_);
+	connection->openUser(options, userData, std::move(receiveHandler_), std::move(closeHandler_));
 
 	insert(connection);
 	connection->open();
@@ -124,9 +127,22 @@ void Socket::erase(Connection *connection)
 void Socket::close ()
 {
 	auto lock = lock_of(userDataMutex);
-	userData = nullptr;
-	acceptHandler = nullptr;
-	closeHandler = nullptr;
+	
+	closeUser();
+}
+
+void Socket::closeUser ()
+{
+	auto expected = false;
+	if (userDataDisposed.compare_exchange_strong(expected, true))
+	{
+		if (closeHandler)
+			closeHandler(userData, MRUDP_EVENT_CLOSED);
+
+		userData = nullptr;
+		acceptHandler = nullptr;
+		closeHandler = nullptr;
+	}
 }
 
 void Socket::send(const PacketPtr &packet, Connection *connection, const Address *to)

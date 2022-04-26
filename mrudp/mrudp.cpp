@@ -1,4 +1,5 @@
 #include "mrudp.h"
+#include "mrudp.hpp"
 #include "Socket.h"
 #include "Connection.h"
 #include "Implementation.h"
@@ -34,16 +35,26 @@ mrudp_socket_t mrudp_socket(
 mrudp_error_code_t mrudp_listen(
 	mrudp_socket_t socket_,
 	void *userData,
-	mrudp_accept_callback_fn acceptCallback,
-	mrudp_close_callback_fn closeCallback
+	mrudp_accept_callback &&acceptCallback,
+	mrudp_close_callback &&closeCallback
 )
 {
 	auto socket = toNative(socket_);
 	if (!socket)
 		return MRUDP_ERROR_GENERAL_FAILURE;
 	
-	socket->listen(userData, acceptCallback, closeCallback);
+	socket->listen(userData, std::move(acceptCallback), std::move(closeCallback));
 	return MRUDP_OK;
+}
+
+mrudp_error_code_t mrudp_listen(
+	mrudp_socket_t socket_,
+	void *userData,
+	mrudp_accept_callback_fn acceptCallback,
+	mrudp_close_callback_fn closeCallback
+)
+{
+	return mrudp_listen(socket_, userData, mrudp_accept_callback(acceptCallback), mrudp_close_callback(closeCallback));
 }
 
 mrudp_error_code_t mrudp_close_connection(mrudp_connection_t connection_)
@@ -55,7 +66,7 @@ mrudp_error_code_t mrudp_close_connection(mrudp_connection_t connection_)
 	xLogDebug(logVar(connection));
 
 	connection->close();
-	connection->closeUser();
+	connection->closeUser(MRUDP_EVENT_CLOSED);
 	
 	deleteHandle((ConnectionHandle)connection_);
 
@@ -148,6 +159,16 @@ mrudp_error_code_t mrudp_close_socket_native(mrudp_socket_t socket_)
 mrudp_error_code_t mrudp_accept(
 	mrudp_connection_t connection_,
 	void *userData,
+	mrudp_receive_callback &&receiveHandler,
+	mrudp_close_callback &&closeHandler
+)
+{
+	return mrudp_accept_ex(connection_, nullptr, userData, std::move(receiveHandler), std::move(closeHandler));
+}
+
+mrudp_error_code_t mrudp_accept(
+	mrudp_connection_t connection_,
+	void *userData,
 	mrudp_receive_callback_fn receiveHandler,
 	mrudp_close_callback_fn closeHandler
 )
@@ -159,17 +180,29 @@ mrudp_error_code_t mrudp_accept_ex(
 	mrudp_connection_t connection_,
 	const mrudp_connection_options_t *options,
 	void *userData,
-	mrudp_receive_callback_fn receiveHandler,
-	mrudp_close_callback_fn closeHandler
+	mrudp_receive_callback &&receiveHandler,
+	mrudp_close_callback &&closeHandler
 )
 {
 	auto connection = toNative(connection_);
 	if (!connection)
 		return MRUDP_ERROR_GENERAL_FAILURE;
 
-	connection->openUser(options, userData, receiveHandler, closeHandler);
+	connection->openUser(options, userData, std::move(receiveHandler), std::move(closeHandler));
 	
 	return MRUDP_OK;
+}
+
+
+mrudp_error_code_t mrudp_accept_ex(
+	mrudp_connection_t connection_,
+	const mrudp_connection_options_t *options,
+	void *userData,
+	mrudp_receive_callback_fn receiveHandler,
+	mrudp_close_callback_fn closeHandler
+)
+{
+	return mrudp_accept_ex(connection_, options, userData, mrudp_receive_callback(receiveHandler), mrudp_close_callback(closeHandler));
 }
 
 mrudp_connection_t mrudp_connect(
@@ -183,6 +216,17 @@ mrudp_connection_t mrudp_connect(
 	return mrudp_connect_ex(socket_, remoteAddress, nullptr, userData, receiveCallback, eventCallback);
 }
 
+mrudp_connection_t mrudp_connect(
+	mrudp_socket_t socket_,
+	const mrudp_addr_t *remoteAddress,
+	void *userData,
+	mrudp_receive_callback &&receiveCallback,
+	mrudp_close_callback &&eventCallback
+)
+{
+	return mrudp_connect_ex(socket_, remoteAddress, nullptr, userData, std::move(receiveCallback), std::move(eventCallback));
+}
+
 mrudp_connection_t mrudp_connect_ex(
 	mrudp_socket_t socket_,
 	const mrudp_addr_t *remoteAddress,
@@ -193,13 +237,26 @@ mrudp_connection_t mrudp_connect_ex(
 	mrudp_close_callback_fn eventCallback
 )
 {
+	return mrudp_connect_ex(socket_, remoteAddress, options, userData, mrudp_receive_callback(receiveCallback), mrudp_close_callback(eventCallback));
+}
+
+mrudp_connection_t mrudp_connect_ex(
+	mrudp_socket_t socket_,
+	const mrudp_addr_t *remoteAddress,
+	const mrudp_connection_options_t *options,
+	
+	void *userData,
+	mrudp_receive_callback &&receiveCallback,
+	mrudp_close_callback &&eventCallback
+)
+{
 	auto socket = toNative(socket_);
 	if (!socket)
 		return nullptr;
 
 	xLogDebug(logVar(socket) << logVar(userData));
 	
-	auto connection = socket->connect(*remoteAddress, options, userData, receiveCallback, eventCallback);
+	auto connection = socket->connect(*remoteAddress, options, userData, std::move(receiveCallback), std::move(eventCallback));
 	
 	return newHandle(connection);
 }
@@ -254,6 +311,11 @@ void mrudp_close_service(mrudp_service_t service_, int waitForFinish)
 }
 
 mrudp_error_code_t mrudp_resolve(mrudp_service_t service_, const char *address, mrudp_resolve_callback_fn callback, void *userData)
+{
+	return mrudp_resolve(service_, address, mrudp_resolve_callback(callback), userData);
+}
+
+mrudp_error_code_t mrudp_resolve(mrudp_service_t service_, const char *address, mrudp_resolve_callback &&callback, void *userData)
 {
 	auto service = toNative(service_);
 	if (!service)

@@ -70,7 +70,7 @@ endif()
 
 target_include_directories(MrUDP
     PUBLIC 
-        ${PROJECT_SOURCE_DIR}/mrudp
+        ${PROJECT_SOURCE_DIR}
 )
 
 
@@ -96,11 +96,33 @@ if(USE_CRYPTO)
 		tests/Crypto.cpp
 	)
 else()
+endif()
 
+
+# Add an executable with the above sources
+add_executable(MrUDP-Examples
+    examples/Run.cpp
+    examples/EchoClient.cpp
+    examples/EchoClient.c
+    examples/EchoServer.cpp
+    examples/EchoServer.c
+)
+
+if(USE_CRYPTO)
+	target_sources(MrUDP-Examples PRIVATE
+		tests/Crypto.cpp
+	)
+else()
 endif()
 
 # link the new hello_library target with the hello_binary target
 target_link_libraries( MrUDP-Tests
     PRIVATE 
+        MrUDP
+)
+
+# link the new hello_library target with the hello_binary target
+target_link_libraries( MrUDP-Examples
+    PRIVATE
         MrUDP
 )

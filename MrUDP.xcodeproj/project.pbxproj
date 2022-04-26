@@ -8,8 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		F61D252526D0286A00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */; };
+		F61E17012703483300E69317 /* EchoServer.c in Sources */ = {isa = PBXBuildFile; fileRef = F61E16F52703478700E69317 /* EchoServer.c */; };
+		F61E17062703B01700E69317 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
+		F61E17082703B03000E69317 /* libCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F61E17072703B03000E69317 /* libCore.a */; };
 		F61FD09526F1566300F58003 /* NetworkPathChange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61FD09426F153F800F58003 /* NetworkPathChange.cpp */; };
 		F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634A8EB26A613AC00869A6F /* Connections.cpp */; };
+		F639D07628181F830031D309 /* EchoClient.c in Sources */ = {isa = PBXBuildFile; fileRef = F639D07528181F830031D309 /* EchoClient.c */; };
+		F639D078281820E00031D309 /* EchoClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F639D077281820DF0031D309 /* EchoClient.cpp */; };
 		F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2626A4E128001C2E1E /* Socket.cpp */; };
 		F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3426A4E128001C2E1E /* Packet.cpp */; };
 		F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3326A4E128001C2E1E /* mrudp.cpp */; };
@@ -20,7 +25,6 @@
 		F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
 		F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
 		F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3126A4E128001C2E1E /* SendQueue.cpp */; };
-		F64AC0F126A63FAE001829A0 /* IDGenerator.inl in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* IDGenerator.inl */; };
 		F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3A26A4E128001C2E1E /* Receiver.cpp */; };
 		F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */; };
 		F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2226A4E128001C2E1E /* Probe.cpp */; };
@@ -36,7 +40,6 @@
 		F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2926A4E128001C2E1E /* Sender.cpp */; };
 		F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2A26A4E128001C2E1E /* Retrier.cpp */; };
 		F6915A5826A4E128001C2E1E /* SendQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2B26A4E128001C2E1E /* SendQueue.h */; };
-		F6915A5926A4E128001C2E1E /* IDGenerator.inl in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2C26A4E128001C2E1E /* IDGenerator.inl */; };
 		F6915A5A26A4E128001C2E1E /* RTT.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2D26A4E128001C2E1E /* RTT.h */; };
 		F6915A5B26A4E128001C2E1E /* Sender.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2E26A4E128001C2E1E /* Sender.h */; };
 		F6915A5C26A4E129001C2E1E /* Retrier.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A2F26A4E128001C2E1E /* Retrier.h */; };
@@ -78,12 +81,22 @@
 		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */; };
+		F6B6AD882711A422006A7726 /* Echo.h in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD872711A422006A7726 /* Echo.h */; };
+		F6B6AD8A2711A451006A7726 /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD892711A451006A7726 /* Run.cpp */; };
+		F6B6AD8B2711A48B006A7726 /* EchoServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61E17022703AA3B00E69317 /* EchoServer.cpp */; };
 		F6BEFDA526CF206D008EB30E /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */; };
 		F6BEFDA626CF206D008EB30E /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */; };
 		F6FB582E26A9F6EB00C24EAA /* StandaloneCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F61E17042703B01100E69317 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6915A1426A4E107001C2E1E;
+			remoteInfo = MrUDP;
+		};
 		F6915A8026A4E27F001C2E1E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
@@ -94,6 +107,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F61E16F8270347E400E69317 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		F6915A7726A4E277001C2E1E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,9 +137,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F611E489270F2CFA0038D6D4 /* mrudp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mrudp.hpp; sourceTree = "<group>"; };
 		F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionTimesOutAtBeginning.cpp; sourceTree = "<group>"; };
+		F61E16F52703478700E69317 /* EchoServer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = EchoServer.c; sourceTree = "<group>"; };
+		F61E16FA270347E400E69317 /* MrUDP-Examples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Examples"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F61E17022703AA3B00E69317 /* EchoServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoServer.cpp; sourceTree = "<group>"; };
+		F61E17072703B03000E69317 /* libCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F61FD09426F153F800F58003 /* NetworkPathChange.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkPathChange.cpp; sourceTree = "<group>"; };
 		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
+		F639D07528181F830031D309 /* EchoClient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = EchoClient.c; sourceTree = "<group>"; };
+		F639D077281820DF0031D309 /* EchoClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoClient.cpp; sourceTree = "<group>"; };
 		F66B0ACB26B0338C0055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
 		F66B0ACD26B03A3A0055F46D /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F66B0AD126B03D080055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
@@ -182,9 +211,12 @@
 		F6A176BD26B1C0C4003708D8 /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F6A176BF26B3497F003708D8 /* Handshake.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Handshake.h; sourceTree = "<group>"; };
 		F6A176C326B41B2C003708D8 /* Handshake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Handshake.cpp; sourceTree = "<group>"; };
+		F6AE8D86278CA33700BF1EA9 /* Precompile.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Precompile.pch; sourceTree = "<group>"; };
 		F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnreliableReceiveQueue.cpp; sourceTree = "<group>"; };
 		F6AF314926DE51FE003FCCAE /* UnreliableReceiveQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnreliableReceiveQueue.h; sourceTree = "<group>"; };
 		F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Streams.cpp; sourceTree = "<group>"; };
+		F6B6AD872711A422006A7726 /* Echo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Echo.h; sourceTree = "<group>"; };
+		F6B6AD892711A451006A7726 /* Run.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Run.cpp; sourceTree = "<group>"; };
 		F6BEFDA326CF1A85008EB30E /* Statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statistics.h; sourceTree = "<group>"; };
 		F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Statistics.cpp; sourceTree = "<group>"; };
 		F6FB581C26A9F6A100C24EAA /* StandaloneCore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StandaloneCore.cpp; sourceTree = "<group>"; };
@@ -193,6 +225,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F61E16F7270347E400E69317 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F61E17082703B03000E69317 /* libCore.a in Frameworks */,
+				F61E17062703B01700E69317 /* libMrUDP.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F6915A1326A4E107001C2E1E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -218,6 +259,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F61E16F42703476400E69317 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				F6B6AD892711A451006A7726 /* Run.cpp */,
+				F6B6AD872711A422006A7726 /* Echo.h */,
+				F639D07528181F830031D309 /* EchoClient.c */,
+				F639D077281820DF0031D309 /* EchoClient.cpp */,
+				F61E16F52703478700E69317 /* EchoServer.c */,
+				F61E17022703AA3B00E69317 /* EchoServer.cpp */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
 		F676C52326A78AE3001559F4 /* imp */ = {
 			isa = PBXGroup;
 			children = (
@@ -252,6 +306,7 @@
 				F6915A7426A4E181001C2E1E /* Makefile.def */,
 				F6915A1C26A4E128001C2E1E /* Makefile.project */,
 				F6915A1D26A4E128001C2E1E /* mrudp */,
+				F61E16F42703476400E69317 /* examples */,
 				F6915A4626A4E128001C2E1E /* tests */,
 				F6915A1626A4E107001C2E1E /* Products */,
 				F6915A8226A4E288001C2E1E /* Frameworks */,
@@ -264,6 +319,7 @@
 				F6915A1526A4E107001C2E1E /* libMrUDP.a */,
 				F6915A7926A4E277001C2E1E /* MrUDP-Tests */,
 				F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */,
+				F61E16FA270347E400E69317 /* MrUDP-Examples */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -291,6 +347,8 @@
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
 				F6915A1F26A4E128001C2E1E /* mrudp.h */,
+				F611E489270F2CFA0038D6D4 /* mrudp.hpp */,
+				F6AE8D86278CA33700BF1EA9 /* Precompile.pch */,
 				F6915A3426A4E128001C2E1E /* Packet.cpp */,
 				F6915A3826A4E128001C2E1E /* Packet.h */,
 				F6915A3F26A4E128001C2E1E /* Packet.inl */,
@@ -375,6 +433,7 @@
 		F6915A8226A4E288001C2E1E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F61E17072703B03000E69317 /* libCore.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -413,6 +472,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		F61E16F9270347E400E69317 /* MrUDP-Examples */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F61E16FE270347E400E69317 /* Build configuration list for PBXNativeTarget "MrUDP-Examples" */;
+			buildPhases = (
+				F61E16F6270347E400E69317 /* Sources */,
+				F61E16F7270347E400E69317 /* Frameworks */,
+				F61E16F8270347E400E69317 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F61E17052703B01100E69317 /* PBXTargetDependency */,
+			);
+			name = "MrUDP-Examples";
+			productName = "MrUDP-Examples";
+			productReference = F61E16FA270347E400E69317 /* MrUDP-Examples */;
+			productType = "com.apple.product-type.tool";
+		};
 		F6915A1426A4E107001C2E1E /* MrUDP */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F6915A1926A4E107001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP" */;
@@ -474,6 +551,9 @@
 				LastSwiftUpdateCheck = 1250;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					F61E16F9270347E400E69317 = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
 					F6915A1426A4E107001C2E1E = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
@@ -501,17 +581,30 @@
 				F6915A1426A4E107001C2E1E /* MrUDP */,
 				F6915A9726A4E346001C2E1E /* MrUDP-iOS */,
 				F6915A7826A4E277001C2E1E /* MrUDP-Tests */,
+				F61E16F9270347E400E69317 /* MrUDP-Examples */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F61E16F6270347E400E69317 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F639D07628181F830031D309 /* EchoClient.c in Sources */,
+				F639D078281820E00031D309 /* EchoClient.cpp in Sources */,
+				F6B6AD8A2711A451006A7726 /* Run.cpp in Sources */,
+				F6B6AD8B2711A48B006A7726 /* EchoServer.cpp in Sources */,
+				F61E17012703483300E69317 /* EchoServer.c in Sources */,
+				F6B6AD882711A422006A7726 /* Echo.h in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F6915A1226A4E107001C2E1E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				F6960F4A26E926A7007C3EB5 /* NetworkPath.cpp in Sources */,
-				F6915A5926A4E128001C2E1E /* IDGenerator.inl in Sources */,
 				F6915A5626A4E128001C2E1E /* Sender.cpp in Sources */,
 				F6BEFDA626CF206D008EB30E /* Statistics.cpp in Sources */,
 				F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */,
@@ -556,7 +649,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6960F4926E926A7007C3EB5 /* NetworkPath.cpp in Sources */,
-				F64AC0F126A63FAE001829A0 /* IDGenerator.inl in Sources */,
 				F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */,
 				F6BEFDA526CF206D008EB30E /* Statistics.cpp in Sources */,
 				F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */,
@@ -582,6 +674,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F61E17052703B01100E69317 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6915A1426A4E107001C2E1E /* MrUDP */;
+			targetProxy = F61E17042703B01100E69317 /* PBXContainerItemProxy */;
+		};
 		F6915A8126A4E27F001C2E1E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F6915A1426A4E107001C2E1E /* MrUDP */;
@@ -590,6 +687,38 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		F61E16FF270347E400E69317 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					.,
+					../Libraries/sdk/include,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F61E1700270347E400E69317 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					.,
+					../Libraries/sdk/include,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		F6915A1726A4E107001C2E1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -802,6 +931,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F61E16FE270347E400E69317 /* Build configuration list for PBXNativeTarget "MrUDP-Examples" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F61E16FF270347E400E69317 /* Debug */,
+				F61E1700270347E400E69317 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F6915A1026A4E107001C2E1E /* Build configuration list for PBXProject "MrUDP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

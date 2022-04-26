@@ -27,5 +27,30 @@ cmake .. -DUSE_BOOST=/where/ever/you/have/boost/boost
 make
 ```
 
-## In Progress
-  * Some cleanup, renamings
+## Examples
+After building,
+
+Run the C++ echo server with:
+```
+./MrUDP-Examples --run_echo_server_cpp
+```
+
+Run the C echo server with:
+```
+./MrUDP-Examples --run_echo_server_c
+```
+
+Using the address printed out by a server above:
+Run the C++ echo client with:
+```
+./MrUDP-Examples --run_echo_client_cpp ADDRESS
+```
+
+Run the C echo client with:
+```
+./MrUDP-Examples --run_echo_client_c ADDRESS
+```
+
+## To do:
+  * Better testing of changing IP address mid stream.
+  * User provided allocator

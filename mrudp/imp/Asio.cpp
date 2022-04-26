@@ -503,6 +503,8 @@ void SocketImp::acquireAddress(const Address &address)
 			temporary.close();
 			
 			// and open the new one immediately
+			sLogDebug("debug", logVar(this) << logVar(localEndpoint));
+			
 			socket->handle.bind(localEndpoint);
 		}
 	}
@@ -532,6 +534,8 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 	{
 		auto localEndpoint = toEndpoint(parent_->getLocalAddress());
 		auto remoteEndpoint = toEndpoint(remoteAddress);
+		
+		sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
 
 		auto connectedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
 

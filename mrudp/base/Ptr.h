@@ -10,9 +10,8 @@
 #include <memory>
 
 template<typename T>
-void deallocate(T *t)
+void on_deallocate(T *t)
 {
-	delete t;
 }
 
 namespace timprepscius {
@@ -25,7 +24,8 @@ struct Deleter
 {
 	void operator()(T* p)
 	{
-		deallocate(p);
+		on_deallocate(p);
+		delete p;
 	}
 } ;
 
