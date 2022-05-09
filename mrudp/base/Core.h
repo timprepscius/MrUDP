@@ -13,7 +13,7 @@
 	#include <core/log/Log.h>
 	#include <core/log/LogOf.h>
 	#include <core/debug/Debug.h>
-	#include <core/assert/Assert.h>
+	#include <core/assert/debug_assert.h>
 #else
 	#define sLogDebug(...)
 	#define sLogDebugIf(...)
