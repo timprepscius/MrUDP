@@ -258,6 +258,9 @@ mrudp_connection_t mrudp_connect_ex(
 	
 	auto connection = socket->connect(*remoteAddress, options, userData, std::move(receiveCallback), std::move(eventCallback));
 	
+	if (!connection)
+		return nullptr;
+		
 	return newHandle(connection);
 }
 

@@ -82,16 +82,23 @@ void Connection::closeUser (mrudp_event_t event)
 	}
 }
 
-void Connection::open ()
+mrudp_error_code_t Connection::open ()
 {
 	imp = strong_thread(strong<imp::ConnectionImp>(strong_this(this)));
-	imp->open();
+
+	mrudp_error_code_t status = MRUDP_OK;
+	if (mrudp_failed(status = imp->open()))
+	{
+		return status;
+	}
 	
 	probe.onStart(socket->service->clock.now());
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK
 	__debugHook();
 #endif
+
+	return MRUDP_OK;
 }
 
 #ifdef MRUDP_ENABLE_DEBUG_HOOK

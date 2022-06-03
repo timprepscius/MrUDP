@@ -75,10 +75,26 @@ StrongPtr<Connection> Socket::connect(
 		generateShortConnectionID()
 	);
 	
-	connection->openUser(options, userData, std::move(receiveHandler_), std::move(closeHandler_));
+	connection->openUser(
+		options,
+		userData,
+		std::move(receiveHandler_),
+		std::move(closeHandler_)
+	);
 
 	insert(connection);
-	connection->open();
+
+	// when the connection doesn't open, it means the system
+	// is in such a state the connect isn't working
+	// for now we erase the connection and return null
+	mrudp_error_code_t status = MRUDP_OK;
+	if (mrudp_failed(status = connection->open()))
+	{
+		// this might change to connection->close
+		connection->finish();
+		return nullptr;
+	}
+	
 	connection->handshake.initiate();
 
 	sLogDebugIf(connection->imp->connectedSocket, "mrudp::overlap_io", "connect " << logVar(uint64_t(connection->id)) << logVar(ptr_of(connection)) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())) << logVar(connection->imp->connectedSocket->handle.local_endpoint()));
@@ -232,15 +248,26 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 		return nullptr;
 	}
 	
+	int status = 0;
 	auto localID = generateShortConnectionID();
 	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID);
 	
 	insert(connection);
-	connection->open();
-		
+
+	// what happens if the open fails?
+	// this means the system is in some state where bind and
+	// connects are failing, for now we erase the connection
+	// and continue on
+	if (mrudp_failed(status = connection->open()))
+	{
+		// we finish the connection immediately
+		// this might change to connection->close
+		connection->finish();
+		return nullptr;
+	}
+
 	auto connectionHandle = newHandle(connection);
-	
-	int status;
+
 	if (mrudp_failed(status = acceptHandler(userData, (mrudp_connection_t)connectionHandle)))
 	{
 		sLogDebug("mrudp::overlap_io", "ERROR NOT ACCEPTED " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));

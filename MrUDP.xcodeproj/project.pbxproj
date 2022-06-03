@@ -28,6 +28,9 @@
 		F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3A26A4E128001C2E1E /* Receiver.cpp */; };
 		F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3C26A4E128001C2E1E /* ReceiveQueue.cpp */; };
 		F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2226A4E128001C2E1E /* Probe.cpp */; };
+		F65E050A284A973C00AD9687 /* AsioTesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E0509284A93D500AD9687 /* AsioTesting.cpp */; };
+		F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E0509284A93D500AD9687 /* AsioTesting.cpp */; };
+		F65E050D284AA0D000AD9687 /* InstrusiveAsioTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */; };
 		F6915A4D26A4E128001C2E1E /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1E26A4E128001C2E1E /* Connection.h */; };
 		F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1F26A4E128001C2E1E /* mrudp.h */; };
 		F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2026A4E128001C2E1E /* Types.cpp */; };
@@ -147,6 +150,9 @@
 		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
 		F639D07528181F830031D309 /* EchoClient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = EchoClient.c; sourceTree = "<group>"; };
 		F639D077281820DF0031D309 /* EchoClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoClient.cpp; sourceTree = "<group>"; };
+		F65E0508284A936400AD9687 /* AsioTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsioTesting.h; sourceTree = "<group>"; };
+		F65E0509284A93D500AD9687 /* AsioTesting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AsioTesting.cpp; sourceTree = "<group>"; };
+		F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InstrusiveAsioTests.cpp; sourceTree = "<group>"; };
 		F66B0ACB26B0338C0055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
 		F66B0ACD26B03A3A0055F46D /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F66B0AD126B03D080055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
@@ -275,6 +281,8 @@
 		F676C52326A78AE3001559F4 /* imp */ = {
 			isa = PBXGroup;
 			children = (
+				F65E0508284A936400AD9687 /* AsioTesting.h */,
+				F65E0509284A93D500AD9687 /* AsioTesting.cpp */,
 				F6915A3E26A4E128001C2E1E /* Asio.cpp */,
 				F6915A4026A4E128001C2E1E /* Asio.h */,
 				F676C52226A78AC8001559F4 /* BoostAsio.h */,
@@ -417,6 +425,7 @@
 				F6915A4726A4E128001C2E1E /* Basics.cpp */,
 				F6915A4A26A4E128001C2E1E /* Common.h */,
 				F634A8EB26A613AC00869A6F /* Connections.cpp */,
+				F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */,
 				F61FD09426F153F800F58003 /* NetworkPathChange.cpp */,
 				F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */,
 				F6A176BD26B1C0C4003708D8 /* Crypto.cpp */,
@@ -617,6 +626,7 @@
 				F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
 				F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */,
 				F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */,
+				F65E050A284A973C00AD9687 /* AsioTesting.cpp in Sources */,
 				F6A176D426B42B0B003708D8 /* Crypto.cpp in Sources */,
 				F6915A6B26A4E129001C2E1E /* Connection.cpp in Sources */,
 				F6A176C926B4207D003708D8 /* Handshake.cpp in Sources */,
@@ -637,6 +647,7 @@
 				F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */,
 				F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */,
 				F6A176D126B42AF7003708D8 /* Crypto.cpp in Sources */,
+				F65E050D284AA0D000AD9687 /* InstrusiveAsioTests.cpp in Sources */,
 				F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */,
 				F61FD09526F1566300F58003 /* NetworkPathChange.cpp in Sources */,
 				F61D252526D0286A00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp in Sources */,
@@ -661,6 +672,7 @@
 				F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
 				F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */,
 				F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */,
+				F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */,
 				F6A176D326B42B0B003708D8 /* Crypto.cpp in Sources */,
 				F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */,
 				F6A176C826B4207C003708D8 /* Handshake.cpp in Sources */,

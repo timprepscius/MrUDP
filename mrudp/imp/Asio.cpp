@@ -5,6 +5,8 @@
 #include <boost/asio.hpp>
 #include <iostream>
 
+#include "AsioTesting.h"
+
 namespace timprepscius {
 namespace mrudp {
 namespace imp {
@@ -240,8 +242,6 @@ ConnectionImp::ConnectionImp(const StrongPtr<Connection> &parent_) :
 {
 	xLogDebug(logOfThis(this));
 	
-	if (parent_->socket->imp->options.overlapped_io)
-		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
 }
 
 ConnectionImp::~ConnectionImp()
@@ -250,9 +250,25 @@ ConnectionImp::~ConnectionImp()
 	stop();
 }
 
-void ConnectionImp::open ()
+mrudp_error_code_t ConnectionImp::open ()
 {
+	auto parent_ = strong(parent);
+
+	if (!parent_)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+		
+	if (parent_->socket->imp->options.overlapped_io)
+	{
+		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
+		
+		if (!connectedSocket)
+			return MRUDP_ERROR_GENERAL_FAILURE;
+	}
+		
+	return MRUDP_OK;
 }
+
+
 
 void ConnectionImp::stop ()
 {
@@ -465,13 +481,35 @@ void SocketImp::acquireAddress(const Address &address)
 	bool acquiredAddress = false;
 	while (!acquiredAddress)
 	{
-		socket->handle.close();
+		boost::system::error_code error;
+
+		auto handleError = [&](auto &error) {
+			sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(error.message()));
+		};
+
+		socket->handle.close(error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_close, error);
+		
+		if (error)
+			return handleError(error);
 		
 		auto endpoint = toEndpoint(address);
 		socket->handle.open(endpoint.protocol());
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_open, error);
+
+		if (error)
+			return handleError(error);
 
 		socket->handle.bind(endpoint);
-		localEndpoint = socket->handle.local_endpoint();
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_bind, error);
+
+		if (error)
+			return handleError(error);
+
+		localEndpoint = socket->handle.local_endpoint(error);
+
+		if (error)
+			return handleError(error);
 		
 		acquiredAddress = parent_->service->imp->insertEndpoint(localEndpoint);
 		
@@ -497,15 +535,32 @@ void SocketImp::acquireAddress(const Address &address)
 			
 			// prepare the new handle
 			socket->handle.open(localEndpoint.protocol());
-			socket->handle.set_option(overlap_socket(true));
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_open_overlapped, error);
+			
+			if (error)
+				return handleError(error);
+
+			socket->handle.set_option(overlap_socket(true), error);
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_set_option_overlapped, error);
+			
+			if (error)
+				return handleError(error);
 
 			// close the old handle
 			temporary.close();
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__temporary_close_overlapped, error);
+			
+			if (error)
+				return handleError(error);
 			
 			// and open the new one immediately
 			sLogDebug("debug", logVar(this) << logVar(localEndpoint));
 			
-			socket->handle.bind(localEndpoint);
+			socket->handle.bind(localEndpoint, error);
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_bind_overlapped, error);
+
+			if (error)
+				return handleError(error);
 		}
 	}
 }
@@ -534,16 +589,50 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 	{
 		auto localEndpoint = toEndpoint(parent_->getLocalAddress());
 		auto remoteEndpoint = toEndpoint(remoteAddress);
-		
+
+		auto handleError = [&](auto &error) {
+			sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint) << logVar(error.message()));
+		};
+
+		boost::system::error_code error;
+
 		sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
 
 		auto connectedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
 
-		connectedSocket->handle.open(localEndpoint.protocol());
-		connectedSocket->handle.set_option(overlap_socket(true));
+		connectedSocket->handle.open(localEndpoint.protocol(), error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_open, error);
 
-		connectedSocket->handle.bind(localEndpoint);
-		connectedSocket->handle.connect(remoteEndpoint);
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
+		
+		connectedSocket->handle.set_option(overlap_socket(true), error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_set_option, error);
+		
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
+
+		connectedSocket->handle.bind(localEndpoint, error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_bind, error);
+
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
+		
+		connectedSocket->handle.connect(remoteEndpoint, error);
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
 		
 		connectedSocket_ = weak(connectedSocket);
 		
@@ -601,19 +690,25 @@ void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr
 	);
 }
 
-void SocketImp::send(const PacketPtr &packet, Connection *connection, const Address *address_)
+mrudp_error_code_t SocketImp::send(const PacketPtr &packet, Connection *connection, const Address *address_)
 {
 	auto *socket = &this->socket;
 	
 	if (options.overlapped_io == 1 && !address_)
 		socket = &connection->imp->connectedSocket;
-	
+
+	if (!*socket)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+
 	auto *address = address_ ? address_ : &connection->remoteAddress;
+	
 	
 	if (options.send_via_queue == 1)
 		sendViaQueue(*socket, *address, packet, connection);
 	else
 		sendDirect(*socket, *address, packet, connection);
+		
+	return MRUDP_OK;
 }
 
 void SocketImp::sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection)
@@ -645,9 +740,17 @@ void SocketImp::close ()
 		running = false;
 		xLogDebug(logOfThis(this) << socket->handle.local_endpoint() << " handle is closing " << socket->handle.native_handle());
 
+		boost::system::error_code error;
+		auto handleError = [&](auto &error) {
+			sLogDebug("debug", logVar(this) << logVar(error.message()));
+		};
+
 		{
 			auto lock = lock_of(socket->handleMutex);
-			socket->handle.close();
+			socket->handle.close(error);
+
+			if (error)
+				handleError(error);
 		}
 		
 		auto lock = lock_of(connectedSocketsMutex);
@@ -655,8 +758,13 @@ void SocketImp::close ()
 		{
 			if (auto socket = strong(socket_))
 			{
+				boost::system::error_code error;
+
 				auto lock = lock_of(socket->handleMutex);
-				socket->handle.close();
+				socket->handle.close(error);
+
+				if (error)
+					handleError(error);
 			}
 		}
 	}

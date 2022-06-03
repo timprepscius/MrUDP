@@ -131,7 +131,7 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 	ConnectionImp(const StrongPtr<Connection> &parent_);
 	~ConnectionImp();
 
-	void open ();
+	mrudp_error_code_t open ();
 	void stop ();
 
 	void setTimeout (const String &name, const Timepoint &then, Function<void()> &&f);
@@ -168,7 +168,7 @@ struct SocketImp : StrongThis<SocketImp>
 	void connect(const Address &address);
 	void handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket);
 	
-	void send(const PacketPtr &packet, Connection *connection, const Address *addr);
+	mrudp_error_code_t send(const PacketPtr &packet, Connection *connection, const Address *addr);
 	void sendDirect(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void sendViaQueue(const StrongPtr<SocketNative> &socket, const Address &addr, const PacketPtr &packet, Connection *connection);
 	void doSend(const StrongPtr<SocketNative> &);

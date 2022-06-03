@@ -76,7 +76,7 @@ struct Connection : StrongThis<Connection>
 	void openUser(const ConnectionOptions *options, void *userData_, mrudp_receive_callback &&receiveHandler_, mrudp_close_callback &&closeHandler_);
 	void closeUser (mrudp_event_t event);
 
-	void open ();
+	[[nodiscard]] mrudp_error_code_t open ();
 
 	bool canSend ();
 	void send(const PacketPtr &packet, Address *address=nullptr);
