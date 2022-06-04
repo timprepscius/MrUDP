@@ -17,9 +17,9 @@ namespace imp {
 struct AsioIntrusiveError
 {
 	boost::system::error_code
-		getConnectedSocket__connectedSocket_handle_open,
-		getConnectedSocket__connectedSocket_handle_set_option,
-		getConnectedSocket__connectedSocket_handle_bind,
+		getOverlappedSocket__overlappedSocket_handle_open,
+		getOverlappedSocket__overlappedSocket_handle_set_option,
+		getOverlappedSocket__overlappedSocket_handle_bind,
 		
 		acquireAddress__socket_handle_close,
 		acquireAddress__socket_handle_open,

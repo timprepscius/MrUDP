@@ -17,9 +17,9 @@ Vector<boost::system::error_code *> __mrudp_asio_getIntrusiveErrors()
 	auto &v = __mrudp_asio_getIntrusiveError();
 	
 	Vector<boost::system::error_code *> result = {
-		&v.getConnectedSocket__connectedSocket_handle_open,
-		&v.getConnectedSocket__connectedSocket_handle_set_option,
-		&v.getConnectedSocket__connectedSocket_handle_bind,
+		&v.getOverlappedSocket__overlappedSocket_handle_open,
+		&v.getOverlappedSocket__overlappedSocket_handle_set_option,
+		&v.getOverlappedSocket__overlappedSocket_handle_bind,
 		
 		&v.acquireAddress__socket_handle_close,
 		&v.acquireAddress__socket_handle_open,

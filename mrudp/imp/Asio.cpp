@@ -259,9 +259,9 @@ mrudp_error_code_t ConnectionImp::open ()
 		
 	if (parent_->socket->imp->options.overlapped_io)
 	{
-		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
+		overlappedSocket = parent_->socket->imp->getOverlappedSocket(parent_->remoteAddress);
 		
-		if (!connectedSocket)
+		if (!overlappedSocket)
 			return MRUDP_ERROR_GENERAL_FAILURE;
 	}
 		
@@ -312,22 +312,22 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 
 void ConnectionImp::relocate ()
 {
-	reacquireConnectedSocket();
+	reacquireOverlappedSocket();
 }
 
 void ConnectionImp::onRemoteAddressChanged ()
 {
-	reacquireConnectedSocket();
+	reacquireOverlappedSocket();
 }
 
-void ConnectionImp::reacquireConnectedSocket ()
+void ConnectionImp::reacquireOverlappedSocket ()
 {
 	auto parent_ = strong(parent);
 	debug_assert(parent_);
 	
-	connectedSocket = nullptr;
+	overlappedSocket = nullptr;
 	if (parent_->socket->imp->options.overlapped_io)
-		connectedSocket = parent_->socket->imp->getConnectedSocket(parent_->remoteAddress);
+		overlappedSocket = parent_->socket->imp->getOverlappedSocket(parent_->remoteAddress);
 }
 
 // -------------------------------------
@@ -347,7 +347,7 @@ void SocketNative::send(const Send &send, Function<void (const error_code &)> &&
 	char *buffer_ = (char *)ptr_of(send.packet);
 	auto size = send.packet->dataSize + sizeof(Header);
 	
-	if (isConnected)
+	if (isOverlapped)
 	{
 		handle.async_send(
 			buffer(buffer_, size),
@@ -394,7 +394,7 @@ void SocketNative::receive(Receive &receive, Function<void (const error_code &)>
 	auto *buffer_ = (char *)&receive.packet;
 	auto size = sizeof(Packet) - sizeof(Packet::dataSize);
 	
-	if (isConnected)
+	if (isOverlapped)
 	{
 		// why am I using async_receive_from and not async_receive:
 		// There is a socket A bound to port X
@@ -575,14 +575,14 @@ SocketImp::~SocketImp ()
 	}
 }
 
-StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddress)
+StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddress)
 {
-	auto lock = lock_of(connectedSocketsMutex);
+	auto lock = lock_of(overlappedSocketsMutex);
 	
-	auto &connectedSocket_ = connectedSockets[remoteAddress];
-	if (auto connectedSocket = strong(connectedSocket_))
+	auto &overlappedSocket_ = overlappedSockets[remoteAddress];
+	if (auto overlappedSocket = strong(overlappedSocket_))
 	{
-		return connectedSocket;
+		return overlappedSocket;
 	}
 	
 	if (auto parent_ = strong(parent))
@@ -598,28 +598,10 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 
 		sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
 
-		auto connectedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
+		auto overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
 
-		connectedSocket->handle.open(localEndpoint.protocol(), error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_open, error);
-
-		if (error)
-		{
-			handleError(error);
-			return nullptr;
-		}
-		
-		connectedSocket->handle.set_option(overlap_socket(true), error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_set_option, error);
-		
-		if (error)
-		{
-			handleError(error);
-			return nullptr;
-		}
-
-		connectedSocket->handle.bind(localEndpoint, error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getConnectedSocket__connectedSocket_handle_bind, error);
+		overlappedSocket->handle.open(localEndpoint.protocol(), error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_open, error);
 
 		if (error)
 		{
@@ -627,24 +609,42 @@ StrongPtr<SocketNative> SocketImp::getConnectedSocket(const Address &remoteAddre
 			return nullptr;
 		}
 		
-		connectedSocket->handle.connect(remoteEndpoint, error);
+		overlappedSocket->handle.set_option(overlap_socket(true), error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_set_option, error);
+		
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
+
+		overlappedSocket->handle.bind(localEndpoint, error);
+		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_bind, error);
+
 		if (error)
 		{
 			handleError(error);
 			return nullptr;
 		}
 		
-		connectedSocket_ = weak(connectedSocket);
+		overlappedSocket->handle.connect(remoteEndpoint, error);
+		if (error)
+		{
+			handleError(error);
+			return nullptr;
+		}
 		
-		doReceive(connectedSocket, strong<Receive>());
+		overlappedSocket_ = weak(overlappedSocket);
 		
-		return connectedSocket;
+		doReceive(overlappedSocket, strong<Receive>());
+		
+		return overlappedSocket;
 	}
 	
 	return nullptr;
 }
 
-void SocketImp::releaseConnectedSocket(const Address &)
+void SocketImp::releaseOverlappedSocket(const Address &)
 {
 	// this needs to do something and get connected eventually
 }
@@ -695,7 +695,7 @@ mrudp_error_code_t SocketImp::send(const PacketPtr &packet, Connection *connecti
 	auto *socket = &this->socket;
 	
 	if (options.overlapped_io == 1 && !address_)
-		socket = &connection->imp->connectedSocket;
+		socket = &connection->imp->overlappedSocket;
 
 	if (!*socket)
 		return MRUDP_ERROR_GENERAL_FAILURE;
@@ -753,8 +753,8 @@ void SocketImp::close ()
 				handleError(error);
 		}
 		
-		auto lock = lock_of(connectedSocketsMutex);
-		for (auto &[remote, socket_] : connectedSockets)
+		auto lock = lock_of(overlappedSocketsMutex);
+		for (auto &[remote, socket_] : overlappedSockets)
 		{
 			if (auto socket = strong(socket_))
 			{
