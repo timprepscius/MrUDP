@@ -484,7 +484,7 @@ void SocketImp::acquireAddress(const Address &address)
 		boost::system::error_code error;
 
 		auto handleError = [&](auto &error) {
-			sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(error.message()));
+			sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(error.message()));
 		};
 
 		socket->handle.close(error);
@@ -554,7 +554,7 @@ void SocketImp::acquireAddress(const Address &address)
 				return handleError(error);
 			
 			// and open the new one immediately
-			sLogDebug("debug", logVar(this) << logVar(localEndpoint));
+			sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint));
 			
 			socket->handle.bind(localEndpoint, error);
 			MRUDP_ASIO_TEST_GENERATE_FAILURE(acquireAddress__socket_handle_bind_overlapped, error);
@@ -591,12 +591,12 @@ StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddr
 		auto remoteEndpoint = toEndpoint(remoteAddress);
 
 		auto handleError = [&](auto &error) {
-			sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint) << logVar(error.message()));
+			sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint) << logVar(error.message()));
 		};
 
 		boost::system::error_code error;
 
-		sLogDebug("debug", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
+		sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
 
 		auto overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
 
@@ -742,7 +742,7 @@ void SocketImp::close ()
 
 		boost::system::error_code error;
 		auto handleError = [&](auto &error) {
-			sLogDebug("debug", logVar(this) << logVar(error.message()));
+			sLogDebug("mrudp::asio", logVar(this) << logVar(error.message()));
 		};
 
 		{
