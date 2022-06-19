@@ -44,7 +44,7 @@ SCENARIO("packet transmission rate")
 		auto listenerDispatch = Listener {
 			[&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				mrudp_accept(
 					connection,
@@ -79,7 +79,7 @@ SCENARIO("packet transmission rate")
 			
 			for (auto i=0; i<X; ++i)
 			{
-				local.connections.push_back(
+				local.connections.insert(
 					mrudp_connect(
 						local.sockets.back(), &remoteAddress,
 						&localConnectionDispatch,
@@ -137,7 +137,7 @@ SCENARIO("packet transmission rate")
 			{
 				local.sockets.push_back(mrudp_socket(local.service, &anyAddress));
 			
-				local.connections.push_back(
+				local.connections.insert(
 					mrudp_connect(
 						local.sockets.back(), &remoteAddress,
 						&localConnectionDispatch,
@@ -216,7 +216,7 @@ SCENARIO("packet transmission rate")
 		auto listen = Listener {
 			[&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				mrudp_accept(connection,
 					&remoteConnectionDispatch,
@@ -246,7 +246,7 @@ SCENARIO("packet transmission rate")
 				mrudp_socket_addr(localSocket, &localAddress);
 				local.sockets.push_back(localSocket);
 				
-				local.connections.push_back(mrudp_connect(
+				local.connections.insert(mrudp_connect(
 					localSocket, &remoteAddress,
 					&localConnectionDispatch,
 					connectionReceive, connectionClose

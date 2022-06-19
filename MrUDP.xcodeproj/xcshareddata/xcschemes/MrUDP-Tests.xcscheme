@@ -56,6 +56,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "&quot;Scenario: lots_of_connections&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-b"
             isEnabled = "NO">
          </CommandLineArgument>

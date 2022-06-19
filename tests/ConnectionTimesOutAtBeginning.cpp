@@ -49,7 +49,7 @@ SCENARIO("error with connections timing out")
 		auto listen = Listener {
 			[&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				mrudp_accept(connection,
 					&remoteConnectionDispatch,
@@ -79,7 +79,7 @@ SCENARIO("error with connections timing out")
 				mrudp_socket_addr(localSocket, &localAddress);
 				local.sockets.push_back(localSocket);
 				
-				local.connections.push_back(mrudp_connect(
+				local.connections.insert(mrudp_connect(
 					localSocket, &remoteAddress,
 					&localConnectionDispatch,
 					connectionReceive, connectionClose

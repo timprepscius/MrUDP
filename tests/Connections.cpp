@@ -30,7 +30,7 @@ SCENARIO("connections")
 		auto listen = Listener {
 			.accept = [&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				auto remoteConnectionDispatch = new Connection {
 					.receive = [&](auto data, auto size, auto isReliable) {
@@ -44,8 +44,8 @@ SCENARIO("connections")
 						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 						if (connection_ != remote.connections.end())
 						{
-							remote.connections.remove(connection);
 							mrudp_close_connection(connection);
+							remote.connections.erase(connection_);
 						}
 						return 0;
 					},
@@ -85,7 +85,7 @@ SCENARIO("connections")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
-					local.connections.push_back(
+					local.connections.insert(
 						mrudp_connect(
 							local.sockets.back(), &remoteAddress,
 							&localConnectionDispatch, connectionReceive, connectionClose
@@ -143,8 +143,9 @@ SCENARIO("connections")
 
 					while (!local.connections.empty())
 					{
-						mrudp_close_connection(local.connections.back());
-						local.connections.pop_back();
+						auto front = local.connections.begin();
+						mrudp_close_connection(*front);
+						local.connections.erase(front);
 					}
 
 					THEN("connections on remote return to 0")

@@ -55,7 +55,7 @@ SCENARIO("basics")
 				auto listen = Listener {
 					.accept = [&](auto connection) {
 						auto l = lock_of(remote.connectionsMutex);
-						remote.connections.push_back(connection);
+						remote.connections.insert(connection);
 						
 						auto remoteConnectionDispatch = new Connection {
 							.receive = [&](auto data, auto size, auto isReliable) {
@@ -70,7 +70,7 @@ SCENARIO("basics")
 								auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 								if (connection_ != remote.connections.end())
 								{
-									remote.connections.remove(connection);
+									remote.connections.erase(connection);
 									mrudp_close_connection(connection);
 								}
 								return 0;
@@ -117,7 +117,7 @@ SCENARIO("basics")
 							options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
 							options.coalesce_reliable.delay_ms = 20;
 							
-							local.connections.push_back(
+							local.connections.insert(
 								mrudp_connect_ex(
 									local.sockets.back(), &remoteAddress,
 									&options,
@@ -174,7 +174,7 @@ SCENARIO("basics")
 								THEN("the number of packets sent is far less than the number of data packets sent")
 								{
 									mrudp_connection_statistics_t statistics;
-									mrudp_connection_statistics(local.connections.front(), &statistics);
+									mrudp_connection_statistics(*local.connections.begin(), &statistics);
 									
 									REQUIRE(statistics.reliable.packets.sent < statistics.reliable.frames.sent / 16);
 								}
@@ -205,7 +205,7 @@ SCENARIO("basics")
 					{
 						for (auto i=0; i<numConnectionsToCreate; ++i)
 						{
-							local.connections.push_back(
+							local.connections.insert(
 								mrudp_connect(
 									local.sockets.back(), &remoteAddress,
 									&localConnectionDispatch, connectionReceive, connectionClose
@@ -227,8 +227,9 @@ SCENARIO("basics")
 						{
 							while (!local.connections.empty())
 							{
-								mrudp_close_connection(local.connections.back());
-								local.connections.pop_back();
+								auto front = local.connections.begin();
+								mrudp_close_connection(*front);
+								local.connections.erase(front);
 							}
 
 							THEN("connections on remote return to 0")
@@ -250,8 +251,9 @@ SCENARIO("basics")
 							
 							while (!local.connections.empty())
 							{
-								mrudp_close_connection(local.connections.back());
-								local.connections.pop_back();
+								auto front = local.connections.begin();
+								mrudp_close_connection(*front);
+								local.connections.erase(front);
 							}
 
 							THEN("connections on remote return to 0")
@@ -272,7 +274,7 @@ SCENARIO("basics")
 						
 						for (auto i=0; i<numConnectionsToCreate; ++i)
 						{
-							local.connections.push_back(mrudp_connect(
+							local.connections.insert(mrudp_connect(
 								local.sockets.back(), &remoteAddress,
 								&localConnectionDispatch, connectionReceive, connectionClose
 							));
@@ -388,8 +390,9 @@ SCENARIO("basics")
 
 							while (!local.connections.empty())
 							{
-								mrudp_close_connection(local.connections.back());
-								local.connections.pop_back();
+								auto front = local.connections.begin();
+								mrudp_close_connection(*front);
+								local.connections.erase(front);
 							}
 
 							THEN("connections on remote return to 0")
@@ -411,8 +414,9 @@ SCENARIO("basics")
 							
 							while (!local.connections.empty())
 							{
-								mrudp_close_connection(local.connections.back());
-								local.connections.pop_back();
+								auto front = local.connections.begin();
+								mrudp_close_connection(*front);
+								local.connections.erase(front);
 							}
 
 							THEN("connections on remote return to 0")

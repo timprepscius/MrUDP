@@ -32,7 +32,7 @@ SCENARIO("network path change")
 		auto listen = Listener {
 			.accept = [&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				auto remoteConnectionDispatch = new Connection {
 					.receive = [&](auto data, auto size, auto isReliable) {
@@ -46,8 +46,8 @@ SCENARIO("network path change")
 						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 						if (connection_ != remote.connections.end())
 						{
-							remote.connections.remove(connection);
 							mrudp_close_connection(connection);
+							remote.connections.erase(connection_);
 						}
 						return 0;
 					},
@@ -87,7 +87,7 @@ SCENARIO("network path change")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
 				{
-					local.connections.push_back(
+					local.connections.insert(
 						mrudp_connect(
 							local.sockets.back(), &remoteAddress,
 							&localConnectionDispatch, connectionReceive, connectionClose

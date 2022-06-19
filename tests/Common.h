@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <list>
+#include <set>
 #include <atomic>
 #include <thread>
 #include <chrono>
@@ -84,7 +85,7 @@ struct State {
 	std::list<mrudp_socket_t> sockets;
 	
 	Mutex connectionsMutex;
-	std::list<mrudp_connection_t> connections;
+	std::set<mrudp_connection_t> connections;
 	
 	Mutex packetsMutex;
 	std::list<Packet> packets;

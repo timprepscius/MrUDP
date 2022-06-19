@@ -62,7 +62,7 @@ SCENARIO("streams")
 		auto listen = Listener {
 			[&](auto connection) {
 				auto l = lock_of(remote.connectionsMutex);
-				remote.connections.push_back(connection);
+				remote.connections.insert(connection);
 				
 				mrudp_accept(connection,
 					&remoteConnectionDispatch,
@@ -90,14 +90,13 @@ SCENARIO("streams")
 			mrudp_socket_addr(localSocket, &localAddress);
 			local.sockets.push_back(localSocket);
 			
-		
-			local.connections.push_back(mrudp_connect(
+			auto localConnection_ = local.connections.insert(mrudp_connect(
 				localSocket, &remoteAddress,
 				&localConnectionDispatch,
 				connectionReceive, connectionClose
 			));
 			
-			auto &localConnection = local.connections.back();
+			auto &localConnection = *localConnection_.first;
 		
 			WHEN("send the stream packets of data on the connection")
 			{

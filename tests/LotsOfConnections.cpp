@@ -7,9 +7,9 @@ namespace timprepscius {
 namespace mrudp {
 namespace tests {
 
-SCENARIO("intrusive_asio_tests")
+SCENARIO("lots_of_connections")
 {
-	auto numConnectionsToCreate = 512;
+	auto numConnectionsToCreate = 10000;
 	size_t numPacketsToSendOnEachConnection = 16;
 	
     GIVEN( "mrudp service, remote socket" )
@@ -23,7 +23,7 @@ SCENARIO("intrusive_asio_tests")
 		
 		mrudp_addr_t remoteAddress;
 		mrudp_socket_addr(remote.sockets.back(), &remoteAddress);
-
+;
 		State local("local");
 		local.service = mrudp_service();
 		
@@ -41,7 +41,7 @@ SCENARIO("intrusive_asio_tests")
 					},
 					.close = [&remote, connection](auto event) {
 						auto lock = lock_of(remote.connectionsMutex);
-						auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
+						auto connection_ = remote.connections.find(connection);
 						if (connection_ != remote.connections.end())
 						{
 							remote.connections.erase(connection);
@@ -83,12 +83,15 @@ SCENARIO("intrusive_asio_tests")
 
 			WHEN(numConnectionsToCreate << " connections are created from local to remote and then destroyed")
 			{
-				local.connections.insert(
-					mrudp_connect(
-						local.sockets.back(), &remoteAddress,
-						&localConnectionDispatch, connectionReceive, connectionClose
-					)
-				);
+				for (auto i=0; i<numConnectionsToCreate; ++i)
+				{
+					local.connections.insert(
+						mrudp_connect(
+							local.sockets.back(), &remoteAddress,
+							&localConnectionDispatch, connectionReceive, connectionClose
+						)
+					);
+				}
 			
 				wait_until(std::chrono::seconds(10), [&]() {
 					return remote.connections.size() == numConnectionsToCreate;
