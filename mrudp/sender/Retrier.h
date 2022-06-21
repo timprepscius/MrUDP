@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Packet.h"
+#include "../Scheduler.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -62,6 +63,7 @@ struct Retrier
 	
 	Sender *sender;
 	size_t maximumAttempts = 5;
+	Timeout timeout;
 
 	Mutex mutex;
 

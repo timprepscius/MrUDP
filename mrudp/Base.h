@@ -120,7 +120,7 @@ struct StackArray
 	}
 } ;
 
-typedef std::chrono::system_clock Clock;
+typedef std::chrono::steady_clock Clock;
 typedef std::chrono::time_point<Clock> Timepoint;
 typedef std::chrono::milliseconds Duration;
 

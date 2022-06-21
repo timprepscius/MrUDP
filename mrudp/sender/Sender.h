@@ -5,6 +5,7 @@
 #include "WindowSize.h"
 #include "IDGenerator.h"
 #include "SendQueue.h"
+#include "../Scheduler.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -76,8 +77,8 @@ struct Sender
 	
 	struct Schedule
 	{
-		String name;
 		Atomic<bool> waiting = false;
+		Timeout timeout;
 	} ;
 	
 	// scheduler for reliable and unreliable

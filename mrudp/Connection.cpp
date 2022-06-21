@@ -86,6 +86,16 @@ mrudp_error_code_t Connection::open ()
 {
 	imp = strong_thread(strong<imp::ConnectionImp>(strong_this(this)));
 
+	socket->service->scheduler->allocate(
+		finishTimeout,
+		[this, self_=weak_this(this)]() {
+			if (auto self = strong(self_))
+			{
+				finish();
+			}
+		}
+	);
+
 	mrudp_error_code_t status = MRUDP_OK;
 	if (mrudp_failed(status = imp->open()))
 	{
@@ -190,16 +200,7 @@ void Connection::close (mrudp_event_t event)
 void Connection::finishWhenReady()
 {
 	auto interval = toDuration(sender.rtt.duration * 3);
-	imp->setTimeout(
-		"finish",
-		socket->service->clock.now() + interval,
-		[this, self_=weak_this(this)]() {
-			if (auto self = strong(self_))
-			{
-				finish();
-			}
-		}
-	);
+	finishTimeout.schedule(socket->service->clock.now() + interval);
 }
 
 void Connection::finish ()

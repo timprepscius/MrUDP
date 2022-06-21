@@ -9,6 +9,10 @@ Service::Service (mrudp_imp_selector imp_, void *options)
 	debug_assert(imp_ == MRUDP_IMP_ASIO);
 	
 	imp = strong_thread(strong<imp::ServiceImp>(this, (mrudp_options_asio_t *)options));
+	
+	scheduler = strong<Scheduler>(this);
+	scheduler->open();
+	
 }
 
 void Service::open ()
@@ -22,6 +26,9 @@ void Service::open ()
 
 Service::~Service ()
 {
+	scheduler->close();
+	scheduler = nullptr;
+	
 	imp->stop();
 	imp = nullptr;
 	

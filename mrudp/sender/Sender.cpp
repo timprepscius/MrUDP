@@ -11,8 +11,21 @@ Sender::Sender(Connection *connection_) :
 	connection(connection_),
 	retrier(this)
 {
-	schedules[0].name = "send-0";
-	schedules[1].name = "send-1";
+	connection->socket->service->scheduler->allocate(
+		schedules[0].timeout,
+		[this]() {
+			schedules[0].waiting = false;
+			processDataQueue(UNRELIABLE);
+		}
+	);
+	
+	connection->socket->service->scheduler->allocate(
+		schedules[1].timeout,
+		[this]() {
+			schedules[1].waiting = false;
+			processDataQueue(RELIABLE);
+		}
+	);
 }
 
 void Sender::processReliableDataQueue()
@@ -192,13 +205,7 @@ void Sender::scheduleDataQueueProcessing (Reliability reliability)
 	auto now = connection->socket->service->clock.now();
 	auto then = now + Duration(sendQueueProcessingDelay);
 	
-	connection->imp->setTimeout(
-		schedule.name, then,
-		[this, &schedule, reliability]() {
-			schedule.waiting = false;
-			processDataQueue(reliability);
-		}
-	);
+	schedule.timeout.schedule(then);
 }
 
 void Sender::processDataQueue(Reliability reliability)

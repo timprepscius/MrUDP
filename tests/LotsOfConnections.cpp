@@ -107,6 +107,8 @@ SCENARIO("lots_of_connections")
 				{
 					size_t packetsSent = 0;
 					
+					auto then = Clock::now();
+					
 					Packet packet = { 'a', 'b', 'c', 'd', 'e' };
 
 					for (auto &connection: local.connections)
@@ -125,7 +127,18 @@ SCENARIO("lots_of_connections")
 							[&]() { return remote.packetsReceived == packetsSent; }
 						);
 
+						auto now = Clock::now();
+						auto duration = now - then;
+
 						REQUIRE(remote.packetsReceived == packetsSent);
+						
+						auto durationInMS = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+						auto durationInS = durationInMS.count() / 1000.0;
+						auto packetsPerSecond = packetsSent / durationInS;
+						
+						auto requiredPacketsPerSecond = 1.0;
+						REQUIRE(packetsPerSecond > requiredPacketsPerSecond);
+						
 						
 						auto l = lock_of(remote.packetsMutex);
 						

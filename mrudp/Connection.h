@@ -7,6 +7,7 @@
 #include "Handshake.h"
 #include "Statistics.h"
 #include "NetworkPath.h"
+#include "Scheduler.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -93,6 +94,7 @@ struct Connection : StrongThis<Connection>
 	void fail(mrudp_event_t event);
 	void close(mrudp_event_t event);
 	
+	Timeout finishTimeout;
 	void finishWhenReady ();
 	void finish ();
 	

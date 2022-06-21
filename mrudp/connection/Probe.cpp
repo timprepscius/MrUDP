@@ -6,8 +6,6 @@
 
 #include "../Implementation.h"
 
-#include <iostream>
-
 namespace timprepscius {
 namespace mrudp {
 
@@ -15,6 +13,10 @@ Probe::Probe(Connection *connection_) :
 	connection(connection_),
 	status(OPEN)
 {
+	connection->socket->service->scheduler->allocate(
+		timeout,
+		[this]() { this->onTimeout(); }
+	);
 }
 
 void Probe::close ()
@@ -57,11 +59,7 @@ void Probe::registerTimeout (const Timepoint &at)
 	{
 		isRegistered = true;
 		
-		connection->imp->setTimeout(
-			"probe",
-			nextProbeTime,
-			[this]() { this->onTimeout(); }
-		);
+		timeout.schedule(nextProbeTime);
 	}
 }
 

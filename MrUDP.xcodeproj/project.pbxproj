@@ -85,6 +85,9 @@
 		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */; };
+		F6B6241B2860A131003F604E /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6241A28609AE1003F604E /* Scheduler.cpp */; };
+		F6B6241C2860A131003F604E /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6241A28609AE1003F604E /* Scheduler.cpp */; };
+		F6B6241E2860C23C003F604E /* libCore_Misc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6B6241D2860C23C003F604E /* libCore_Misc.a */; };
 		F6B6AD882711A422006A7726 /* Echo.h in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD872711A422006A7726 /* Echo.h */; };
 		F6B6AD8A2711A451006A7726 /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD892711A451006A7726 /* Run.cpp */; };
 		F6B6AD8B2711A48B006A7726 /* EchoServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61E17022703AA3B00E69317 /* EchoServer.cpp */; };
@@ -223,6 +226,9 @@
 		F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnreliableReceiveQueue.cpp; sourceTree = "<group>"; };
 		F6AF314926DE51FE003FCCAE /* UnreliableReceiveQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnreliableReceiveQueue.h; sourceTree = "<group>"; };
 		F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Streams.cpp; sourceTree = "<group>"; };
+		F6B624192860931B003F604E /* Scheduler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scheduler.h; sourceTree = "<group>"; };
+		F6B6241A28609AE1003F604E /* Scheduler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scheduler.cpp; sourceTree = "<group>"; };
+		F6B6241D2860C23C003F604E /* libCore_Misc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCore_Misc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6B6AD872711A422006A7726 /* Echo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Echo.h; sourceTree = "<group>"; };
 		F6B6AD892711A451006A7726 /* Run.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Run.cpp; sourceTree = "<group>"; };
 		F6BEFDA326CF1A85008EB30E /* Statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statistics.h; sourceTree = "<group>"; };
@@ -253,6 +259,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6B6241E2860C23C003F604E /* libCore_Misc.a in Frameworks */,
 				F6915A8326A4E288001C2E1E /* libMrUDP.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,6 +369,8 @@
 				F6915A3426A4E128001C2E1E /* Packet.cpp */,
 				F6915A3826A4E128001C2E1E /* Packet.h */,
 				F6915A3F26A4E128001C2E1E /* Packet.inl */,
+				F6B624192860931B003F604E /* Scheduler.h */,
+				F6B6241A28609AE1003F604E /* Scheduler.cpp */,
 				F6915A3726A4E128001C2E1E /* Service.cpp */,
 				F6915A2526A4E128001C2E1E /* Service.h */,
 				F6915A2626A4E128001C2E1E /* Socket.cpp */,
@@ -445,6 +454,7 @@
 		F6915A8226A4E288001C2E1E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6B6241D2860C23C003F604E /* libCore_Misc.a */,
 				F61E17072703B03000E69317 /* libCore.a */,
 			);
 			name = Frameworks;
@@ -623,6 +633,7 @@
 				F6915A6126A4E129001C2E1E /* Packet.cpp in Sources */,
 				F6915A5026A4E128001C2E1E /* Probe.cpp in Sources */,
 				F6915A6726A4E129001C2E1E /* ReceiveQueue.cpp in Sources */,
+				F6B6241C2860A131003F604E /* Scheduler.cpp in Sources */,
 				F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */,
 				F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */,
 				F6915A6326A4E129001C2E1E /* Service.cpp in Sources */,
@@ -670,6 +681,7 @@
 				F64AC0EA26A63FA5001829A0 /* Service.cpp in Sources */,
 				F64AC0E926A63FA5001829A0 /* Types.cpp in Sources */,
 				F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */,
+				F6B6241B2860A131003F604E /* Scheduler.cpp in Sources */,
 				F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */,
 				F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */,
 				F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */,
@@ -786,6 +798,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					../Core_Misc,
 					../Core_Zero,
 					../Base,
 					../Libraries/sdk/include,
@@ -849,6 +862,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					../Core_Misc,
 					../Core_Zero,
 					../Base,
 					../Libraries/sdk/include,

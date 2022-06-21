@@ -7,6 +7,8 @@
 
 #include "AsioTesting.h"
 
+#include <core/profile/PROFILE_SCOPE.h>
+
 namespace timprepscius {
 namespace mrudp {
 namespace imp {
@@ -124,6 +126,36 @@ udp::endpoint toEndpoint(const mrudp_addr_t &addr)
 
 // --------------------------
 
+SchedulerImp::SchedulerImp(io_service &io, const OptionsImp *options) :
+	timer(io)
+{
+}
+
+void SchedulerImp::update(const Timepoint &next, bool isRequired)
+{
+	auto duration = next.time_since_epoch();
+	uint64_t milliseconds =  std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+	
+	auto roundAmount = 10 - (milliseconds % 10);
+	auto roundToCentisecond = milliseconds + roundAmount;
+	
+	if (isRequired || roundToCentisecond != nextExpiration)
+	{
+		nextExpiration = roundToCentisecond;
+		
+		auto when = next + std::chrono::milliseconds(roundAmount);
+		timer.expires_at(when);
+		
+		timer.async_wait([this](auto ec) {
+			if (!ec)
+			if (scheduler)
+				scheduler->process();
+		});
+	}
+}
+
+// --------------------------
+
 ServiceImp::ServiceImp (Service *parent_, const OptionsImp *options_) :
 	parent(weak_this(parent_)),
 	options(options_ ? *options_ : systemDefaultOptions)
@@ -132,6 +164,7 @@ ServiceImp::ServiceImp (Service *parent_, const OptionsImp *options_) :
 
 	service = strong<io_service>();
 	resolver = strong<udp::resolver>(*service);
+	scheduler = strong<SchedulerImp>(*service, options_);
 }
 
 ServiceImp::~ServiceImp ()
@@ -274,15 +307,29 @@ void ConnectionImp::stop ()
 {
 	xLogDebug(logOfThis(this));
 
-	auto lock = lock_of(setTimeoutMutex);
-	for (auto &[key, timer] : timers)
-		timer.cancel();
+//	auto lock = lock_of(setTimeoutMutex);
+//	for (auto &[key, timer] : timers)
+//		timer.cancel();
 
-	timers.clear();
+//	timers.clear();
 }
 
+/*
+void ConnectionImp::allocateTimeout(Timeout &timeout, Function<void()> &&f)
+{
+	auto parent = strong(this->parent);
+	if (!parent)
+		return;
+
+	parent->socket->service->scheduler->allocate(timeout, std::move(f));
+}
+*/
+
+/*
 void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Function<void()> &&f)
 {
+	PROFILE_FUNCTION(this);
+
 	xLogDebug(logOfThis(this));
 
 	auto parent = strong(this->parent);
@@ -300,7 +347,7 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 	xLogDebug(logOfThis(this) << logLabel("setting timeout") << logVar(durationInMS));
 
 	timer.expires_from_now(boost::posix_time::milliseconds(durationInMS));
-	timer.async_wait([weak_self = weak_this(this), this, f=std::move(f)](auto ec) {
+	timer.async_wait([weak_self = weak_this(this), f=std::move(f)](auto ec) {
 		if (!ec)
 		if (auto self = strong(weak_self))
 		if (auto parent = strong(self->parent))
@@ -309,6 +356,7 @@ void ConnectionImp::setTimeout (const String &name, const Timepoint &then, Funct
 		}
 	});
 }
+*/
 
 void ConnectionImp::relocate ()
 {

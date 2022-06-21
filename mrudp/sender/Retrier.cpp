@@ -10,7 +10,12 @@ namespace mrudp {
 Retrier::Retrier (Sender *sender_) :
 	sender(sender_)
 {
-
+	sender->connection->socket->service->scheduler->allocate(
+		timeout,
+		[this]() {
+			this->onRetryTimeout();
+		}
+	);
 }
 
 Retrier::~Retrier ()
@@ -150,13 +155,7 @@ void Retrier::recalculateRetryTimeout()
 		auto interval = toDuration(calculateRetryDuration(sender->rtt.duration));
 
 		retry->retryAt = retry->sentAt + interval;
-		sender->connection->imp->setTimeout(
-			"retry",
-			retry->retryAt,
-			[this]() {
-				this->onRetryTimeout();
-			}
-		);
+		timeout.schedule(retry->retryAt);
 	}
 }
 

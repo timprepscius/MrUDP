@@ -3,6 +3,7 @@
 #include "../Connection.h"
 #include "../Socket.h"
 #include "../Service.h"
+#include "../Scheduler.h"
 
 #include "../Base.h"
 
@@ -91,6 +92,25 @@ struct SocketNative
 	void receive(Receive &receive, Function<void(const error_code &)> &&f);
 } ;
 
+// ------------
+
+struct SchedulerImp
+{
+	OptionsImp options;
+
+	SchedulerImp(io_service &io, const OptionsImp *options);
+
+	Scheduler *scheduler = nullptr;
+	uint64_t nextExpiration = 0;
+	steady_timer timer;
+
+	void update(const Timepoint &when, bool isRequired);
+	
+	void process();
+} ;
+
+// ---------
+
 struct ServiceImp : StrongThis<ServiceImp>
 {
 	OptionsImp options;
@@ -98,7 +118,7 @@ struct ServiceImp : StrongThis<ServiceImp>
 	WeakPtr<Service> parent;
 	List<Thread> runners;
 	RecursiveMutex mutex;
-	
+
 	Mutex endpointsInUseMutex;
 	Set<udp::endpoint> endpointsInUse;
 	bool insertEndpoint(const udp::endpoint &endpoint);
@@ -106,6 +126,8 @@ struct ServiceImp : StrongThis<ServiceImp>
 	
 	StrongPtr<io_service> service;
 	StrongPtr<udp::resolver> resolver;
+	StrongPtr<SchedulerImp> scheduler;
+
 	io_service::work *working = nullptr;
 
 	ServiceImp (Service *parent_, const OptionsImp *options);
@@ -115,14 +137,15 @@ struct ServiceImp : StrongThis<ServiceImp>
 	void stop ();
 
 	void resolve(const String &host, const String &port, Function<void(Vector<mrudp_addr_t> &&)> &&f);
+	
 } ;
 
 struct ConnectionImp : StrongThis<ConnectionImp>
 {
 	WeakPtr<Connection> parent;
-	OrderedMap<String, deadline_timer> timers;
-	
-	RecursiveMutex setTimeoutMutex;
+
+//	RecursiveMutex setTimeoutMutex;
+//	OrderedMap<String, deadline_timer> timers;
 	
 	StrongPtr<SocketNative> overlappedSocket;
 
@@ -131,8 +154,6 @@ struct ConnectionImp : StrongThis<ConnectionImp>
 
 	mrudp_error_code_t open ();
 	void stop ();
-
-	void setTimeout (const String &name, const Timepoint &then, Function<void()> &&f);
 
 	void reacquireOverlappedSocket ();
 	void onRemoteAddressChanged();

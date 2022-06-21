@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Base.h"
+#include "../Scheduler.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -48,6 +49,8 @@ struct Probe
 	// Since the retry is based on rtt, and the probe is based on the retry
 	// then the probe is based on rtt.	
 	Duration probeInterval;
+	
+	Timeout timeout;
 	
 	Probe (Connection *connection_);
 	
