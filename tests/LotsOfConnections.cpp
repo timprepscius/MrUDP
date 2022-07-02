@@ -74,6 +74,7 @@ SCENARIO("lots_of_connections")
 			
 			auto localConnectionDispatch = Connection {
 				[&](auto data, auto size, auto isReliable) {
+					local.packetsReceived++;
 					return 0;
 				},
 				[&](auto event) {
@@ -103,7 +104,7 @@ SCENARIO("lots_of_connections")
 					REQUIRE(remote.connections.size() == numConnectionsToCreate);
 				}
 				
-				WHEN(numPacketsToSendOnEachConnection << " packets are sent on each")
+				WHEN(numPacketsToSendOnEachConnection << " packets are sent on each local to remote")
 				{
 					size_t packetsSent = 0;
 					
@@ -144,6 +145,54 @@ SCENARIO("lots_of_connections")
 						
 						bool allMatch = std::all_of(
 							remote.packets.begin(), remote.packets.end(),
+							[&packet](auto &v) { return v == packet; }
+						);
+						
+						REQUIRE(allMatch);
+					}
+				}
+				
+				WHEN(numPacketsToSendOnEachConnection << " packets are sent on each remote to local")
+				{
+					size_t packetsSent = 0;
+					
+					auto then = Clock::now();
+					
+					Packet packet = { 'a', 'b', 'c', 'd', 'e' };
+
+					for (auto &connection: remote.connections)
+					{
+						for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
+						{
+							mrudp_send(connection, packet.data(), (int)packet.size(), 1);
+							packetsSent++;
+						}
+					}
+					
+					THEN("packets show up and are correct")
+					{
+						wait_until(
+							std::chrono::seconds(10),
+							[&]() { return local.packetsReceived == packetsSent; }
+						);
+
+						auto now = Clock::now();
+						auto duration = now - then;
+
+						REQUIRE(local.packetsReceived == packetsSent);
+						
+						auto durationInMS = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+						auto durationInS = durationInMS.count() / 1000.0;
+						auto packetsPerSecond = packetsSent / durationInS;
+						
+						auto requiredPacketsPerSecond = 1.0;
+						REQUIRE(packetsPerSecond > requiredPacketsPerSecond);
+						
+						
+						auto l = lock_of(local.packetsMutex);
+						
+						bool allMatch = std::all_of(
+							local.packets.begin(), local.packets.end(),
 							[&packet](auto &v) { return v == packet; }
 						);
 						
