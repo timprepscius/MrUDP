@@ -395,6 +395,8 @@ void SocketNative::send(const Send &send, Function<void (const error_code &)> &&
 	char *buffer_ = (char *)ptr_of(send.packet);
 	auto size = send.packet->dataSize + sizeof(Header);
 	
+	sLogDebug("mrudp::send::detail", logOfThis(this) << logVar(remoteEndpoint) << logVar(size) << logVar(debugID_));
+	
 	if (isOverlapped)
 	{
 		handle.async_send(
