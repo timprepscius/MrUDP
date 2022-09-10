@@ -211,7 +211,7 @@ void Connection::finish ()
 
 void Connection::receive(Packet &packet, const Address &remoteAddress)
 {
-	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
+	sLogDebug("mrudp::receive", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet.header.connection) << logVarV((char)packet.header.type) << logVarV(packet.header.id) << logVarV(packet.dataSize))
 
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (crypto->onReceive(packet) == Discard)
@@ -224,7 +224,7 @@ void Connection::receive(Packet &packet, const Address &remoteAddress)
 		return ;
 	}
 	
-	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.id) << logVar(packet.dataSize))
+	sLogDebug("mrudp::receive", logVarV((char)packet.header.type) << logVarV(packet.header.id) << logVarV(packet.dataSize))
 #endif
 
 	xTraceChar(this, packet.header.id, (char)std::tolower((char)packet.header.type));
@@ -275,13 +275,13 @@ void Connection::send_(const PacketPtr &packet, Address *address)
 		*packet_ = *packet;
 		pushData(*packet_, id);
 		
-		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet_->header.connection) << logVar(packet_->header.type) << logVar(packet_->header.id) << logVar(packet_->dataSize) << " with long ID");
+		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet_->header.connection) << logVarV(packet_->header.type) << logVarV(packet_->header.id) << logVarV(packet_->dataSize) << " with long ID");
 
 		socket->send(packet_, this, address);
 	}
 	else
 	{
-		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logVar(packet->dataSize));
+		sLogDebug("mrudp::send", logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id) << logVarV(packet->dataSize));
 
 		socket->send(packet, this, address);
 	}

@@ -163,11 +163,11 @@ void Socket::closeUser ()
 
 void Socket::send(const PacketPtr &packet, Connection *connection, const Address *to)
 {
-	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id));
+	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id));
 
 	if (drop.shouldDrop())
 	{
-		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVar(packet->header.connection) << logVar((char)packet->header.type) << logVar(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
+		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
 	}
 	
 	imp->send(packet, connection, to);
@@ -299,7 +299,7 @@ StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Pac
 
 void Socket::receive(Packet &packet, const Address &remoteAddress)
 {
-	xLogDebug(logOfThis(this) << logLabel("begin") << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVar(packet.header.connection) << logVar((char)packet.header.type) << logVar(packet.header.id));
+	xLogDebug(logOfThis(this) << logLabel("begin") << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet.header.connection) << logVarV((char)packet.header.type) << logVarV(packet.header.id));
 
 	auto lookup = getLookUp(packet);
 	

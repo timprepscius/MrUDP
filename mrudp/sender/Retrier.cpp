@@ -178,7 +178,7 @@ void Retrier::onRetryTimeout()
 			auto &header = retry->paths.front().packet->header;
 			(void)header;
 
-			sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress)) << logLabel("FAILING") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
+			sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress)) << logLabel("FAILING") << logVarV(header.id) << logVarV((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
 
 	
 			xTraceChar(this, header.id, 'F', (char)header.type);
@@ -194,7 +194,7 @@ void Retrier::onRetryTimeout()
 				auto &header = path.packet->header;
 				(void)header;
 
-				sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress))<< logLabel("retrying") << logVar(header.id) << logVar((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
+				sLogDebug("mrudp::retry", logOfThis(this) << logLabelVar("local", toString(connection->socket->getLocalAddress())) << logLabelVar("remote", toString(connection->remoteAddress))<< logLabel("retrying") << logVarV(header.id) << logVarV((char)header.type) << logVar(retry->attempts) << "rtt.duration " << sender->rtt.duration);
 
 				xTraceChar(this, path.packet->header.id, '0' + (char)retry->attempts, (char)path.packet->header.type);
 				if (path.address)

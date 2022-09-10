@@ -5,7 +5,7 @@ namespace mrudp {
 
 void UnreliableReceiveQueue::onReceive(Packet &packet)
 {
-	sLogDebug("mrudp::receive", logVar((char)packet.header.type) << logVar(packet.header.connection) << logVar(packet.header.id) );
+	sLogDebug("mrudp::receive", logVarV((char)packet.header.type) << logVarV(packet.header.connection) << logVarV(packet.header.id) );
 
 	auto *begin = (Frame *)packet.data;
 	auto *end = (Frame *)(packet.data + packet.dataSize);
