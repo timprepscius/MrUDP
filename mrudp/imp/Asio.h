@@ -74,19 +74,31 @@ struct SocketNative
 	{
 	}
 
-	SocketNative(io_service &service, const udp::endpoint &remoteEndpoint_) :
+	SocketNative(
+		io_service &service,
+		const udp::endpoint &remoteEndpoint_,
+		const WeakPtr<SocketImp> &socket_,
+		const Address &overlapKey_) :
+		
 		handle(service),
 		isOverlapped(true),
-		remoteEndpoint(remoteEndpoint_)
+		remoteEndpoint(remoteEndpoint_),
+		socket(socket_),
+		overlapKey(overlapKey_)
 	{
 	}
+	
+	~SocketNative ();
 
 	SharedMutex handleMutex;
 	udp::socket handle;
 	SendQueue queue;
-
+	
 	bool isOverlapped;
 	udp::endpoint remoteEndpoint;
+
+	WeakPtr<SocketImp> socket;
+	Address overlapKey;
 	
 	void send(const Send &send, Function<void(const error_code &)> &&f);
 	void receive(Receive &receive, Function<void(const error_code &)> &&f);

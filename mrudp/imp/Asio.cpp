@@ -8,6 +8,7 @@
 #include "AsioTesting.h"
 
 #include <core/profile/PROFILE_SCOPE.h>
+#include <core/debug/Allocations.h>
 
 namespace timprepscius {
 namespace mrudp {
@@ -273,12 +274,15 @@ void ServiceImp::resolve(const String &host, const String &port, Function<void(V
 ConnectionImp::ConnectionImp(const StrongPtr<Connection> &parent_) :
 	parent(weak(parent_))
 {
+	ALLOC_RECORD(this);
 	xLogDebug(logOfThis(this));
 	
 }
 
 ConnectionImp::~ConnectionImp()
 {
+	DEALLOC_RECORD(this);
+	
 	xLogDebug(logOfThis(this));
 	stop();
 }
@@ -515,6 +519,13 @@ void SocketNative::receive(Receive &receive, Function<void (const error_code &)>
 
 // -------------------------------------
 
+SocketNative::~SocketNative()
+{
+	if (auto socket_ = strong(socket))
+		socket_->releaseOverlappedSocket(overlapKey);
+}
+
+
 SocketImp::SocketImp(const StrongPtr<Socket> &parent_, const Address &address) :
 	parent(weak(parent_)),
 	socket(strong<SocketNative>(*parent_->service->imp->service)),
@@ -648,7 +659,7 @@ StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddr
 
 		sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
 
-		auto overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint);
+		auto overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint, weak_this(this), remoteAddress);
 
 		overlappedSocket->handle.open(localEndpoint.protocol(), error);
 		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_open, error);
@@ -694,9 +705,18 @@ StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddr
 	return nullptr;
 }
 
-void SocketImp::releaseOverlappedSocket(const Address &)
+void SocketImp::releaseOverlappedSocket(const Address &key)
 {
-	// this needs to do something and get connected eventually
+	auto l = lock_of(overlappedSocketsMutex);
+	auto i = overlappedSockets.find(key);
+	debug_assert(i != overlappedSockets.end());
+	
+	if (i != overlappedSockets.end())
+	{
+		auto ptr = strong(i->second);
+		if (ptr == nullptr)
+			overlappedSockets.erase(i);
+	}
 }
 
 void SocketImp::handleReceiveFrom(const Address &remoteAddress, Packet &receivePacket)

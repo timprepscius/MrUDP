@@ -117,12 +117,18 @@ bool construct_(SecureRandom &random, RSAKeyDefault &private_, RSAKeyDefault &pu
 	
 	// generate the public key
 	{
-		u8 *bytes = nullptr;
-		auto len = i2d_PublicKey(private_.i->pkey, &bytes);
+		auto len = i2d_PublicKey(private_.i->pkey, NULL);
 		if (SSL_FAIL(len))
 			return false;
 
-		Vector<u8> v(bytes, bytes+len);
+		Vector<u8> v(len);
+		
+		auto *p = v.data();
+		auto written = i2d_PublicKey(private_.i->pkey, &p);
+
+		if (SSL_FAIL(written))
+			return false;
+
 		if (!construct_(public_, std::move(v)))
 			return false;
 	}
