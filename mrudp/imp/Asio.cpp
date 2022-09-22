@@ -7,9 +7,6 @@
 
 #include "AsioTesting.h"
 
-#include <core/profile/PROFILE_SCOPE.h>
-#include <core/debug/Allocations.h>
-
 namespace timprepscius {
 namespace mrudp {
 namespace imp {

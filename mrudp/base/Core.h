@@ -14,6 +14,8 @@
 	#include <core/log/LogOf.h>
 	#include <core/debug/Debug.h>
 	#include <core/assert/debug_assert.h>
+	#include <core/profile/PROFILE_SCOPE.h>
+	#include <core/debug/Allocations.h>
 #else
 	#define sLogDebug(...)
 	#define sLogDebugIf(...)
@@ -21,6 +23,9 @@
 	#define xDebugLine()
 	#define xLogActivateStory(...)
 	#define xLogInitialize(...)
+	#define ALLOC_RECORD(...)
+	#define DEALLOC_RECORD(...)
+	#define PROFILE_FUNCTION(...)
 	
 	#include <cassert>
 	#include "Ptr.h"

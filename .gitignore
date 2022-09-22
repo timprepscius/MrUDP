@@ -5,4 +5,5 @@ xcshareddata
 */xcuserdata
 .bin
 build
+build*
 Makefile

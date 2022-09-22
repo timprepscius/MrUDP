@@ -11,11 +11,15 @@ else()
 
 endif()
 
-
 if(USE_BOOST)
     include_directories(PRIVATE ${USE_BOOST})
 else()
-    message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
+    find_package(Boost)
+    if(Boost_FOUND)
+       include_directories(${Boost_INCLUDE_DIRS})       
+    else()
+       message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
+    endif()
 endif()
 
 if (WIN32)
@@ -45,6 +49,7 @@ add_library(MrUDP STATIC
     mrudp/Handshake.cpp
     mrudp/NetworkPath.cpp
     mrudp/Packet.cpp
+    mrudp/Scheduler.cpp
     mrudp/Service.cpp
     mrudp/Socket.cpp
     mrudp/Statistics.cpp
