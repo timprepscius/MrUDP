@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "Packet.h"
 #include "socket/Drop.h"
+#include "proxy/Transformer.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -34,6 +35,7 @@ struct Socket : StrongThis<Socket>
 	void close ();
 	void closeUser ();
 	
+	proxy::Transformer proxy;
 	Set<ShortConnectionID> shortConnectionIDs;
 	ShortConnectionID generateShortConnectionID ();
 	bool isFull();
@@ -58,9 +60,9 @@ struct Socket : StrongThis<Socket>
 	UnorderedMap<ShortConnectionID, StrongPtr<Connection>> receiveConnections;
 	
 	LookUp getLookUp(Packet &packet);
-	StrongPtr<Connection> findConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress);
-	StrongPtr<Connection> generateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress);
-	StrongPtr<Connection> findOrGenerateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress);
+	StrongPtr<Connection> findConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress, const ProxyID &proxyID);
+	StrongPtr<Connection> generateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress, const ProxyID &proxyID);
+	StrongPtr<Connection> findOrGenerateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress, const ProxyID &proxyID);
 	
 	void insert(const StrongPtr<Connection> &connection);
 	void erase(Connection *connection);

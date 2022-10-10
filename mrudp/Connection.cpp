@@ -10,9 +10,10 @@ namespace mrudp {
 	static std::atomic<size_t> NumConnection = 0;
 #endif
 
-Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_) :
+Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, const Address &remoteAddress_, ShortConnectionID localID_, ProxyID proxyID_) :
 	socket(socket_),
 	id(id_),
+	proxyID(proxyID_),
 	localID(localID_),
 	remoteAddress(remoteAddress_),
 	sender(this),

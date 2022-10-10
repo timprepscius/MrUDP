@@ -4,6 +4,7 @@ PROJECTS := \
 	mrudp \
 	mrudp/receiver \
 	mrudp/connection \
+	mrudp/proxy \
 	mrudp/sender \
 	mrudp/socket \
 	mrudp/imp

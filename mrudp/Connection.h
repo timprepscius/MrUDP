@@ -8,6 +8,7 @@
 #include "Statistics.h"
 #include "NetworkPath.h"
 #include "Scheduler.h"
+#include "proxy/ProxyID.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -29,10 +30,15 @@ struct Connection : StrongThis<Connection>
 {
 	StrongPtr<imp::ConnectionImp> imp;
 	StrongPtr<Socket> socket = nullptr;
-
+	
 	// the long lookup id for this connection
 	LongConnectionID id;
 	
+	// the proxyID for this connection
+	// if this is non-zero, a proxy header will be pushed
+	// before send
+	ProxyID proxyID;
+
 	// the short lookup ids for remote and local.
 	ShortConnectionID remoteID = 0, localID = 0;
 	
@@ -68,7 +74,8 @@ struct Connection : StrongThis<Connection>
 		const StrongPtr<Socket> &socket_,
 		LongConnectionID id,
 		const mrudp_addr_t &remoteAddress_,
-		ShortConnectionID localID
+		ShortConnectionID localID,
+		ProxyID proxyID
 	);
 	~Connection ();
 

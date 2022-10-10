@@ -1,0 +1,51 @@
+include $(MAKEDIR)/Makefile.base
+
+PROJECTS := \
+	. \
+	
+
+#BASE := ../
+
+INCPATH := \
+	$(timprepscius.core.include) \
+	$(timprepscius.standard.include) \
+	$(timprepscius.com.include) \
+	$(timprepscius.network.include) \
+	$(timprepscius.audio.include) \
+	$(timprepscius.crown.include) \
+	$(timprepscius.crowngui.include) \
+	$(timprepscius.map.include) \
+	$(timprepscius.tilemap.include) \
+	$(timprepscius.vectormap.include) \
+	$(timprepscius.libraries.cpp.include)
+	
+#SRC_PCH := server/Precompile.pch
+
+LDPATH := $(timprepscius.libraries.cpp.link)
+
+EXEFILE := MrUDP-Proxy.exe
+
+LIBS := \
+	-lMrUDP \
+	-lCoreMisc -lCoreVariant -lCoreFuture -lCoreIO -lCoreMath -lCoreZero \
+
+LIBS += \
+	$(timprepscius.com.libs) \
+	$(timprepscius.audio.libs) \
+	-lboost-system \
+	-lboost-thread \
+	-lssl \
+	-lcrypto \
+	-lz
+
+ifeq (OSX,$(SYSNAME))
+	LIBS += -framework OpenCl -lc++
+endif
+
+ifeq (LINUX,$(SYSNAME))
+	LIBS += -lm -lstdc++ -pthread
+endif
+
+include $(MAKEDIR)/Makefile.bin
+
+

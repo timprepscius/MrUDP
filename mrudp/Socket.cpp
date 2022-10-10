@@ -72,7 +72,8 @@ StrongPtr<Connection> Socket::connect(
 		strong_this(this),
 		generateLongConnectionID(),
 		remoteAddress,
-		generateShortConnectionID()
+		generateShortConnectionID(),
+		(ProxyID)0
 	);
 	
 	connection->openUser(
@@ -161,13 +162,26 @@ void Socket::closeUser ()
 	}
 }
 
-void Socket::send(const PacketPtr &packet, Connection *connection, const Address *to)
+void Socket::send(const PacketPtr &packet_, Connection *connection, const Address *to)
 {
+	auto packet = packet_;
+	
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id));
 
 	if (drop.shouldDrop())
 	{
 		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
+	}
+	
+	// this is sort of lame, because I'm allocating memory with
+	// each packet, however, in the near future this allocation
+	// will all go away anyways with the allocator pool
+	if (connection->proxyID)
+	{
+		auto packet_ = strong<Packet>();
+		*packet_ = *packet;
+		proxy.sendBackward(*packet_, connection->proxyID);
+		packet = packet_;
 	}
 	
 	imp->send(packet, connection, to);
@@ -185,7 +199,7 @@ Socket::LookUp Socket::getLookUp(Packet &packet)
 }
 
 
-StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress)
+StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress, const ProxyID &proxyID)
 {
 	if (lookup.longID != 0)
 	{
@@ -206,7 +220,7 @@ StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packe
 	return nullptr;
 }
 
-StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress)
+StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress, const ProxyID &proxyID)
 {
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "new connection");
 	
@@ -250,7 +264,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	
 	int status = 0;
 	auto localID = generateShortConnectionID();
-	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID);
+	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID, proxyID);
 	
 	insert(connection);
 
@@ -283,14 +297,14 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	return connection;
 }
 
-StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress)
+StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Packet &packet, const Address &remoteAddress, const ProxyID &proxyID)
 {
 	auto lock = lock_of(connectionsMutex);
-	auto connection = findConnection(lookup, packet, remoteAddress);
+	auto connection = findConnection(lookup, packet, remoteAddress, proxyID);
 
 	if(connection == nullptr)
 	{
-		connection = generateConnection(lookup, packet, remoteAddress);
+		connection = generateConnection(lookup, packet, remoteAddress, proxyID);
 	}
 
 	return connection;
@@ -301,9 +315,12 @@ void Socket::receive(Packet &packet, const Address &remoteAddress)
 {
 	xLogDebug(logOfThis(this) << logLabel("begin") << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet.header.connection) << logVarV((char)packet.header.type) << logVarV(packet.header.id));
 
+	ProxyID proxyID = 0;
+	proxy.receiveForward(packet, proxyID);
+
 	auto lookup = getLookUp(packet);
 	
-	if (auto connection = findOrGenerateConnection(lookup, packet, remoteAddress))
+	if (auto connection = findOrGenerateConnection(lookup, packet, remoteAddress, proxyID))
 	{
 		connection->receive(packet, remoteAddress);
 	}

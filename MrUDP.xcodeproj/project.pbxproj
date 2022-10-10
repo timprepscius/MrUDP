@@ -10,7 +10,6 @@
 		F61D252526D0286A00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */; };
 		F61E17012703483300E69317 /* EchoServer.c in Sources */ = {isa = PBXBuildFile; fileRef = F61E16F52703478700E69317 /* EchoServer.c */; };
 		F61E17062703B01700E69317 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
-		F61E17082703B03000E69317 /* libCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F61E17072703B03000E69317 /* libCore.a */; };
 		F61FD09526F1566300F58003 /* NetworkPathChange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61FD09426F153F800F58003 /* NetworkPathChange.cpp */; };
 		F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634A8EB26A613AC00869A6F /* Connections.cpp */; };
 		F639D07628181F830031D309 /* EchoClient.c in Sources */ = {isa = PBXBuildFile; fileRef = F639D07528181F830031D309 /* EchoClient.c */; };
@@ -31,6 +30,11 @@
 		F65E050A284A973C00AD9687 /* AsioTesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E0509284A93D500AD9687 /* AsioTesting.cpp */; };
 		F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E0509284A93D500AD9687 /* AsioTesting.cpp */; };
 		F65E050D284AA0D000AD9687 /* InstrusiveAsioTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */; };
+		F67A363B28EDEEDA00DA78E7 /* Transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */; };
+		F67A363C28EDEEDB00DA78E7 /* Transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */; };
+		F67A364928EDF72400DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
+		F67A364F28EDF73000DA78E7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363828EDA8F600DA78E7 /* main.cpp */; };
+		F67A366028EE032A00DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
 		F6915A4D26A4E128001C2E1E /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1E26A4E128001C2E1E /* Connection.h */; };
 		F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1F26A4E128001C2E1E /* mrudp.h */; };
 		F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2026A4E128001C2E1E /* Types.cpp */; };
@@ -85,9 +89,13 @@
 		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */; };
+		F6B49B9C28EE32FF00258B1F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A367128EE31EB00DA78E7 /* Proxy.cpp */; };
+		F6B49B9D28EE32FF00258B1F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A367128EE31EB00DA78E7 /* Proxy.cpp */; };
+		F6B49BA128EE34A700258B1F /* Proxy+Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */; };
+		F6B49BA228EE36A200258B1F /* mrudp_proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */; };
+		F6B49BA328EE36A200258B1F /* mrudp_proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */; };
 		F6B6241B2860A131003F604E /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6241A28609AE1003F604E /* Scheduler.cpp */; };
 		F6B6241C2860A131003F604E /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6241A28609AE1003F604E /* Scheduler.cpp */; };
-		F6B6241E2860C23C003F604E /* libCore_Misc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6B6241D2860C23C003F604E /* libCore_Misc.a */; };
 		F6B6AD882711A422006A7726 /* Echo.h in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD872711A422006A7726 /* Echo.h */; };
 		F6B6AD8A2711A451006A7726 /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6AD892711A451006A7726 /* Run.cpp */; };
 		F6B6AD8B2711A48B006A7726 /* EchoServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F61E17022703AA3B00E69317 /* EchoServer.cpp */; };
@@ -98,6 +106,20 @@
 
 /* Begin PBXContainerItemProxy section */
 		F61E17042703B01100E69317 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6915A1426A4E107001C2E1E;
+			remoteInfo = MrUDP;
+		};
+		F67A363F28EDF72400DA78E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6915A1426A4E107001C2E1E;
+			remoteInfo = MrUDP;
+		};
+		F67A365828EE032A00DA78E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F6915A0D26A4E107001C2E1E /* Project object */;
 			proxyType = 1;
@@ -115,6 +137,24 @@
 
 /* Begin PBXCopyFilesBuildPhase section */
 		F61E16F8270347E400E69317 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		F67A364A28EDF72400DA78E7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		F67A366128EE032A00DA78E7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -170,6 +210,14 @@
 		F676C52826A7943F001559F4 /* Linux.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Linux.h; sourceTree = "<group>"; };
 		F676C52926A794C1001559F4 /* Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		F676C55526A79EAE001559F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F67A363828EDA8F600DA78E7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		F67A363928EDEE4500DA78E7 /* Transformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Transformer.h; sourceTree = "<group>"; };
+		F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Transformer.cpp; sourceTree = "<group>"; };
+		F67A364E28EDF72400DA78E7 /* MrUDP-Proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Proxy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "Proxy+Test.cpp"; sourceTree = "<group>"; };
+		F67A366528EE032A00DA78E7 /* MrUDP-Proxy-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Proxy-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F67A367028EE31EB00DA78E7 /* Proxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
+		F67A367128EE31EB00DA78E7 /* Proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
 		F6915A1526A4E107001C2E1E /* libMrUDP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMrUDP.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6915A1C26A4E128001C2E1E /* Makefile.project */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
 		F6915A1E26A4E128001C2E1E /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
@@ -226,6 +274,9 @@
 		F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnreliableReceiveQueue.cpp; sourceTree = "<group>"; };
 		F6AF314926DE51FE003FCCAE /* UnreliableReceiveQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnreliableReceiveQueue.h; sourceTree = "<group>"; };
 		F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Streams.cpp; sourceTree = "<group>"; };
+		F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mrudp_proxy.h; sourceTree = "<group>"; };
+		F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mrudp_proxy.cpp; sourceTree = "<group>"; };
+		F6B49B9E28EE333800258B1F /* ProxyID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyID.h; sourceTree = "<group>"; };
 		F6B624192860931B003F604E /* Scheduler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scheduler.h; sourceTree = "<group>"; };
 		F6B6241A28609AE1003F604E /* Scheduler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scheduler.cpp; sourceTree = "<group>"; };
 		F6B6241D2860C23C003F604E /* libCore_Misc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCore_Misc.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -243,8 +294,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F61E17082703B03000E69317 /* libCore.a in Frameworks */,
 				F61E17062703B01700E69317 /* libMrUDP.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F67A364728EDF72400DA78E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F67A364928EDF72400DA78E7 /* libMrUDP.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F67A365E28EE032A00DA78E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F67A366028EE032A00DA78E7 /* libMrUDP.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +325,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6B6241E2860C23C003F604E /* libCore_Misc.a in Frameworks */,
 				F6915A8326A4E288001C2E1E /* libMrUDP.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +380,27 @@
 			path = base;
 			sourceTree = "<group>";
 		};
+		F67A363728EDA8E000DA78E7 /* mrudp_proxy */ = {
+			isa = PBXGroup;
+			children = (
+				F67A363828EDA8F600DA78E7 /* main.cpp */,
+			);
+			path = mrudp_proxy;
+			sourceTree = "<group>";
+		};
+		F67A366F28EE31DC00DA78E7 /* proxy */ = {
+			isa = PBXGroup;
+			children = (
+				F6B49B9E28EE333800258B1F /* ProxyID.h */,
+				F67A363928EDEE4500DA78E7 /* Transformer.h */,
+				F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */,
+				F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */,
+				F67A367128EE31EB00DA78E7 /* Proxy.cpp */,
+				F67A367028EE31EB00DA78E7 /* Proxy.h */,
+			);
+			path = proxy;
+			sourceTree = "<group>";
+		};
 		F6915A0C26A4E107001C2E1E = {
 			isa = PBXGroup;
 			children = (
@@ -322,6 +408,7 @@
 				F676C55526A79EAE001559F4 /* README.md */,
 				F6915A7426A4E181001C2E1E /* Makefile.def */,
 				F6915A1C26A4E128001C2E1E /* Makefile.project */,
+				F67A363728EDA8E000DA78E7 /* mrudp_proxy */,
 				F6915A1D26A4E128001C2E1E /* mrudp */,
 				F61E16F42703476400E69317 /* examples */,
 				F6915A4626A4E128001C2E1E /* tests */,
@@ -337,6 +424,8 @@
 				F6915A7926A4E277001C2E1E /* MrUDP-Tests */,
 				F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */,
 				F61E16FA270347E400E69317 /* MrUDP-Examples */,
+				F67A364E28EDF72400DA78E7 /* MrUDP-Proxy */,
+				F67A366528EE032A00DA78E7 /* MrUDP-Proxy-Tests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -344,6 +433,7 @@
 		F6915A1D26A4E128001C2E1E /* mrudp */ = {
 			isa = PBXGroup;
 			children = (
+				F67A366F28EE31DC00DA78E7 /* proxy */,
 				F676C52526A79378001559F4 /* base */,
 				F6915A2126A4E128001C2E1E /* connection */,
 				F676C52326A78AE3001559F4 /* imp */,
@@ -364,6 +454,8 @@
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
 				F6915A1F26A4E128001C2E1E /* mrudp.h */,
+				F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */,
+				F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */,
 				F611E489270F2CFA0038D6D4 /* mrudp.hpp */,
 				F6AE8D86278CA33700BF1EA9 /* Precompile.pch */,
 				F6915A3426A4E128001C2E1E /* Packet.cpp */,
@@ -512,6 +604,42 @@
 			productReference = F61E16FA270347E400E69317 /* MrUDP-Examples */;
 			productType = "com.apple.product-type.tool";
 		};
+		F67A363D28EDF72400DA78E7 /* MrUDP-Proxy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F67A364B28EDF72400DA78E7 /* Build configuration list for PBXNativeTarget "MrUDP-Proxy" */;
+			buildPhases = (
+				F67A364028EDF72400DA78E7 /* Sources */,
+				F67A364728EDF72400DA78E7 /* Frameworks */,
+				F67A364A28EDF72400DA78E7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F67A363E28EDF72400DA78E7 /* PBXTargetDependency */,
+			);
+			name = "MrUDP-Proxy";
+			productName = "MrUDP-Examples";
+			productReference = F67A364E28EDF72400DA78E7 /* MrUDP-Proxy */;
+			productType = "com.apple.product-type.tool";
+		};
+		F67A365628EE032A00DA78E7 /* MrUDP-Proxy-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F67A366228EE032A00DA78E7 /* Build configuration list for PBXNativeTarget "MrUDP-Proxy-Tests" */;
+			buildPhases = (
+				F67A365928EE032A00DA78E7 /* Sources */,
+				F67A365E28EE032A00DA78E7 /* Frameworks */,
+				F67A366128EE032A00DA78E7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F67A365728EE032A00DA78E7 /* PBXTargetDependency */,
+			);
+			name = "MrUDP-Proxy-Tests";
+			productName = "MrUDP-Examples";
+			productReference = F67A366528EE032A00DA78E7 /* MrUDP-Proxy-Tests */;
+			productType = "com.apple.product-type.tool";
+		};
 		F6915A1426A4E107001C2E1E /* MrUDP */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F6915A1926A4E107001C2E1E /* Build configuration list for PBXNativeTarget "MrUDP" */;
@@ -604,6 +732,8 @@
 				F6915A9726A4E346001C2E1E /* MrUDP-iOS */,
 				F6915A7826A4E277001C2E1E /* MrUDP-Tests */,
 				F61E16F9270347E400E69317 /* MrUDP-Examples */,
+				F67A363D28EDF72400DA78E7 /* MrUDP-Proxy */,
+				F67A365628EE032A00DA78E7 /* MrUDP-Proxy-Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -619,6 +749,22 @@
 				F6B6AD8B2711A48B006A7726 /* EchoServer.cpp in Sources */,
 				F61E17012703483300E69317 /* EchoServer.c in Sources */,
 				F6B6AD882711A422006A7726 /* Echo.h in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F67A364028EDF72400DA78E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F67A364F28EDF73000DA78E7 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F67A365928EE032A00DA78E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6B49BA128EE34A700258B1F /* Proxy+Test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -638,6 +784,7 @@
 				F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */,
 				F6915A6326A4E129001C2E1E /* Service.cpp in Sources */,
 				F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
+				F6B49B9C28EE32FF00258B1F /* Proxy.cpp in Sources */,
 				F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */,
 				F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */,
 				F65E050A284A973C00AD9687 /* AsioTesting.cpp in Sources */,
@@ -645,8 +792,10 @@
 				F6915A6B26A4E129001C2E1E /* Connection.cpp in Sources */,
 				F6A176C926B4207D003708D8 /* Handshake.cpp in Sources */,
 				F6A176BB26B1B80E003708D8 /* Base.cpp in Sources */,
+				F67A363B28EDEEDA00DA78E7 /* Transformer.cpp in Sources */,
 				F6915A6926A4E129001C2E1E /* Asio.cpp in Sources */,
 				F6915A6526A4E129001C2E1E /* Receiver.cpp in Sources */,
+				F6B49BA228EE36A200258B1F /* mrudp_proxy.cpp in Sources */,
 				F6A176D626B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -686,6 +835,7 @@
 				F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */,
 				F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */,
 				F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
+				F6B49B9D28EE32FF00258B1F /* Proxy.cpp in Sources */,
 				F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */,
 				F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */,
 				F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */,
@@ -693,8 +843,10 @@
 				F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */,
 				F6A176C826B4207C003708D8 /* Handshake.cpp in Sources */,
 				F6A176BA26B1B80E003708D8 /* Base.cpp in Sources */,
+				F67A363C28EDEEDB00DA78E7 /* Transformer.cpp in Sources */,
 				F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */,
 				F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */,
+				F6B49BA328EE36A200258B1F /* mrudp_proxy.cpp in Sources */,
 				F6A176D526B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -706,6 +858,16 @@
 			isa = PBXTargetDependency;
 			target = F6915A1426A4E107001C2E1E /* MrUDP */;
 			targetProxy = F61E17042703B01100E69317 /* PBXContainerItemProxy */;
+		};
+		F67A363E28EDF72400DA78E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6915A1426A4E107001C2E1E /* MrUDP */;
+			targetProxy = F67A363F28EDF72400DA78E7 /* PBXContainerItemProxy */;
+		};
+		F67A365728EE032A00DA78E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6915A1426A4E107001C2E1E /* MrUDP */;
+			targetProxy = F67A365828EE032A00DA78E7 /* PBXContainerItemProxy */;
 		};
 		F6915A8126A4E27F001C2E1E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -723,10 +885,6 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				HEADER_SEARCH_PATHS = (
-					.,
-					../Libraries/sdk/include,
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -739,10 +897,54 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				HEADER_SEARCH_PATHS = (
-					.,
-					../Libraries/sdk/include,
-				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F67A364C28EDF72400DA78E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F67A364D28EDF72400DA78E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F67A366328EE032A00DA78E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F67A366428EE032A00DA78E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T2M28D3T75;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -804,16 +1006,22 @@
 					../Libraries/sdk/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
-				LIBRARY_SEARCH_PATHS = ../Libraries/sdk/lib/Debug.osx;
+				LIBRARY_SEARCH_PATHS = (
+					../Libraries/sdk/lib/Debug.osx,
+					../Libraries/project/Debug.osx,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
+					"-lCoreMisc",
+					"-lCoreZero",
 					"-lssl",
 					"-lcrypto",
 				);
 				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
 			};
 			name = Debug;
 		};
@@ -868,15 +1076,21 @@
 					../Libraries/sdk/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
-				LIBRARY_SEARCH_PATHS = ../Libraries/sdk/lib/Release.osx;
+				LIBRARY_SEARCH_PATHS = (
+					../Libraries/sdk/lib/Release.osx,
+					../Libraries/project/Release.osx,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
+					"-lCoreMisc",
+					"-lCoreZero",
 					"-lssl",
 					"-lcrypto",
 				);
 				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
 			};
 			name = Release;
 		};
@@ -965,6 +1179,24 @@
 			buildConfigurations = (
 				F61E16FF270347E400E69317 /* Debug */,
 				F61E1700270347E400E69317 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F67A364B28EDF72400DA78E7 /* Build configuration list for PBXNativeTarget "MrUDP-Proxy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F67A364C28EDF72400DA78E7 /* Debug */,
+				F67A364D28EDF72400DA78E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F67A366228EE032A00DA78E7 /* Build configuration list for PBXNativeTarget "MrUDP-Proxy-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F67A366328EE032A00DA78E7 /* Debug */,
+				F67A366428EE032A00DA78E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
