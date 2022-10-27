@@ -704,6 +704,8 @@ StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddr
 
 void SocketImp::releaseOverlappedSocket(const Address &key)
 {
+	sLogRelease("mrudp::asio", toString(key));
+	
 	auto l = lock_of(overlappedSocketsMutex);
 	auto i = overlappedSockets.find(key);
 	debug_assert(i != overlappedSockets.end());
@@ -751,6 +753,10 @@ void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr
 				if (auto socket = strong(socket_))
 				{
 					doReceive(socket, receive);
+				}
+				else
+				{
+					sLogRelease("mrudp::asio", "doReceive ending")
 				}
 			}
 		}
