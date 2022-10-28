@@ -131,8 +131,8 @@ struct ServiceImp : StrongThis<ServiceImp>
 	List<Thread> runners;
 	RecursiveMutex mutex;
 
-	Mutex endpointsInUseMutex;
-	Set<udp::endpoint> endpointsInUse;
+//	Mutex endpointsInUseMutex;
+//	Set<udp::endpoint> endpointsInUse;
 	bool insertEndpoint(const udp::endpoint &endpoint);
 	void eraseEndpoint(const udp::endpoint &endpoint);
 	

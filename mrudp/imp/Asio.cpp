@@ -172,27 +172,27 @@ ServiceImp::~ServiceImp ()
 
 bool ServiceImp::insertEndpoint(const udp::endpoint &endpoint)
 {
-	auto lock = lock_of(endpointsInUseMutex);
-	auto i = endpointsInUse.find(endpoint);
-	
-	if (i != endpointsInUse.end())
-	{
-		sLogDebug("mrudp::overlap_io", "endpoint already taken! " << endpoint);
-
-		return false;
-	}
-		
-	endpointsInUse.insert(endpoint);
+//	auto lock = lock_of(endpointsInUseMutex);
+//	auto i = endpointsInUse.find(endpoint);
+//
+//	if (i != endpointsInUse.end())
+//	{
+//		sLogDebug("mrudp::overlap_io", "endpoint already taken! " << endpoint);
+//
+//		return false;
+//	}
+//
+//	endpointsInUse.insert(endpoint);
 	return true;
 }
 
 void ServiceImp::eraseEndpoint(const udp::endpoint &endpoint)
 {
-	auto lock = lock_of(endpointsInUseMutex);
-	auto i = endpointsInUse.find(endpoint);
-
-	if (i != endpointsInUse.end())
-		endpointsInUse.erase(i);
+//	auto lock = lock_of(endpointsInUseMutex);
+//	auto i = endpointsInUse.find(endpoint);
+//
+//	if (i != endpointsInUse.end())
+//		endpointsInUse.erase(i);
 }
 
 
