@@ -110,10 +110,10 @@ jobs:
           ${{ matrix.config.name }}-ccache-
 
     - name: Install boost
-        uses: MarkusJx/install-boost@v2.1.0
-        id: install-boost
-        with:
-          boost_version: 1.76.0
+      uses: MarkusJx/install-boost@v2.1.0
+      id: install-boost
+      with:
+        boost_version: 1.76.0
 
     - name: Configure
       shell: cmake -P {0}
