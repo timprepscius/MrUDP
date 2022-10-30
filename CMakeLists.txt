@@ -56,6 +56,7 @@ add_library(MrUDP STATIC
     mrudp/Types.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
+    mrudp/proxy/Transformer.cpp
     mrudp/receiver/ReceiveQueue.cpp
     mrudp/receiver/Receiver.cpp
     mrudp/sender/Retrier.cpp

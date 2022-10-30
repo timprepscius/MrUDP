@@ -5,29 +5,11 @@
 
 #pragma once
 
-#include "../Config.h"
-
 #include <memory>
-
-template<typename T>
-void on_deallocate(T *t)
-{
-}
 
 namespace timprepscius {
 namespace core {
 namespace ptr {
-namespace using_std {
-
-template<typename T>
-struct Deleter
-{
-	void operator()(T* p)
-	{
-		on_deallocate(p);
-		delete p;
-	}
-} ;
 
 template<typename T>
 using StrongPtr = std::shared_ptr<T>;
@@ -53,13 +35,7 @@ auto weak_this(T *t)
 template<typename T>
 auto strong_this(T *t)
 {
-	return std::static_pointer_cast<T>(t->weak_from_this().lock());
-}
-
-template<typename T, typename ... Args>
-auto strong(Args && ...args)
-{
-	return std::shared_ptr<T>(new T(std::forward<Args>(args)...), Deleter<T>());
+	return std::static_pointer_cast<T>(t ? t->weak_from_this().lock() : std::shared_ptr<T>());
 }
 
 template<typename T>
@@ -74,6 +50,11 @@ auto weak(const StrongPtr<T> &t)
 	return std::weak_ptr<T>(t);
 }
 
+template<typename T, typename ... Args>
+auto strong(Args && ...args)
+{
+	return std::make_shared<T>(std::forward<Args>(args)...);
+}
 
 template<typename T>
 auto strong_thread(const T &t)
@@ -93,7 +74,6 @@ auto ref_this(T *t)
 	return strong_this(t);
 }
 
-} // namespace
 } // namespace
 } // namespace
 } // namespace

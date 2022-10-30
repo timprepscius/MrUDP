@@ -19,10 +19,6 @@
 #include "base/Mutex.h"
 #include "base/Core.h"
 
-#ifdef SYS_LINUX
-	#include "base/Linux.h"
-#endif
-
 namespace timprepscius {
 namespace mrudp {
 

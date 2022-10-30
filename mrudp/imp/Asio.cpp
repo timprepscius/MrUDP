@@ -756,7 +756,7 @@ void SocketImp::doReceive(const StrongPtr<SocketNative> &socket, const StrongPtr
 				}
 				else
 				{
-					sLogRelease("mrudp::asio", "doReceive ending")
+					sLogRelease("mrudp::asio", "doReceive ending");
 				}
 			}
 		}
