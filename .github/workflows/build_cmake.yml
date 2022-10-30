@@ -109,19 +109,16 @@ jobs:
         restore-keys: |
           ${{ matrix.config.name }}-ccache-
 
-
-
-    - name: Build Boost
-      id: boost
-      uses: egor-tensin/build-boost@v1
+    - name: Install boost
+      uses: MarkusJx/install-boost@v2.1.0
+      id: install-boost
       with:
-        version: 1.76.0
-        libraries: threads system
-        platform: x64
-        configuration: Release
+        boost_version: 1.76.0
 
     - name: Configure
       shell: cmake -P {0}
+      env:
+        USE_BOOST: ${{ steps.install-boost.outputs.BOOST_ROOT }}
       run: |
         set(ENV{CC} ${{ matrix.config.cc }})
         set(ENV{CXX} ${{ matrix.config.cxx }})
@@ -159,7 +156,6 @@ jobs:
         if (NOT result EQUAL 0)
           message(FATAL_ERROR "Bad exit status")
         endif()
-
 
     - name: Build
       shell: cmake -P {0}
