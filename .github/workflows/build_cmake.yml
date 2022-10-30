@@ -109,11 +109,16 @@ jobs:
         restore-keys: |
           ${{ matrix.config.name }}-ccache-
 
-    - name: Install boost
-      uses: MarkusJx/install-boost@v2.1.0
-      id: install-boost
+
+
+    - name: Build Boost
+      id: boost
+      uses: egor-tensin/build-boost@v1
       with:
-        boost_version: 1.76.0
+        version: 1.76.0
+        libraries: threads system
+        platform: x64
+        configuration: Release
 
     - name: Configure
       shell: cmake -P {0}

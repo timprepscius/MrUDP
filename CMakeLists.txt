@@ -11,14 +11,14 @@ else()
 
 endif()
 
-if(BOOST_ROOT)
-    include_directories(PRIVATE ${BOOST_ROOT})
+if(USE_BOOST)
+    include_directories(PRIVATE ${USE_BOOST})
 else()
     find_package(Boost)
     if(Boost_FOUND)
        include_directories(${Boost_INCLUDE_DIRS})       
     else()
-       message( FATAL_ERROR "please specify BOOST_ROOT=/place/where/boost/is/boost <-- not a relative path!")
+       message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
     endif()
 endif()
 
