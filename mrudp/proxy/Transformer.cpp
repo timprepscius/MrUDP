@@ -62,17 +62,29 @@ bool Transformer::sendBackward(Packet &packet, const ProxyID &proxyID)
 	return true;
 }
 
-bool Transformer::sendMagic (Packet &packet)
+bool Transformer::sendMagic (Packet &packet, ProxyMagic magic)
 {
 	packet.header.type = PROXY_MAGIC;
 	packet.dataSize = 0;
+	if (!pushData(packet, magic))
+		return false;
 	
 	return true;
 }
 
-bool Transformer::receiveMagic (Packet &packet)
+bool Transformer::receiveMagic (Packet &packet, ProxyMagic expected)
 {
-	return packet.header.type == PROXY_MAGIC;
+	if (packet.header.type != PROXY_MAGIC)
+		return false;
+		
+	ProxyMagic magic;
+	if (!popData(packet, magic))
+		return false;
+		
+	if (magic != expected)
+		return false;
+		
+	return true;
 }
 
 } // namespace

@@ -81,7 +81,7 @@ struct ProxyIDs {
 	}
 } ;
 
-void proxy(udp::socket &handle, bool dynamicTo, const udp::endpoint &to_, bool *end)
+void proxy(udp::socket &handle, bool dynamicTo, const udp::endpoint &to_, bool *end, ProxyMagic magic)
 {
 
 	std::cout << "proxying on endpoint " << handle.local_endpoint() << std::endl;
@@ -94,7 +94,7 @@ void proxy(udp::socket &handle, bool dynamicTo, const udp::endpoint &to_, bool *
 	
 	Vector<char> buffer_(4092);
 	auto size = buffer_.size();
-
+	
 	while (!*end)
 	{
 		error_code error;
@@ -128,7 +128,7 @@ void proxy(udp::socket &handle, bool dynamicTo, const udp::endpoint &to_, bool *
 				}
 			}
 			else
-			if (proxy.receiveMagic(*packet))
+			if (proxy.receiveMagic(*packet, magic))
 			{
 				if (dynamicTo)
 				{
@@ -169,7 +169,7 @@ void proxy(udp::socket &handle, bool dynamicTo, const udp::endpoint &to_, bool *
 	}
 }
 
-void send_connect(mrudp_socket_t socket_, const mrudp_addr_t *to)
+void send_connect(mrudp_socket_t socket_, const mrudp_addr_t *to, mrudp_proxy_magic_t magic)
 {
 	auto socket = toNative(socket_);
 	if (!socket)
@@ -180,7 +180,7 @@ void send_connect(mrudp_socket_t socket_, const mrudp_addr_t *to)
 	send.packet = strong<Packet>();
 	
 	proxy::Transformer proxy;
-	proxy.sendMagic(*send.packet);
+	proxy.sendMagic(*send.packet, magic);
 	socket->imp->socket->send(send, [](auto e){});
 }
 
@@ -189,12 +189,13 @@ struct ProxyMemento {
 	udp::socket *socket;
 	udp::endpoint from, to, bound;
 	bool dynamicTo;
+	mrudp_proxy_magic_t magic;
 
 	std::thread thread;
 	bool end;
 } ;
 
-void *open(const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound)
+void *open(const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, mrudp_proxy_magic_t magic)
 {
 	auto memento = new ProxyMemento;
 	
@@ -204,6 +205,7 @@ void *open(const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound
 		memento->to = imp::toEndpoint(*to);
 	
 	memento->dynamicTo = to == nullptr;
+	memento->magic = magic;
 
 	
 	memento->socket = new udp::socket(memento->service);
@@ -215,7 +217,7 @@ void *open(const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound
 	*bound = imp::toAddr(memento->bound);
 	
 	memento->thread = std::thread([memento]() {
-		proxy(*memento->socket, memento->dynamicTo, memento->to, &memento->end);
+		proxy(*memento->socket, memento->dynamicTo, memento->to, &memento->end, memento->magic);
 	});
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));

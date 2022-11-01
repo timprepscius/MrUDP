@@ -17,8 +17,8 @@ struct Transformer
 	bool sendBackward(Packet &packet, const ProxyID &id);
 	bool sendForward(Packet &packet, const ProxyID &id);
 	
-	bool sendMagic (Packet &packet);
-	bool receiveMagic (Packet &packet);
+	bool sendMagic (Packet &packet, ProxyMagic magic);
+	bool receiveMagic (Packet &packet, ProxyMagic magic);
 } ;
 
 } // namespace
