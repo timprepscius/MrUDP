@@ -147,13 +147,12 @@ target_link_libraries( MrUDP-Examples
 		Threads::Threads
 )
 
-target_link_directories( MrUDP-Tests
-    PRIVATE
-		$(Boost_LIB_DIRS)
-		
-)
-
-target_link_directories( MrUDP-Examples
-    PRIVATE
-		$(Boost_LIB_DIRS)
-)
+#target_link_directories( MrUDP-Tests
+#    PRIVATE
+#		$(Boost_LIB_DIRS)
+#)
+#
+#target_link_directories( MrUDP-Examples
+#    PRIVATE
+#		$(Boost_LIB_DIRS)
+#)
