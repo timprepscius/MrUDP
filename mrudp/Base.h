@@ -2,6 +2,8 @@
 
 #include "Config.h"
 
+#include <stdint.h>
+
 #include <list>
 #include <map>
 #include <array>
@@ -18,12 +20,20 @@
 #include "base/Random.h"
 #include "base/Mutex.h"
 #include "base/Core.h"
+#include "base/Pack.h"
 
 namespace timprepscius {
 namespace mrudp {
 
 using u8 = uint8_t;
 using u16 = uint16_t;
+using u32 = uint32_t;
+using u64 = uint64_t;
+
+using s8 = int8_t;
+using s16 = int16_t;
+using s32 = int32_t;
+using s64 = int64_t;
 
 template<typename V>
 using List = std::list<V>;
@@ -135,9 +145,9 @@ using String = std::string;
 
 #ifdef MRUDP_SINGLE_CHAR_TRACE
 
-void xTraceChar_(void *self, uint32_t, char c);
-void xTraceChar_(void *self, uint32_t, char prefix, char c);
-void xTraceChar_(void *self, uint32_t, char prefix, const std::string &c);
+void xTraceChar_(void *self, u32, char c);
+void xTraceChar_(void *self, u32, char prefix, char c);
+void xTraceChar_(void *self, u32, char prefix, const std::string &c);
 
 #define xTraceChar(...) xTraceChar_(__VA_ARGS__)
 

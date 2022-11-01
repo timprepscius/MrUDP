@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+
+#ifndef SYS_WINDOWS
+	#include <unistd.h>
+#endif
 
 typedef struct {
 	mrudp_service_t service;
@@ -18,7 +21,7 @@ typedef struct {
 
 mrudp_error_code_t server_receive(void *connection_, char *data, int size, int is_reliable)
 {
-	const int maxPrintLength=256;
+	enum { maxPrintLength = 256 };
 	char print[maxPrintLength+1];
 	int copySize = size < maxPrintLength ? size : maxPrintLength;
 	
@@ -84,7 +87,7 @@ int run_echo_server_c(int argc, const char* argv[])
 		abort();
 	}
 	
-	const int addressStringSize = 256;
+	enum { addressStringSize = 256 };
 	char addressString[addressStringSize];
 	mrudp_addr_to_str(&server->address, addressString, addressStringSize);
 	printf("Running server on %s\n", addressString);

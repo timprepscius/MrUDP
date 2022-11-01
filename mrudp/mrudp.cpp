@@ -351,7 +351,7 @@ mrudp_error_code_t mrudp_str_to_addr(const char *str, mrudp_addr_t *addr)
 	
 	if (ip.find(':')!=-1 || ip.find('[') != -1)
 	{
-		#ifndef SYS_LINUX
+		#ifdef SYS_APPLE
 			addr->v6.sin6_len = sizeof(addr->v6);
 		#endif
 		addr->v6.sin6_family = AF_INET6;
@@ -361,7 +361,7 @@ mrudp_error_code_t mrudp_str_to_addr(const char *str, mrudp_addr_t *addr)
 	}
 	else
 	{
-		#ifndef SYS_LINUX
+		#ifdef SYS_APPLE
 			addr->v4.sin_len = sizeof(addr->v4);
 		#endif
 

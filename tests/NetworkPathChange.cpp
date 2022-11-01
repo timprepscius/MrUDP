@@ -51,7 +51,7 @@ SCENARIO("network path change")
 						}
 						return 0;
 					},
-					true
+					.shouldDelete = true
 				} ;
 
 				mrudp_accept(

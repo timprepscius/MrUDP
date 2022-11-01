@@ -49,7 +49,7 @@ SCENARIO("connections")
 						}
 						return 0;
 					},
-					true
+					.shouldDelete = true
 				} ;
 
 				mrudp_accept(

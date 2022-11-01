@@ -204,6 +204,7 @@
 		F66B0AD126B03D080055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
 		F66B0AD226B03EDA0055F46D /* Crypto.inl */ = {isa = PBXFileReference; lastKnownFileType = text; path = Crypto.inl; sourceTree = "<group>"; };
 		F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CryptoOpenSSL.cpp; sourceTree = "<group>"; };
+		F66C410F2911B6FD00E99C6C /* Pack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pack.h; sourceTree = "<group>"; };
 		F676C51C26A6FBDE001559F4 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		F676C52226A78AC8001559F4 /* BoostAsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoostAsio.h; sourceTree = "<group>"; };
 		F676C52426A78DAA001559F4 /* Ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Ptr.h; sourceTree = "<group>"; };
@@ -376,6 +377,7 @@
 				F676C52726A793CF001559F4 /* Mutex.h */,
 				F676C52926A794C1001559F4 /* Core.h */,
 				F62EE9A9290EC3500082C0E5 /* Log.h */,
+				F66C410F2911B6FD00E99C6C /* Pack.h */,
 				F62EE9AA290EC38B0082C0E5 /* debug_assert.h */,
 				F676C52426A78DAA001559F4 /* Ptr.h */,
 			);
@@ -887,6 +889,10 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					"${inherited}",
+					.,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -899,6 +905,10 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					"${inherited}",
+					.,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

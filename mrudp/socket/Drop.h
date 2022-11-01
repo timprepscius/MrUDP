@@ -21,7 +21,7 @@ struct DropNone
 
 struct DropPercentage
 {
-	float percentage = 0.1;
+	float percentage = 0.1f;
 	
 	Random random;
 	bool shouldDrop ()

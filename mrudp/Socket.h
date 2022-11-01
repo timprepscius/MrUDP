@@ -52,7 +52,7 @@ struct Socket : StrongThis<Socket>
 	struct LookUp
 	{
 		ShortConnectionID shortID = 0;
-		LongConnectionID longID = 0;
+		LongConnectionID longID = NullLongConnectionID;
 	} ;
 	
 	RecursiveMutex connectionsMutex;

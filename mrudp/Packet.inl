@@ -29,7 +29,7 @@ bool popData(Packet &packet, u8 *data, size_t size)
 	if (packet.dataSize < size)
 		return false;
 		
-	packet.dataSize -= size;
+	packet.dataSize -= (Packet::Size)size;
 	memcpy(data, packet.data + packet.dataSize, size);
 
 	return true;
@@ -74,7 +74,7 @@ bool pushData(Packet &packet, const u8 *data, size_t size)
 	}
 		
 	memcpy(packet.data + packet.dataSize, data, size);
-	packet.dataSize += size;
+	packet.dataSize += (Packet::Size)size;
 	
 	return true;
 }

@@ -1,9 +1,38 @@
 #include "Types.h"
 
 #include <cstring>
+#include <iostream>
 
 namespace timprepscius {
 namespace mrudp {
+
+bool operator ==(const LongConnectionID &lhs, const LongConnectionID &rhs)
+{
+	return memcmp(lhs.bytes, rhs.bytes, sizeof(lhs.bytes)) == 0;
+}
+
+bool operator !=(const LongConnectionID &lhs, const LongConnectionID &rhs)
+{
+	return !(lhs==rhs);
+}
+
+const LongConnectionID NullLongConnectionID = LongConnectionID{0};
+
+std::ostream &operator <<(std::ostream &o, const LongConnectionID &v)
+{
+	for (auto &b : v.bytes)
+	{
+		u8 n0 = b & 0xF;
+		char c0 = ('a' + n0);
+		o << c0;
+		
+		u8 n1 = (b >> 4) & 0xF;
+		char c1 = ('a' + n1);
+		o << c1;
+	}
+	
+	return o;
+}
 
 String toString(const Address &addr)
 {
@@ -50,4 +79,3 @@ bool operator!=(const mrudp_addr_t &lhs, const mrudp_addr_t &rhs)
 {
 	return memcmp(&lhs, &rhs, sizeof(lhs)) != 0;
 }
-

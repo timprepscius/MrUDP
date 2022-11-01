@@ -8,6 +8,7 @@
 #include "../Config.h"
 
 #include <random>
+#include <limits>
 
 namespace timprepscius {
 namespace mrudp {

@@ -14,7 +14,8 @@ endif()
 if(USE_BOOST)
     include_directories(PRIVATE ${USE_BOOST})
 else()
-    find_package(Boost)
+	find_package(Boost)
+	
     if(Boost_FOUND)
        include_directories(${Boost_INCLUDE_DIRS})       
     else()
@@ -30,14 +31,20 @@ if (WIN32)
 endif ()
 
 if (APPLE)
-	add_definitions(-DSYS_MAC)
+	add_definitions(-DSYS_APPLE)
 endif ()
 
 if(UNIX AND NOT APPLE)
 	add_definitions(-DSYS_LINUX)
 endif ()
 
-set(CMAKE_CXX_STANDARD 17)
+
+if (WIN32)
+	set(CMAKE_CXX_STANDARD 20)
+else ()
+	set(CMAKE_CXX_STANDARD 17)
+endif ()
+
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ############################################################
@@ -124,6 +131,8 @@ if(USE_CRYPTO)
 else()
 endif()
 
+
+
 # link the new hello_library target with the hello_binary target
 target_link_libraries( MrUDP-Tests
     PRIVATE 
@@ -136,4 +145,15 @@ target_link_libraries( MrUDP-Examples
     PRIVATE
         MrUDP
 		Threads::Threads
+)
+
+target_link_directories( MrUDP-Tests
+    PRIVATE
+		$(Boost_LIB_DIRS)
+		
+)
+
+target_link_directories( MrUDP-Examples
+    PRIVATE
+		$(Boost_LIB_DIRS)
 )

@@ -1,6 +1,14 @@
 #pragma once
 
-#include <netinet/in.h>
+#if _WIN32
+	#define NOMINMAX
+	#include <winsock2.h>
+	#include <Ws2ipdef.h>
+#else
+	#include <netinet/in.h>
+#endif
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

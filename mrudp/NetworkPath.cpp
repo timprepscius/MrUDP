@@ -25,6 +25,7 @@ bool NetworkPath::sendChallenge(const Address &address)
 	MultiPacketPath packets {
 		PacketPath { },
 		PacketPath {
+			.packet = nullptr,
 			.address = address
 		}
 	};

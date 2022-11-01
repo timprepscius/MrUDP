@@ -67,8 +67,11 @@ void merge(OptionsImp &lhs, const OptionsImp &rhs)
 
 // --------------------------
 
-typedef boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT> overlap_socket;
-//typedef boost::asio::socket_base::reuse_address overlap_socket;
+#ifdef SYS_WINDOWS
+	typedef boost::asio::socket_base::reuse_address overlap_socket;
+#else
+	typedef boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT> overlap_socket;
+#endif
 
 mrudp_addr_t toAddr(const udp::endpoint &endpoint)
 {
@@ -80,7 +83,7 @@ mrudp_addr_t toAddr(const udp::endpoint &endpoint)
 		auto address = endpoint.address();
 
 		auto bytes = address.to_v4().to_bytes();
-		#ifndef SYS_LINUX
+		#ifdef SYS_APPLE
 			address_.v4.sin_len = sizeof(address_.v4);
 		#endif
 		address_.v4.sin_family = AF_INET;
@@ -91,7 +94,7 @@ mrudp_addr_t toAddr(const udp::endpoint &endpoint)
 	{
 		auto address = endpoint.address();
 		auto bytes = address.to_v6().to_bytes();
-		#ifndef SYS_LINUX
+		#ifdef SYS_APPLE
 			address_.v6.sin6_len = sizeof(address_.v6);
 		#endif
 		address_.v6.sin6_family = AF_INET6;

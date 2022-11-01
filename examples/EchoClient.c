@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+
+#ifndef SYS_WINDOWS
+	#include <unistd.h>
+#endif
 
 typedef struct {
 	mrudp_service_t service;

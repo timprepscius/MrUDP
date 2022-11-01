@@ -17,12 +17,14 @@ namespace mrudp {
 
 struct ReceiveQueue
 {
-	struct Frame {
-		typedef char Data[MAX_PACKET_SIZE];
+	PACK(
+		struct Frame {
+			typedef char Data[MAX_PACKET_SIZE];
 
-		FrameHeader header;
-		Data data;
-	} __attribute__ ((packed));
+			FrameHeader header;
+			Data data;
+		}
+	);
 
 	FrameID expectedID = 0;
 	Function<void(Frame &)> processor;

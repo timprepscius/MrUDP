@@ -65,12 +65,14 @@ typedef uint16_t FrameID;
 // Header contains the necessary information for the decoding a packet.
 // The header is packed so that there is no space between data fields.
 // --------------------------------------------------------------------------------
-struct Header {
-	VersionID version = MRUDP_VERSION;
-	ShortConnectionID connection = 0;
-	TypeID type;
-	PacketID id;
-} __attribute__ ((packed));
+PACK (
+	struct Header {
+		VersionID version = MRUDP_VERSION;
+		ShortConnectionID connection = 0;
+		TypeID type;
+		PacketID id;
+	}
+);
 
 // --------------------------------------------------------------------------------
 // FrameHeader
@@ -78,14 +80,15 @@ struct Header {
 // Packets with type DATA_RELIABLE or DATA_UNRELIABLE are containers for multiple
 // subpackets of data.
 // --------------------------------------------------------------------------------
-struct FrameHeader {
-	typedef uint16_t Size;
-	
-	FrameID id;
-	FrameTypeID type;
-	Size dataSize;
-} __attribute__ ((packed));
-
+PACK (
+	struct FrameHeader {
+		typedef uint16_t Size;
+		
+		FrameID id;
+		FrameTypeID type;
+		Size dataSize;
+	}
+);
 // --------------------------------------------------------------------------------
 // Packet
 //
@@ -95,15 +98,17 @@ struct FrameHeader {
 // When a packet is read from the socket, the packet is read verbatim as a chunk
 // and the field dataSize is set to sizeof(IncomingPacketData) - sizeof(Header).
 // --------------------------------------------------------------------------------
-struct Packet
-{
-	typedef char Data[MAX_PACKET_SIZE];
-	typedef uint16_t Size;
-	
-	Header header;
-	Data data;
-	Size dataSize = 0;
-} __attribute__ ((packed));
+PACK(
+	struct Packet
+	{
+		typedef char Data[MAX_PACKET_SIZE];
+		typedef uint16_t Size;
+		
+		Header header;
+		Data data;
+		Size dataSize = 0;
+	}
+);
 
 typedef StrongPtr<Packet> PacketPtr;
 

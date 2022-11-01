@@ -98,7 +98,7 @@ StrongPtr<Connection> Socket::connect(
 	
 	connection->handshake.initiate();
 
-	sLogDebugIf(connection->imp->overlappedSocket, "mrudp::overlap_io", "connect " << logVar(uint64_t(connection->id)) << logVar(ptr_of(connection)) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())) << logVar(connection->imp->overlappedSocket->handle.local_endpoint()));
+	sLogDebugIf(connection->imp->overlappedSocket, "mrudp::overlap_io", "connect " << logVar(connection->id) << logVar(ptr_of(connection)) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())) << logVar(connection->imp->overlappedSocket->handle.local_endpoint()));
 
 	return connection;
 }
@@ -126,7 +126,7 @@ void Socket::erase(Connection *connection)
 		auto i = connections.find(connection->id);
 		if (i != connections.end())
 		{
-			sLogDebug("mrudp::overlap_io", "erase " << logVar(uint64_t(connection->id)) << logVar(connection) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())));
+			sLogDebug("mrudp::overlap_io", "erase " << logVar(connection->id) << logVar(connection) << logVar(this) << logVar(toString(connection->remoteAddress)) << logVar(toString(getLocalAddress())));
 		
 			connections.erase(i);
 		}
@@ -201,7 +201,7 @@ Socket::LookUp Socket::getLookUp(Packet &packet)
 
 StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress, const ProxyID &proxyID)
 {
-	if (lookup.longID != 0)
+	if (lookup.longID != NullLongConnectionID)
 	{
 		auto connection_ = connections.find(lookup.longID);
 		if (connection_ != connections.end())
@@ -224,7 +224,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 {
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "new connection");
 	
-	sLogDebug("mrudp::overlap_io", "G " << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())) << logVar((char)packet.header.type));
+	sLogDebug("mrudp::overlap_io", "G " << logVar(lookup.longID) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())) << logVar((char)packet.header.type));
 	
 	if (isFull())
 	{
@@ -233,7 +233,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	
 	if (packet.header.type != H0)
 	{
-		sLogDebug("mrudp::overlap_io", "ERROR " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
+		sLogDebug("mrudp::overlap_io", "ERROR " << logVar((char)packet.header.type) << logVar(lookup.longID) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
 
 		xTraceChar(this, packet.header.id, '!', '0');
 		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << "not MRUDP H0");
@@ -242,9 +242,9 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 		return nullptr;
 	}
 	
-	if (lookup.longID == 0)
+	if (lookup.longID == NullLongConnectionID)
 	{
-		sLogDebug("mrudp::overlap_io", "ERROR NO LONG " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
+		sLogDebug("mrudp::overlap_io", "ERROR NO LONG " << logVar((char)packet.header.type) << logVar(lookup.longID) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
 
 		xTraceChar(this, packet.header.id, '!', 'L');
 
@@ -256,7 +256,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	auto lock = lock_of(userDataMutex);
 	if (!acceptHandler)
 	{
-		sLogDebug("mrudp::overlap_io", "ERROR NO ACCEPT " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
+		sLogDebug("mrudp::overlap_io", "ERROR NO ACCEPT " << logVar((char)packet.header.type) << logVar(lookup.longID) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
 
 		// @TODO: throw exception/ return some value?
 		return nullptr;
@@ -284,7 +284,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 
 	if (mrudp_failed(status = acceptHandler(userData, (mrudp_connection_t)connectionHandle)))
 	{
-		sLogDebug("mrudp::overlap_io", "ERROR NOT ACCEPTED " << logVar((char)packet.header.type) << logVar(uint64_t(lookup.longID)) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
+		sLogDebug("mrudp::overlap_io", "ERROR NOT ACCEPTED " << logVar((char)packet.header.type) << logVar(lookup.longID) << logVar(this) << logVar(toString(remoteAddress)) << logVar(toString(getLocalAddress())));
 
 		// do something
 		xLogDebug(logOfThis(this) << "not accepted");
