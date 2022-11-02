@@ -145,10 +145,10 @@ target_link_libraries( MrUDP-Examples
 
 target_link_directories( MrUDP-Tests
     PRIVATE
-		$(Boost_LIBRARY_DIRS)
+		${Boost_LIBRARY_DIRS}
 )
 
 target_link_directories( MrUDP-Examples
     PRIVATE
-		$(Boost_LIBRARY_DIRS)
+		${Boost_LIBRARY_DIRS}
 )
