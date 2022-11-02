@@ -11,16 +11,12 @@ else()
 
 endif()
 
-if(USE_BOOST)
-    include_directories(PRIVATE ${USE_BOOST})
+find_package(Boost)
+
+if(Boost_FOUND)
+   include_directories(${Boost_INCLUDE_DIRS})
 else()
-	find_package(Boost)
-	
-    if(Boost_FOUND)
-       include_directories(${Boost_INCLUDE_DIRS})       
-    else()
-       message( FATAL_ERROR "please specify USE_BOOST=/place/where/boost/is/boost <-- not a relative path!")
-    endif()
+   message( FATAL_ERROR "please specify BOOST_ROOT=/place/where/boost/is/boost <-- not a relative path!")
 endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -147,12 +143,12 @@ target_link_libraries( MrUDP-Examples
 		Threads::Threads
 )
 
-#target_link_directories( MrUDP-Tests
-#    PRIVATE
-#		$(Boost_LIB_DIRS)
-#)
-#
-#target_link_directories( MrUDP-Examples
-#    PRIVATE
-#		$(Boost_LIB_DIRS)
-#)
+target_link_directories( MrUDP-Tests
+    PRIVATE
+		$(Boost_LIBRARY_DIRS)
+)
+
+target_link_directories( MrUDP-Examples
+    PRIVATE
+		$(Boost_LIBRARY_DIRS)
+)
