@@ -52,6 +52,10 @@ else ()
 	set(CMAKE_CXX_STANDARD 17)
 endif ()
 
+if (WIN32)
+    link_libraries(wsock32 ws2_32)
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ############################################################

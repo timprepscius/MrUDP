@@ -49,7 +49,10 @@ inline
 int listenerClose(void *l_, mrudp_event_t event)
 {
 	auto l = reinterpret_cast<Listener *>(l_);
-	auto result = l->close(event);
+	int result = MRUDP_OK;
+	
+	if (l->close)
+		result = l->close(event);
 	
 	if (l->shouldDelete)
 		delete l;
@@ -68,7 +71,10 @@ inline
 int connectionClose(void *l_, mrudp_event_t event)
 {
 	auto l = reinterpret_cast<Connection *>(l_);
-	auto result = l->close(event);
+	int result = MRUDP_OK;
+	
+	if (l->close)
+		result = l->close(event);
 	
 	if (l->shouldDelete)
 		delete l;
