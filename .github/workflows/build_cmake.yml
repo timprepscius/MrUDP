@@ -114,7 +114,7 @@ jobs:
       uses: MarkusJx/install-boost@v2.1.0
       id: install-boost
       with:
-        platform: 2019
+        platform_version: ${{ matrix.config.platform_version }}
         boost_version: 1.76.0
 
     - name: Configure
