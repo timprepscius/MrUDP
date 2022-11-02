@@ -113,8 +113,8 @@ jobs:
     - name: Install boost
       uses: MarkusJx/install-boost@v2.1.0
       id: install-boost
-      platform: 2019
       with:
+        platform: 2019
         boost_version: 1.76.0
 
     - name: Configure
