@@ -11,11 +11,20 @@ else()
 
 endif()
 
+# this is for github actions
+if (BOOST_ROOT)
+   link_directories(${BOOST_ROOT}/lib)
+endif()
+
 find_package(Boost)
 
 if(Boost_FOUND)
    include_directories(${Boost_INCLUDE_DIRS})
+   
+   # this doesn_t seem to work at all, although this *should* work
    link_directories(${Boost_LIBRARY_DIRS})
+   
+   # this only seems to work on win32 with boost installed from .exe
    link_directories(${Boost_INCLUDE_DIRS}/lib)
 else()
    message( FATAL_ERROR "please specify BOOST_ROOT=/place/where/boost/is/boost <-- not a relative path!")
