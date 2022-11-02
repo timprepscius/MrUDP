@@ -15,6 +15,7 @@ find_package(Boost)
 
 if(Boost_FOUND)
    include_directories(${Boost_INCLUDE_DIRS})
+   link_directories(${Boost_LIBRARY_DIRS})
 else()
    message( FATAL_ERROR "please specify BOOST_ROOT=/place/where/boost/is/boost <-- not a relative path!")
 endif()
@@ -141,14 +142,4 @@ target_link_libraries( MrUDP-Examples
     PRIVATE
         MrUDP
 		Threads::Threads
-)
-
-target_link_directories( MrUDP-Tests
-    PRIVATE
-		${Boost_LIBRARY_DIRS}
-)
-
-target_link_directories( MrUDP-Examples
-    PRIVATE
-		${Boost_LIBRARY_DIRS}
 )
