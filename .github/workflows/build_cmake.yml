@@ -113,10 +113,8 @@ jobs:
     - name: Install boost
       uses: MarkusJx/install-boost@v2.1.0
       id: install-boost
-      platform_version: |
-        if ("${{ runner.os }}" STREQUAL "Windows")
-          echo "2019"
-		endif()
+#      platform_version: ${{ matrix.config.os == 'windows' }}
+      platform_version: 2019
       with:
         boost_version: 1.76.0
 
