@@ -1,5 +1,7 @@
 #include <mrudp/mrudp.h>
 
+#include "Platform.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
