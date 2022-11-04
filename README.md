@@ -1,3 +1,5 @@
+![example workflow](https://github.com/tprepscius/MrUDP/actions/workflows/build_cmake.yml/badge.svg)
+
 MrUDP
 ======
 
