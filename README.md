@@ -1,4 +1,4 @@
-![example workflow](https://github.com/tprepscius/MrUDP/actions/workflows/build_cmake.yml/badge.svg)
+![GitHub Workflow Status](https://github.com/tprepscius/MrUDP/actions/workflows/build_cmake.yml/badge.svg?event=push)
 
 MrUDP
 ======
