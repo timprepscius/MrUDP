@@ -35,7 +35,7 @@ int main (int argc, const char *argv[])
 		auto magic_ = get_arg("magic=", argv[i]);
 		if (!remote_.empty())
 		{
-			if (mrudp_str_to_addr(magic_.data(), &to) != MRUDP_OK)
+			if (mrudp_str_to_addr(remote_.data(), &to) != MRUDP_OK)
 				return (void)usage(), -1;
 		
 			to_ = &to;

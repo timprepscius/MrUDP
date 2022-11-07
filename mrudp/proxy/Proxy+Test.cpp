@@ -56,10 +56,10 @@ SCENARIO("proxy")
 				mrudp_socket_addr(remote.sockets.back(), &proxyTo);
 				
 				mrudp_addr_t proxyFrom;
-
-				auto *proxy = proxy_open(anyAddress, proxyTo, proxyFrom);
+				mrudp_proxy_magic_t magic = 42;
+				auto *proxy = mrudp_proxy_open(&anyAddress, &proxyTo, &proxyFrom, magic);
 				ExecuteOnDestruct e([proxy]() {
-					proxy_close(proxy);
+					mrudp_proxy_close(proxy);
 				});
 				
 				char remoteAddressStr[2048];

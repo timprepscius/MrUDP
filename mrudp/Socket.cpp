@@ -164,6 +164,8 @@ void Socket::closeUser ()
 
 void Socket::send(const PacketPtr &packet_, Connection *connection, const Address *to)
 {
+	PROFILE_FUNCTION(this);
+
 	auto packet = packet_;
 	
 	xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id));
@@ -201,6 +203,8 @@ Socket::LookUp Socket::getLookUp(Packet &packet)
 
 StrongPtr<Connection> Socket::findConnection(const LookUp &lookup, Packet &packet, const mrudp_addr_t &remoteAddress, const ProxyID &proxyID)
 {
+	PROFILE_FUNCTION(this);
+
 	if (lookup.longID != NullLongConnectionID)
 	{
 		auto connection_ = connections.find(lookup.longID);
@@ -313,6 +317,8 @@ StrongPtr<Connection> Socket::findOrGenerateConnection(const LookUp &lookup, Pac
 
 void Socket::receive(Packet &packet, const Address &remoteAddress)
 {
+	PROFILE_FUNCTION(this);
+
 	xLogDebug(logOfThis(this) << logLabel("begin") << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)) << logVarV(packet.header.connection) << logVarV((char)packet.header.type) << logVarV(packet.header.id));
 
 	ProxyID proxyID = 0;
