@@ -23,6 +23,9 @@ struct ReceiveQueue
 
 			FrameHeader header;
 			Data data;
+			
+			Frame();
+			Frame(const Frame &frame);
 		}
 	);
 

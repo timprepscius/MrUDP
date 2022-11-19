@@ -3,6 +3,16 @@
 namespace timprepscius {
 namespace mrudp {
 
+ReceiveQueue::Frame::Frame()
+{
+
+}
+
+ReceiveQueue::Frame::Frame(const Frame &frame)
+{
+	memcpy(this, &frame, sizeof(frame.header) + frame.header.dataSize);
+}
+
 void ReceiveQueue::processQueue()
 {
 	while (processNext())
@@ -40,11 +50,22 @@ void ReceiveQueue::onReceive(Packet &packet)
 
 	auto lock = lock_of(mutex);
 	
+	static_assert(alignof(Frame) == 1);
 	auto *begin = (Frame *)packet.data;
 	auto *end = (Frame *)(packet.data + packet.dataSize);
 	
 	for (auto *frame = (Frame *)begin; frame < end; frame = (Frame *)(frame->data + frame->header.dataSize))
 	{
+		auto remaining = (size_t)end - (size_t)frame;
+		
+		debug_assert (remaining >= sizeof(FrameHeader))
+		if (remaining < sizeof(FrameHeader))
+			break;
+
+		debug_assert (remaining >= frame->header.dataSize + sizeof(FrameHeader))
+		if (remaining < sizeof(FrameHeader) + frame->header.dataSize)
+			break;
+
 		if (frame->header.id == expectedID)
 		{
 			processor(*frame);
@@ -57,6 +78,7 @@ void ReceiveQueue::onReceive(Packet &packet)
 			if (id_greater_than(frame->header.id, expectedID))
 			{
 				sLogDebug("mrudp::receive", logOfThis(this) << "out of order " << packet.header.id << " but greater than expected " << expectedID);
+				
 				enqueue(*frame);
 			}
 			else

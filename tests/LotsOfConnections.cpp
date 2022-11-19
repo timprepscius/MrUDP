@@ -49,7 +49,7 @@ SCENARIO("lots_of_connections")
 						}
 						return 0;
 					},
-					true
+					.shouldDelete = true
 				} ;
 
 				mrudp_accept(
@@ -61,10 +61,11 @@ SCENARIO("lots_of_connections")
 				
 				return 0;
 			},
-			.close = [&](auto event) { return 0; }
+			.close = [&](auto event) { return 0; },
+			.shouldDelete = true
 		} ;
 		
-		mrudp_listen(remote.sockets.back(), &listen, listenerAccept, listenerClose);
+		mrudp_listen(remote.sockets.back(), new Listener { listen }, listenerAccept, listenerClose);
 		
 		WHEN("create one local socket and make many connections")
 		{
@@ -73,15 +74,16 @@ SCENARIO("lots_of_connections")
 			mrudp_socket_addr(local.sockets.back(), &localAddress);
 			
 			auto localConnectionDispatch = Connection {
-				[&](auto data, auto size, auto isReliable) {
+				.receive = [&](auto data, auto size, auto isReliable) {
 					local.packetsReceived++;
 					return 0;
 				},
-				[&](auto event) {
+				.close = [&](auto event) {
 					return 0;
-				}
+				},
+				.shouldDelete = true
 			} ;
-
+			
 			WHEN(numConnectionsToCreate << " connections are created from local to remote and then destroyed")
 			{
 				for (auto i=0; i<numConnectionsToCreate; ++i)
@@ -89,7 +91,7 @@ SCENARIO("lots_of_connections")
 					local.connections.insert(
 						mrudp_connect(
 							local.sockets.back(), &remoteAddress,
-							&localConnectionDispatch, connectionReceive, connectionClose
+							new Connection { localConnectionDispatch }, connectionReceive, connectionClose
 						)
 					);
 				}
