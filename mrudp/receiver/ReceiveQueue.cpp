@@ -58,11 +58,11 @@ void ReceiveQueue::onReceive(Packet &packet)
 	{
 		auto remaining = (size_t)end - (size_t)frame;
 		
-		debug_assert (remaining >= sizeof(FrameHeader))
+		debug_assert (remaining >= sizeof(FrameHeader));
 		if (remaining < sizeof(FrameHeader))
 			break;
 
-		debug_assert (remaining >= frame->header.dataSize + sizeof(FrameHeader))
+		debug_assert (remaining >= frame->header.dataSize + sizeof(FrameHeader));
 		if (remaining < sizeof(FrameHeader) + frame->header.dataSize)
 			break;
 
