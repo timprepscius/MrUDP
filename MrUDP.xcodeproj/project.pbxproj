@@ -1031,8 +1031,8 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-lCoreMisc",
-					"-lCoreZero",
+					"-lCore_Misc",
+					"-lCore_Zero",
 					"-lssl",
 					"-lcrypto",
 				);
@@ -1100,8 +1100,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
-					"-lCoreMisc",
-					"-lCoreZero",
+					"-lCore_Misc",
+					"-lCore_Zero",
 					"-lssl",
 					"-lcrypto",
 				);
