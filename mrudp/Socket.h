@@ -46,6 +46,7 @@ struct Socket : StrongThis<Socket>
 	Atomic<bool> userDataDisposed = true;
 
 	void *userData = nullptr;
+	mrudp_should_accept_callback shouldAccept;
 	mrudp_accept_callback acceptHandler;
 	mrudp_close_callback closeHandler;
 	
@@ -72,7 +73,12 @@ struct Socket : StrongThis<Socket>
 	void send(const PacketPtr &packet, Connection *connection, const Address *to);
 	void receive(Packet &packet, const Address &from);
 	
-	void listen(void *userData, mrudp_accept_callback &&acceptCallback, mrudp_close_callback &&closeCallback);
+	void listen(
+		void *userData,
+		mrudp_should_accept_callback &&shouldAcceptCallback,
+		mrudp_accept_callback &&acceptCallback,
+		mrudp_close_callback &&closeCallback
+	);
 	
 	StrongPtr<Connection> connect(
 		const Address &address,

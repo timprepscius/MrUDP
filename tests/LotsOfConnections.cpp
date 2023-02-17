@@ -65,7 +65,7 @@ SCENARIO("lots_of_connections")
 			.shouldDelete = true
 		} ;
 		
-		mrudp_listen(remote.sockets.back(), new Listener { listen }, listenerAccept, listenerClose);
+		mrudp_listen(remote.sockets.back(), new Listener { listen }, nullptr, listenerAccept, listenerClose);
 		
 		WHEN("create one local socket and make many connections")
 		{

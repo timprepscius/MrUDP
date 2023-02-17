@@ -90,7 +90,7 @@ SCENARIO("basics")
 					.close = [&](auto event) { return 0; }
 				} ;
 				
-				mrudp_listen(remote.sockets.back(), &listen, listenerAccept, listenerClose);
+				mrudp_listen(remote.sockets.back(), &listen, nullptr, listenerAccept, listenerClose);
 				
 				WHEN("create one local socket and make many connections")
 				{

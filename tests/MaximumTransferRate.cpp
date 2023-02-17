@@ -61,7 +61,7 @@ SCENARIO("packet transmission rate")
 		
 		mrudp_listen(
 			remote.sockets.back(),
-			&listenerDispatch, listenerAccept, listenerClose
+			&listenerDispatch, nullptr, listenerAccept, listenerClose
 		);
 		
 		WHEN("create a local socket with " << X << " conections to the remote socket")
@@ -239,7 +239,7 @@ SCENARIO("packet transmission rate")
 				mrudp_socket_addr(remoteSocket, &remoteAddress);
 				remote.sockets.push_back(remoteSocket);
 					
-				mrudp_listen(remoteSocket, &listen, listenerAccept, listenerClose);
+				mrudp_listen(remoteSocket, &listen, nullptr, listenerAccept, listenerClose);
 			
 				mrudp_addr_t localAddress;
 				auto localSocket = mrudp_socket(local.service, &anyAddress);

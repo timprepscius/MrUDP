@@ -49,12 +49,18 @@ LongConnectionID Socket::generateLongConnectionID()
 	return service->random.next<LongConnectionID>();
 }
 
-void Socket::listen(void *userData_, mrudp_accept_callback &&acceptHandler_, mrudp_close_callback &&closeHandler_)
+void Socket::listen(
+	void *userData_,
+	mrudp_should_accept_callback &&shouldAccept_,
+	mrudp_accept_callback &&acceptHandler_,
+	mrudp_close_callback &&closeHandler_
+)
 {
 	auto expected = true;
 	if (userDataDisposed.compare_exchange_strong(expected, false))
 	{
 		userData = userData_;
+		shouldAccept = std::move(shouldAccept_);
 		acceptHandler = std::move(acceptHandler_);
 		closeHandler = std::move(closeHandler_);
 	}
@@ -264,6 +270,15 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 
 		// @TODO: throw exception/ return some value?
 		return nullptr;
+	}
+	
+	if (shouldAccept)
+	{
+		if (mrudp_failed(shouldAccept(userData, &remoteAddress)))
+		{
+			sLogRelease("debug", logVar(this) << logVar(toString(remoteAddress)));
+			return nullptr;
+		}
 	}
 	
 	int status = 0;

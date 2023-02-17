@@ -35,6 +35,7 @@ mrudp_socket_t mrudp_socket(
 mrudp_error_code_t mrudp_listen(
 	mrudp_socket_t socket_,
 	void *userData,
+	mrudp_should_accept_callback &&shouldAcceptCallback,
 	mrudp_accept_callback &&acceptCallback,
 	mrudp_close_callback &&closeCallback
 )
@@ -43,18 +44,29 @@ mrudp_error_code_t mrudp_listen(
 	if (!socket)
 		return MRUDP_ERROR_GENERAL_FAILURE;
 	
-	socket->listen(userData, std::move(acceptCallback), std::move(closeCallback));
+	socket->listen(
+		userData,
+		std::move(shouldAcceptCallback),
+		std::move(acceptCallback),
+		std::move(closeCallback)
+	);
 	return MRUDP_OK;
 }
 
 mrudp_error_code_t mrudp_listen(
 	mrudp_socket_t socket_,
 	void *userData,
+	mrudp_should_accept_callback_fn shouldAcceptCallback,
 	mrudp_accept_callback_fn acceptCallback,
 	mrudp_close_callback_fn closeCallback
 )
 {
-	return mrudp_listen(socket_, userData, mrudp_accept_callback(acceptCallback), mrudp_close_callback(closeCallback));
+	return mrudp_listen(
+		socket_, userData,
+		mrudp_should_accept_callback(shouldAcceptCallback),
+		mrudp_accept_callback(acceptCallback),
+		mrudp_close_callback(closeCallback)
+	);
 }
 
 mrudp_error_code_t mrudp_close_connection(mrudp_connection_t connection_)

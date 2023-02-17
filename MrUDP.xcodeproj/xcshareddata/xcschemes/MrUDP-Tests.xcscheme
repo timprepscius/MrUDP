@@ -34,7 +34,6 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableAddressSanitizer = "YES"
       enableUBSanitizer = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
@@ -59,7 +58,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: lots_of_connections&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-b"
@@ -75,7 +74,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: packet transmission rate&quot;"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: crypto&quot;"

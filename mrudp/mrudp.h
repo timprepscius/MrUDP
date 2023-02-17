@@ -112,6 +112,9 @@ typedef mrudp_error_code_t (*mrudp_close_callback_fn)(void *, mrudp_event_t);
 // Call-back for when a connection is being accepted
 typedef mrudp_error_code_t (*mrudp_accept_callback_fn)(void *, mrudp_connection_t connection);
 
+// Call-back for when a connection is being accepted
+typedef mrudp_error_code_t (*mrudp_should_accept_callback_fn)(void *, const mrudp_addr_t *);
+
 // Call-back for when data has been received
 typedef mrudp_error_code_t (*mrudp_receive_callback_fn)(void *, char *data, int size, int is_reliable);
 
@@ -157,6 +160,7 @@ mrudp_error_code_t mrudp_close_socket_native(mrudp_socket_t socket);
 mrudp_error_code_t mrudp_listen(
 	mrudp_socket_t socket,
 	void *userData,
+	mrudp_should_accept_callback_fn,
 	mrudp_accept_callback_fn,
 	mrudp_close_callback_fn
 ) ;

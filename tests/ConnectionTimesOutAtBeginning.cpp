@@ -72,7 +72,7 @@ SCENARIO("error with connections timing out")
 				mrudp_socket_addr(remoteSocket, &remoteAddress);
 				remote.sockets.push_back(remoteSocket);
 					
-				mrudp_listen(remoteSocket, &listen, listenerAccept, listenerClose);
+				mrudp_listen(remoteSocket, &listen, nullptr, listenerAccept, listenerClose);
 			
 				mrudp_addr_t localAddress;
 				auto localSocket = mrudp_socket(local.service, &anyAddress);
