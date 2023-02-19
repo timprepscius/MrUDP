@@ -71,6 +71,7 @@ typedef struct {
 typedef struct {
 	mrudp_coalesce_options_t coalesce_reliable;
 	mrudp_coalesce_options_t coalesce_unreliable;
+	int32_t probe_delay_ms;
 } mrudp_connection_options_t;
 
 typedef struct {

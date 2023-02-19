@@ -74,6 +74,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: packet transmission rate&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;Scenario: one_connection&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

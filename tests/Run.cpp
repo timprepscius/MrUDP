@@ -11,6 +11,7 @@ using namespace core;
 int main( int argc, char* argv[] )
 {
 	xLogInitialize("mrudp-test.log");
+	xLogActivateStory("mrudp::probe");
 	
 	using namespace Catch::clara;
 

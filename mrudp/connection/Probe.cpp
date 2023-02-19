@@ -118,6 +118,9 @@ void Probe::recalculateProbeTimeout ()
 		timeout += retrier.calculateRetryDuration(rtt);
 	}
 
+	if (connection->options.probe_delay_ms > 0)
+		timeout += connection->options.probe_delay_ms;
+
 	probeInterval = toDuration(timeout);
 	sLogDebug("mrudp::probe", logOfThis(this) << " " << logVar(timeout));
 }

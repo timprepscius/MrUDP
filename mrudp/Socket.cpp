@@ -276,7 +276,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	{
 		if (mrudp_failed(shouldAccept(userData, &remoteAddress)))
 		{
-			sLogRelease("debug", logVar(this) << logVar(toString(remoteAddress)));
+			sLogDebug("mrudp::shouldAccept", logVar(this) << logVar(toString(remoteAddress)));
 			return nullptr;
 		}
 	}

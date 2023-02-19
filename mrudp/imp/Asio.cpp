@@ -24,7 +24,9 @@ ConnectionOptions getDefaultConnectionOptions ()
 		.coalesce_unreliable = {
 			.mode = MRUDP_COALESCE_PACKET,
 			.delay_ms = 5
-		}
+		},
+		
+		.probe_delay_ms = -1,
 	} ;
 }
 

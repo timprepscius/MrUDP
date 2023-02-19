@@ -116,6 +116,7 @@ SCENARIO("basics")
 							mrudp_connection_options_t options;
 							options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
 							options.coalesce_reliable.delay_ms = 20;
+							options.probe_delay_ms = -1;
 							
 							local.connections.insert(
 								mrudp_connect_ex(

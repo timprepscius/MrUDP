@@ -108,7 +108,7 @@ SCENARIO("proxy")
 					.close = [&](auto event) { return 0; }
 				} ;
 				
-				mrudp_listen(remote.sockets.back(), &listen, listenerAccept, listenerClose);
+				mrudp_listen(remote.sockets.back(), &listen, nullptr, listenerAccept, listenerClose);
 				
 				NO_WHEN("create one local socket and make many connections")
 				{
@@ -134,6 +134,7 @@ SCENARIO("proxy")
 							mrudp_connection_options_t options;
 							options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
 							options.coalesce_reliable.delay_ms = 20;
+							options.probe_delay_ms = -1;
 							
 							local.connections.insert(
 								mrudp_connect_ex(

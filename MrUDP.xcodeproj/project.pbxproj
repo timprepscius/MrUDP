@@ -36,6 +36,7 @@
 		F67A364928EDF72400DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
 		F67A364F28EDF73000DA78E7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363828EDA8F600DA78E7 /* main.cpp */; };
 		F67A366028EE032A00DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
+		F67F173829A0479200CF5EC5 /* OneConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67F173729A046EF00CF5EC5 /* OneConnection.cpp */; };
 		F6915A4D26A4E128001C2E1E /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1E26A4E128001C2E1E /* Connection.h */; };
 		F6915A4E26A4E128001C2E1E /* mrudp.h in Headers */ = {isa = PBXBuildFile; fileRef = F6915A1F26A4E128001C2E1E /* mrudp.h */; };
 		F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2026A4E128001C2E1E /* Types.cpp */; };
@@ -222,6 +223,7 @@
 		F67A366528EE032A00DA78E7 /* MrUDP-Proxy-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Proxy-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F67A367028EE31EB00DA78E7 /* Proxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
 		F67A367128EE31EB00DA78E7 /* Proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
+		F67F173729A046EF00CF5EC5 /* OneConnection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OneConnection.cpp; sourceTree = "<group>"; };
 		F6915A1526A4E107001C2E1E /* libMrUDP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMrUDP.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6915A1C26A4E128001C2E1E /* Makefile.project */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
 		F6915A1E26A4E128001C2E1E /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 				F6915A4A26A4E128001C2E1E /* Common.h */,
 				F634A8EB26A613AC00869A6F /* Connections.cpp */,
 				F6ADDF4A285EA29900404CBA /* LotsOfConnections.cpp */,
+				F67F173729A046EF00CF5EC5 /* OneConnection.cpp */,
 				F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */,
 				F61FD09426F153F800F58003 /* NetworkPathChange.cpp */,
 				F61D252226D0281B00A1FCE0 /* ConnectionTimesOutAtBeginning.cpp */,
@@ -817,6 +820,7 @@
 				F6915A8626A4E2B3001C2E1E /* Basics.cpp in Sources */,
 				F6915A8426A4E2B3001C2E1E /* Run.cpp in Sources */,
 				F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */,
+				F67F173829A0479200CF5EC5 /* OneConnection.cpp in Sources */,
 				F6915A8726A4E2B3001C2E1E /* PacketID.cpp in Sources */,
 				F6A176D126B42AF7003708D8 /* Crypto.cpp in Sources */,
 				F65E050D284AA0D000AD9687 /* InstrusiveAsioTests.cpp in Sources */,
