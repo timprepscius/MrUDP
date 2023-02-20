@@ -87,6 +87,8 @@
 		F6A176D426B42B0B003708D8 /* Crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0ACD26B03A3A0055F46D /* Crypto.cpp */; };
 		F6A176D526B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */; };
 		F6A176D626B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */; };
+		F6A18EB729A2EE8400775991 /* Handshake_Options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A18EB629A2E2C300775991 /* Handshake_Options.cpp */; };
+		F6A18EB829A2EE8500775991 /* Handshake_Options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A18EB629A2E2C300775991 /* Handshake_Options.cpp */; };
 		F6ADDF4B285EA2D600404CBA /* LotsOfConnections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6ADDF4A285EA29900404CBA /* LotsOfConnections.cpp */; };
 		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
@@ -275,6 +277,8 @@
 		F6A176BD26B1C0C4003708D8 /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		F6A176BF26B3497F003708D8 /* Handshake.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Handshake.h; sourceTree = "<group>"; };
 		F6A176C326B41B2C003708D8 /* Handshake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Handshake.cpp; sourceTree = "<group>"; };
+		F6A18EB529A2E2C300775991 /* Handshake_Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Handshake_Options.h; sourceTree = "<group>"; };
+		F6A18EB629A2E2C300775991 /* Handshake_Options.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Handshake_Options.cpp; sourceTree = "<group>"; };
 		F6ADDF4A285EA29900404CBA /* LotsOfConnections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LotsOfConnections.cpp; sourceTree = "<group>"; };
 		F6AE8D86278CA33700BF1EA9 /* Precompile.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Precompile.pch; sourceTree = "<group>"; };
 		F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnreliableReceiveQueue.cpp; sourceTree = "<group>"; };
@@ -458,6 +462,8 @@
 				F66B0ACD26B03A3A0055F46D /* Crypto.cpp */,
 				F6A176BF26B3497F003708D8 /* Handshake.h */,
 				F6A176C326B41B2C003708D8 /* Handshake.cpp */,
+				F6A18EB529A2E2C300775991 /* Handshake_Options.h */,
+				F6A18EB629A2E2C300775991 /* Handshake_Options.cpp */,
 				F6960F4726E92594007C3EB5 /* NetworkPath.h */,
 				F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */,
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
@@ -789,6 +795,7 @@
 				F6915A6026A4E129001C2E1E /* mrudp.cpp in Sources */,
 				F6915A6126A4E129001C2E1E /* Packet.cpp in Sources */,
 				F6915A5026A4E128001C2E1E /* Probe.cpp in Sources */,
+				F6A18EB729A2EE8400775991 /* Handshake_Options.cpp in Sources */,
 				F6915A6726A4E129001C2E1E /* ReceiveQueue.cpp in Sources */,
 				F6B6241C2860A131003F604E /* Scheduler.cpp in Sources */,
 				F6915A5E26A4E129001C2E1E /* SendQueue.cpp in Sources */,
@@ -841,6 +848,7 @@
 				F64AC0EE26A63FAE001829A0 /* Retrier.cpp in Sources */,
 				F64AC0EA26A63FA5001829A0 /* Service.cpp in Sources */,
 				F64AC0E926A63FA5001829A0 /* Types.cpp in Sources */,
+				F6A18EB829A2EE8500775991 /* Handshake_Options.cpp in Sources */,
 				F64AC0EF26A63FAE001829A0 /* Sender.cpp in Sources */,
 				F6B6241B2860A131003F604E /* Scheduler.cpp in Sources */,
 				F64AC0F226A63FB3001829A0 /* Receiver.cpp in Sources */,

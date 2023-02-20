@@ -37,7 +37,8 @@ struct Socket : StrongThis<Socket>
 	
 	proxy::Transformer proxy;
 	Set<ShortConnectionID> shortConnectionIDs;
-	ShortConnectionID generateShortConnectionID ();
+	ShortConnectionID acquireShortConnectionID ();
+	void releaseShortConnectionID (ShortConnectionID);
 	bool isFull();
 	
 	LongConnectionID generateLongConnectionID ();

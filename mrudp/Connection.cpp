@@ -20,6 +20,7 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 	receiver(this),
 	probe(this),
 	handshake(this),
+	handshake_options(this),
 	networkPath(this),
 	options(socket->service->imp->options.connection)
 {
@@ -228,6 +229,9 @@ void Connection::receive(Packet &packet, const Address &remoteAddress)
 	sLogDebug("mrudp::receive", logVarV((char)packet.header.type) << logVarV(packet.header.id) << logVarV(packet.dataSize))
 #endif
 
+	if (handshake_options.onReceive(packet) == Discard)
+		return ;
+
 	xTraceChar(this, packet.header.id, (char)std::tolower((char)packet.header.type));
 	auto now = socket->service->clock.now();
 
@@ -301,6 +305,9 @@ void Connection::send(const PacketPtr &packet, Address *address)
 		(remoteID == 0 && (packet->header.type != DATA_RELIABLE && packet->header.type != DATA_UNRELIABLE)) ||
 		(remoteID != 0)
 	);
+
+	if (handshake_options.onSend(*packet) == Discard)
+		return ;
 
 #ifdef MRUDP_ENABLE_CRYPTO
 	if (crypto->onSend(*packet) == Discard)

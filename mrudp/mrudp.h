@@ -155,6 +155,8 @@ mrudp_error_code_t mrudp_close_socket(mrudp_socket_t socket);
 // closes the native handle for the given socket immediately
 mrudp_error_code_t mrudp_close_socket_native(mrudp_socket_t socket);
 
+mrudp_connection_options_t mrudp_default_connection_options();
+
 // enables listening for a given socket,
 // the accept call-back is invoked when a new connection is preliminarly established
 // the close call-back is invoked when the socket is closed

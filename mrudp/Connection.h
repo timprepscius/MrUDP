@@ -5,6 +5,7 @@
 #include "connection/Probe.h"
 #include "Crypto.h"
 #include "Handshake.h"
+#include "Handshake_Options.h"
 #include "Statistics.h"
 #include "NetworkPath.h"
 #include "Scheduler.h"
@@ -50,6 +51,7 @@ struct Connection : StrongThis<Connection>
 
 	// connection mechanisms
 	Handshake handshake;
+	Handshake_Options handshake_options;
 	NetworkPath networkPath;
 	Sender sender;
 	Receiver receiver;

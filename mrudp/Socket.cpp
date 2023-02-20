@@ -31,7 +31,7 @@ bool Socket::isFull()
 	return shortConnectionIDs.size() == std::numeric_limits<ShortConnectionID>().max()-1;
 }
 
-ShortConnectionID Socket::generateShortConnectionID()
+ShortConnectionID Socket::acquireShortConnectionID()
 {
 	ShortConnectionID id = service->random.next<ShortConnectionID>();
 
@@ -43,6 +43,16 @@ ShortConnectionID Socket::generateShortConnectionID()
 	
 	return id;
 }
+
+void Socket::releaseShortConnectionID(ShortConnectionID id)
+{
+	auto i = shortConnectionIDs.find(id);
+	if (i != shortConnectionIDs.end())
+	{
+		shortConnectionIDs.erase(i);
+	}
+}
+
 
 LongConnectionID Socket::generateLongConnectionID()
 {
@@ -78,7 +88,7 @@ StrongPtr<Connection> Socket::connect(
 		strong_this(this),
 		generateLongConnectionID(),
 		remoteAddress,
-		generateShortConnectionID(),
+		acquireShortConnectionID(),
 		(ProxyID)0
 	);
 	
@@ -138,13 +148,7 @@ void Socket::erase(Connection *connection)
 		}
 	}
 	
-	{
-		auto i = shortConnectionIDs.find(connection->localID);
-		if (i != shortConnectionIDs.end())
-		{
-			shortConnectionIDs.erase(i);
-		}
-	}
+	releaseShortConnectionID(connection->localID);
 }
 
 void Socket::close ()
@@ -282,7 +286,7 @@ StrongPtr<Connection> Socket::generateConnection(const LookUp &lookup, Packet &p
 	}
 	
 	int status = 0;
-	auto localID = generateShortConnectionID();
+	auto localID = acquireShortConnectionID();
 	auto connection = strong<Connection>(strong_this(this), lookup.longID, remoteAddress, localID, proxyID);
 	
 	insert(connection);

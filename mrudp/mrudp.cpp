@@ -9,6 +9,23 @@
 using namespace timprepscius;
 using namespace mrudp;
 
+mrudp_connection_options_t mrudp_default_connection_options()
+{
+	return mrudp_connection_options_t {
+		.coalesce_reliable = {
+			.mode = -1,
+			.delay_ms = -1
+		},
+
+		.coalesce_unreliable = {
+			.mode = -1,
+			.delay_ms = -1
+		},
+		
+		.probe_delay_ms = -1,
+	} ;
+}
+
 mrudp_error_code_t mrudp_default_options (mrudp_imp_selector imp, void *options_)
 {
 	// TODO: size checks
