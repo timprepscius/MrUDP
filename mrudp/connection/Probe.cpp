@@ -119,7 +119,7 @@ void Probe::recalculateProbeTimeout ()
 	}
 
 	if (connection->options.probe_delay_ms > 0)
-		timeout += connection->options.probe_delay_ms;
+		timeout += connection->options.probe_delay_ms / 1000.0;
 
 	probeInterval = toDuration(timeout);
 	sLogDebug("mrudp::probe", logOfThis(this) << " " << logVar(timeout));
