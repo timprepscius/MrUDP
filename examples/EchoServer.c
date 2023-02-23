@@ -67,7 +67,7 @@ server_t *open_server(void)
 	server->socket = mrudp_socket(server->service, &any_address);
 	mrudp_socket_addr(server->socket, &server->address);
 	
-	mrudp_listen(server->socket, server, server_accept, server_close);
+	mrudp_listen(server->socket, server, NULL, server_accept, server_close);
 	
 	return server;
 }

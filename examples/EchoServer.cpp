@@ -31,7 +31,7 @@ void Server::start()
 	mrudp_socket_addr(socket, &address);
 	
 	mrudp_listen(
-		socket, nullptr,
+		socket, nullptr, nullptr,
 		[&](void *, mrudp_connection_t connection) {
 			std::cout << "Connection accept" << std::endl;
 			
