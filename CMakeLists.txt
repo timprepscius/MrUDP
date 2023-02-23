@@ -75,6 +75,7 @@ add_library(MrUDP STATIC
     mrudp/Socket.cpp
     mrudp/Statistics.cpp
     mrudp/Types.cpp
+    mrudp/Handshake_Options.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
     mrudp/proxy/Transformer.cpp
