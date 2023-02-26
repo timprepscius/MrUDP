@@ -29,6 +29,7 @@ Connection::Connection(const StrongPtr<Socket> &socket_, LongConnectionID id_, c
 
 	#ifdef LOG_DEBUG
 		++NumConnection;
+		sLogDebug("mrudp::opens", logOfThis(this) << NumConnection);
 	#endif
 	sLogDebug("mrudp::life_cycle", logOfThis(this) << NumConnection);
 	xLogDebug(logOfThis(this) << logLabel("socket connection") << logLabelVar("local", toString(socket->getLocalAddress())) << logLabelVar("remote", toString(remoteAddress)));

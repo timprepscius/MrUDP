@@ -62,7 +62,7 @@ struct Proxy {
 	mrudp_proxy_magic_t wireMagic, connectionMagic;
 	std::thread ticker;
 	
-	Mutex mutex;
+	RecursiveMutex mutex;
 	mrudp_connection_t wire;
 	
 	SizedVector<char> out;
@@ -93,7 +93,8 @@ void write(V &queue, char *data, size_t size)
 
 mrudp_error_code_t proxy_send_queue(Proxy *proxy, ProxyConnection *connection, ProxyPacketMode::Enum mode, char *data, size_t size)
 {
-	auto lock = lock_of(proxy->mutex);
+	debug_assert(proxy->mutex.locked_by_caller());
+	
 	ProxyPacketHeader header;
 	header.size = size;
 	header.type = mode;
@@ -107,6 +108,8 @@ mrudp_error_code_t proxy_send_queue(Proxy *proxy, ProxyConnection *connection, P
 
 mrudp_error_code_t proxy_receive_queue(Proxy *proxy, char *data, size_t size)
 {
+	debug_assert(proxy->mutex.locked_by_caller());
+	
 	sLogDebug("mrudp::proxy", logVar(size));
 	
 	proxy->in.write(data, size);
@@ -154,17 +157,26 @@ ProxyConnection &on_connection_open(Proxy *proxy, ProxyMode::Enum mode, ProxyID 
 	return proxyConnection;
 }
 
-void on_connection_close(Proxy *proxy, ProxyID id)
+void initiate_connection_close(Proxy *proxy, ProxyID id)
 {
-	auto lock = lock_of(proxy->mutex);
+	debug_assert(proxy->mutex.locked_by_caller());
+//	auto lock = lock_of(proxy->mutex);
 	
 	auto i = proxy->connections.find(id);
 	if (i == proxy->connections.end())
 		return;
 		
-	auto connection = i->second.connection;
-	mrudp_close_connection(connection);
-	
+	auto &connection = i->second;
+	mrudp_close_connection(connection.connection);
+	connection.connection = nullptr;
+}
+
+void on_connection_close(Proxy *proxy, ProxyConnection *connection)
+{
+	auto i = proxy->connections.find(connection->id);
+	if (i == proxy->connections.end())
+		return;
+		
 	proxy->connections.erase(i);
 }
 
@@ -195,7 +207,8 @@ mrudp_error_code_t on_wire_packet(Proxy *proxy, char *data, int size)
 		break;
 		
 		case ProxyPacketMode::CLOSE:
-			on_connection_close(proxy, header.id);
+			initiate_connection_close(proxy, header.id);
+			debug_assert(header.size == 0);
 		break;
 		
 		case ProxyPacketMode::RELIABLE:
@@ -224,6 +237,8 @@ mrudp_error_code_t on_wire_packet(Proxy *proxy, char *data, int size)
 
 mrudp_error_code_t on_wire_close(Proxy *proxy, ProxyConnection *connection, mrudp_event_t)
 {
+	on_connection_close(proxy, connection);
+
 	return 0;
 }
 
@@ -238,11 +253,21 @@ mrudp_error_code_t on_proxy_packet(Proxy *proxy, ProxyConnection *connection, ch
 
 mrudp_error_code_t on_proxy_close(Proxy *proxy, ProxyConnection *connection, mrudp_event_t)
 {
+	proxy_send_queue(
+		proxy, connection,
+		ProxyPacketMode::CLOSE,
+		nullptr, 0
+	);
+
+	on_connection_close(proxy, connection);
+	
 	return 0;
 }
 
 mrudp_error_code_t on_mode_packet(Proxy *proxy, ProxyConnection *connection, char *data, int size, int is_reliable)
 {
+	debug_assert(proxy->mutex.locked_by_caller());
+
 	mrudp_proxy_magic_t magic;
 	if (mrudp_failed(read(magic, data, size)))
 		return -1;
@@ -299,6 +324,8 @@ mrudp_error_code_t on_connection_packet(void *connection_, char *data, int size,
 	auto connection = (ProxyConnection *)connection_;
 	auto proxy = (Proxy *)connection->proxy;
 	
+	auto lock = lock_of(proxy->mutex);
+	
 	switch (connection->mode) {
 	case ProxyMode::NONE:
 		return on_mode_packet(proxy, connection, data, size, is_reliable);
@@ -316,6 +343,11 @@ mrudp_error_code_t on_connection_close(void *connection_, mrudp_event_t event)
 {
 	auto connection = (ProxyConnection *)connection_;
 	auto proxy = (Proxy *)connection->proxy;
+
+	mrudp_close_connection(connection->connection);
+	connection->connection = nullptr;
+	
+	auto lock = lock_of(proxy->mutex);
 	
 	switch (connection->mode) {
 	case ProxyMode::WIRE:
@@ -328,7 +360,16 @@ mrudp_error_code_t on_connection_close(void *connection_, mrudp_event_t event)
 	return -1;
 }
 
-mrudp_error_code_t on_connection_accept(void *proxy_, mrudp_connection_t connection)
+mrudp_error_code_t on_socket_close(void *proxy_, mrudp_event_t event)
+{
+	auto proxy = (Proxy *)proxy_;
+	
+	mrudp_close_socket(proxy->socket);
+	
+	return 0;
+}
+
+mrudp_error_code_t on_socket_accept(void *proxy_, mrudp_connection_t connection)
 {
 	auto proxy = (Proxy *)proxy_;
 	auto proxyID = proxy->nextProxyID;
@@ -465,8 +506,8 @@ void ticker (Proxy *proxy)
 {
 	while (!proxy->closed)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 		proxy_tick(proxy);
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
 
@@ -485,8 +526,8 @@ void *open(
 	proxy->socket = mrudp_socket(service, from);
 	proxy->wire = nullptr;
 	
-	proxy->ticker = std::thread([proxy_retain=weak(proxy_retain)]() {
-		if (auto proxy = strong(proxy_retain))
+	proxy->ticker = std::thread([proxy_weak=weak(proxy_retain)]() {
+		if (auto proxy = strong(proxy_weak))
 			ticker(ptr_of(proxy));
 	});
 	
@@ -527,7 +568,7 @@ void *open(
 		proxy->nextProxyID = ProxyID_SERVER;
 	}
 
-	mrudp_listen(proxy->socket, proxy, nullptr, on_connection_accept, on_connection_close);
+	mrudp_listen(proxy->socket, proxy, nullptr, on_socket_accept, on_socket_close);
 
 	return proxy;
 }
@@ -539,12 +580,18 @@ void close(void *proxy_)
 	proxy->closed = true;
 	proxy->ticker.join();
 
+	mrudp_close_connection(proxy->wire);
+	proxy->wire = nullptr;
+
+	decltype(proxy->connections) connections;
 	mrudp_close_socket(proxy->socket);
 	{
 		auto lock = lock_of(proxy->mutex);
-		for (auto &[id, connection] : proxy->connections)
-			mrudp_close_connection(connection.connection);
+		connections = std::move(proxy->connections);
 	}
+
+	for (auto &[id, connection] : connections)
+		mrudp_close_connection(connection.connection);
 
 	proxy->retain = nullptr;
 }

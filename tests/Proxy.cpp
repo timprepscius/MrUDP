@@ -51,18 +51,17 @@ SCENARIO("proxy")
 				auto *proxyB = mrudp_proxy_open(proxyB_service, &anyAddress, &proxyA_address, &proxyB_address, wireMagic, connectionMagic);
 				
 				core::ExecuteOnDestruct e1([=]() {
-					sLogDebug("mrudp::proxy", "closing proxyA");
+					sLogDebug("testing", "closing proxyA");
 					mrudp_proxy_close(proxyA);
-					sLogDebug("mrudp::proxy", "closing proxyB");
+					sLogDebug("testing", "closing proxyB");
 					mrudp_proxy_close(proxyB);
 					
 					std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
-					sLogDebug("mrudp::proxy", "closing proxyA service");
+					sLogDebug("testing", "closing proxyA service");
 					mrudp_close_service(proxyA_service, true);
-					sLogDebug("mrudp::proxy", "closing proxyB service");
-					mrudp_close_service(proxyB_service, false);
-
+					sLogDebug("testing", "closing proxyB service");
+					mrudp_close_service(proxyB_service, true);
 				});
 				
 				{
