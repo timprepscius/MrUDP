@@ -1,4 +1,4 @@
-#include "mrudp_proxy.h"
+#include "mrudp_proxy.hpp"
 #include "Proxy.hpp"
 
 using namespace timprepscius::mrudp;
@@ -108,6 +108,101 @@ mrudp_connection_t mrudp_connect_ex_proxy_resolve(
 		proxy, magic
 	);
 }
+
+// ------
+
+mrudp_connection_t mrudp_connect_proxy(
+	mrudp_socket_t socket,
+	const mrudp_addr_t *remote,
+	
+	void *userData,
+	mrudp_receive_callback &&on_receive,
+	mrudp_close_callback &&on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	return mrudp_connect_ex_proxy(
+		socket, remote, nullptr,
+		userData, std::move(on_receive), std::move(on_close),
+		proxy, magic
+	);
+}
+
+mrudp_connection_t mrudp_connect_ex_proxy(
+	mrudp_socket_t socket,
+	const mrudp_addr_t *remote,
+	const mrudp_connection_options_t *options,
+	
+	void *userData,
+	mrudp_receive_callback &&on_receive,
+	mrudp_close_callback &&on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	auto connection = mrudp_connect_ex(socket, proxy, options, userData, std::move(on_receive), std::move(on_close));
+	
+	if (!connection)
+		return nullptr;
+		
+	if (mrudp_failed(mrudp_proxy_connect(connection, remote, magic)))
+	{
+		mrudp_close_connection(connection);
+		return nullptr;
+	}
+	
+	return connection;
+}
+
+mrudp_connection_t mrudp_connect_proxy_resolve(
+	mrudp_socket_t socket,
+	const char *remote_,
+	
+	void *userData,
+	mrudp_receive_callback &&on_receive,
+	mrudp_close_callback &&on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	mrudp_addr_t remote;
+	mrudp_str_to_addr(remote_, &remote);
+	
+	return mrudp_connect_proxy(
+		socket, &remote,
+		userData, std::move(on_receive), std::move(on_close),
+		proxy, magic
+	);
+}
+
+mrudp_connection_t mrudp_connect_ex_proxy_resolve(
+	mrudp_socket_t socket,
+	const char *remote_,
+	const mrudp_connection_options_t *options,
+	
+	void *userData,
+	mrudp_receive_callback &&on_receive,
+	mrudp_close_callback &&on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	mrudp_addr_t remote;
+	mrudp_str_to_addr(remote_, &remote);
+	
+	return mrudp_connect_ex_proxy(
+		socket, &remote, options,
+		userData, std::move(on_receive), std::move(on_close),
+		proxy, magic
+	);
+}
+
+// ------
 
 mrudp_proxy_options_t mrudp_proxy_options_default()
 {

@@ -1,6 +1,6 @@
 #include "Common.h"
 
-#include "../mrudp/mrudp_proxy.h"
+#include "../mrudp/mrudp_proxy.hpp"
 #include "../mrudp/imp/Asio.h"
 
 namespace timprepscius::mrudp::tests {
@@ -45,9 +45,11 @@ SCENARIO("proxy")
 				mrudp_proxy_options_t proxyOptions = mrudp_proxy_options_default();
 				
 				mrudp_addr_t proxyA_address, proxyB_address;
+				mrudp_str_to_addr("127.0.0.1:7654", &proxyA_address);
+				mrudp_str_to_addr("127.0.0.1:4567", &proxyB_address);
 				
-				auto *proxyA = mrudp_proxy_open(proxyA_service, &anyAddress, nullptr, &proxyA_address, &proxyOptions);
-				auto *proxyB = mrudp_proxy_open(proxyB_service, &anyAddress, &proxyA_address, &proxyB_address, &proxyOptions);
+				auto *proxyA = mrudp_proxy_open(proxyA_service, &proxyA_address, nullptr, &proxyA_address, &proxyOptions);
+				auto *proxyB = mrudp_proxy_open(proxyB_service, &proxyB_address, &proxyA_address, &proxyB_address, &proxyOptions);
 				
 				core::ExecuteOnDestruct e1([=]() {
 					sLogDebug("testing", "closing proxyA");
@@ -78,12 +80,12 @@ SCENARIO("proxy")
 					State local("local");
 					local.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 					
-					auto listen = Listener {
+					auto listen = strong<Listener>(Listener {
 						.accept = [&](auto connection) {
 							auto l = lock_of(remote.connectionsMutex);
 							remote.connections.insert(connection);
 							
-							auto remoteConnectionDispatch = new Connection {
+							auto remoteConnectionDispatch = strong<Connection>(Connection {
 								.receive = [&](auto data, auto size, auto isReliable) {
 									auto lock = lock_of(remote.packetsMutex);
 									remote.packets.push_back(Packet(data, data+size));
@@ -96,27 +98,32 @@ SCENARIO("proxy")
 									auto connection_ = std::find(remote.connections.begin(),remote.connections.end(), connection);
 									if (connection_ != remote.connections.end())
 									{
-										mrudp_close_connection(connection);
 										remote.connections.erase(connection);
+										mrudp_close_connection(connection);
 									}
 									return 0;
 								},
-								.shouldDelete = true
-							} ;
+								.shouldDelete = false
+							}) ;
 
 							mrudp_accept(
 								connection,
-								remoteConnectionDispatch,
+								ptr_of(remoteConnectionDispatch),
 								connectionReceive,
-								connectionClose
+								[remoteConnectionDispatch](void *p, auto e) { return connectionClose(p, e); }
 							);
 							
 							return 0;
 						},
 						.close = [&](auto event) { return 0; }
-					} ;
+					}) ;
 					
-					mrudp_listen(remote.sockets.back(), &listen, nullptr, listenerAccept, listenerClose);
+					mrudp_listen(
+						remote.sockets.back(),
+						ptr_of(listen), nullptr,
+						listenerAccept,
+						[listen](void *p, auto e) { return listenerClose(p, e); }
+					);
 					
 					WHEN("create one local socket and make many connections")
 					{
@@ -124,7 +131,7 @@ SCENARIO("proxy")
 						mrudp_addr_t localAddress;
 						mrudp_socket_addr(local.sockets.back(), &localAddress);
 						
-						auto localConnectionDispatch = Connection {
+						auto localConnectionDispatch = strong<Connection>(Connection {
 							.receive = [&](auto data, auto size, auto isReliable) {
 								local.packetsReceived++;
 								local.bytesReceived += size;
@@ -133,7 +140,7 @@ SCENARIO("proxy")
 							.close = [&](auto event) {
 								return 0;
 							}
-						} ;
+						}) ;
 
 						WHEN(numConnectionsToCreate << " connections are created from local to remote")
 						{
@@ -148,7 +155,9 @@ SCENARIO("proxy")
 									mrudp_connect_ex_proxy(
 										local.sockets.back(), &remoteAddress,
 										&options,
-										&localConnectionDispatch, connectionReceive, connectionClose,
+										ptr_of(localConnectionDispatch),
+										connectionReceive,
+										[localConnectionDispatch](void *p, auto e) { return connectionClose(p, e); },
 										&proxyB_address, proxyOptions.magic_connection
 									)
 								);
@@ -217,7 +226,7 @@ SCENARIO("proxy")
 						mrudp_addr_t localAddress;
 						mrudp_socket_addr(local.sockets.back(), &localAddress);
 						
-						auto localConnectionDispatch = Connection {
+						auto localConnectionDispatch = strong<Connection>(Connection {
 							.receive = [&](auto data, auto size, auto isReliable) {
 								local.packetsReceived++;
 								local.packets.push_back(Packet(data, data+size));
@@ -227,7 +236,7 @@ SCENARIO("proxy")
 							.close = [&](auto event) {
 								return 0;
 							}
-						} ;
+						}) ;
 
 						NO_WHEN(numConnectionsToCreate << " connections are created from local to remote")
 						{
@@ -236,7 +245,9 @@ SCENARIO("proxy")
 								local.connections.insert(
 									mrudp_connect_proxy(
 										local.sockets.back(), &remoteAddress,
-										&localConnectionDispatch, connectionReceive, connectionClose,
+										ptr_of(localConnectionDispatch),
+										connectionReceive,
+										[localConnectionDispatch](void *p, auto e) { return connectionClose(p, e); },
 										&proxyB_address, proxyOptions.magic_connection
 									)
 								);
@@ -305,7 +316,9 @@ SCENARIO("proxy")
 							{
 								local.connections.insert(mrudp_connect_proxy(
 									local.sockets.back(), &remoteAddress,
-									&localConnectionDispatch, connectionReceive, connectionClose,
+									ptr_of(localConnectionDispatch),
+									connectionReceive,
+									[localConnectionDispatch](void *p, auto e) { return connectionClose(p, e); },
 									&proxyB_address, proxyOptions.magic_connection
 								));
 							}

@@ -51,7 +51,7 @@ struct ProxyConnection {
 	Proxy *proxy;
 	ProxyID id;
 	ProxyMode::Enum mode;
-	mrudp_connection_t connection;
+	mrudp_connection_t connection = nullptr;
 } ;
 
 struct Proxy {
@@ -167,8 +167,10 @@ void initiate_connection_close(Proxy *proxy, ProxyID id)
 		return;
 		
 	auto &connection = i->second;
-	mrudp_close_connection(connection.connection);
-	connection.connection = nullptr;
+	mrudp_connection_t retain = nullptr;
+	std::swap(retain, connection.connection);
+	
+	mrudp_close_connection(retain);
 }
 
 void on_connection_close(Proxy *proxy, ProxyConnection *connection)
@@ -381,7 +383,7 @@ mrudp_error_code_t on_socket_accept(void *proxy_, mrudp_connection_t connection)
 	proxyConnection.mode = ProxyMode::NONE;
 	proxyConnection.connection = connection;
 	
-	mrudp_connection_options_t options;
+	mrudp_connection_options_t options = mrudp_default_connection_options();
 	options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
 	options.coalesce_unreliable.mode = MRUDP_COALESCE_NONE;
 	options.probe_delay_ms = proxyProbeDelay;
@@ -403,7 +405,7 @@ void proxy_tick(Proxy *proxy)
 	auto lock = lock_of(proxy->mutex);
 	if (!proxy->out.empty())
 	{
-		proxy->scratch[0].resize(proxy->out.size() + sizeof(PayloadPacketSize) + sizeof(WasCompressed) + sizeof(UncompressedSize));
+		proxy->scratch[0].resize(sizeof(PayloadPacketSize) + sizeof(WasCompressed) + sizeof(UncompressedSize) + proxy->out.size());
 
 		auto *size = (PayloadPacketSize *)proxy->scratch[0].data();
 		auto *wasCompressed = (WasCompressed *)(size+1);
@@ -414,12 +416,12 @@ void proxy_tick(Proxy *proxy)
 		uLongf sourceLen = proxy->out.size();
 		Bytef *dest = (Bytef *)compressionDest;
 		uLongf destLen = proxy->out.size();
-		int level = proxy->options.compression_level;
+		int level = 1;
 		
 		PayloadSize payloadSize = 0;
 		payloadSize += sizeof(WasCompressed);
 
-		if (level > 0 && compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
+		if (compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
 		{
 			UncompressedSize uncompressedSize_ = (PayloadSize)sourceLen;
 
@@ -428,9 +430,7 @@ void proxy_tick(Proxy *proxy)
 			core::small_copy((char *)uncompressedSize, (const char *)&uncompressedSize_, sizeof(UncompressedSize));
 			payloadSize += sizeof(UncompressedSize);
 			payloadSize += destLen;
-			
-			*size = (PayloadSize)(destLen + sizeof(WasCompressed) + sizeof(UncompressedSize));
-			
+
 			sLogDebug("mrudp::proxy::compress", logVar(sourceLen) << logVar(destLen));
 		}
 		else
@@ -439,13 +439,13 @@ void proxy_tick(Proxy *proxy)
 
 			*wasCompressed = 0;
 			
-			auto *uncompressedDest = (u8 *)(uncompressedSize + 1);
+			auto *uncompressedDest = ((u8 *)wasCompressed) + sizeof(WasCompressed);
 			core::mem_copy((char *)uncompressedDest, proxy->out.data(), sourceLen);
 			payloadSize += sourceLen;
 		}
 
 		*size = payloadSize;
-		mrudp_send(proxy->wire, proxy->scratch[0].data(), sizeof(PayloadPacketSize) + *size, 1);
+		mrudp_send(proxy->wire, proxy->scratch[0].data(), sizeof(PayloadPacketSize) + payloadSize, 1);
 		proxy->out.resize(0);
 	}
 	
@@ -525,11 +525,6 @@ void *open(
 	proxy->socket = mrudp_socket(service, from);
 	proxy->wire = nullptr;
 	
-	proxy->ticker = std::thread([proxy_weak=weak(proxy_retain)]() {
-		if (auto proxy = strong(proxy_weak))
-			ticker(ptr_of(proxy));
-	});
-	
 	if (bound)
 		mrudp_socket_addr(proxy->socket, bound);
 	
@@ -537,8 +532,9 @@ void *open(
 	{
 		proxy->nextProxyID = 0;
 
-		mrudp_connection_options_t options;
+		mrudp_connection_options_t options = mrudp_default_connection_options();
 		options.coalesce_reliable.mode = MRUDP_COALESCE_STREAM;
+		options.coalesce_reliable.delay_ms = 0;
 		options.coalesce_unreliable.mode = MRUDP_COALESCE_NONE;
 		options.probe_delay_ms = proxyProbeDelay;
 
@@ -557,7 +553,8 @@ void *open(
 			on_connection_close
 		);
 		
-		mrudp_send(proxy->wire, (char *)&proxy->options.magic_wire, sizeof(proxy->options.magic_wire), 1);
+		auto wireMagic = proxy->options.magic_wire;
+		mrudp_send(proxy->wire, (char *)&wireMagic, sizeof(wireMagic), 1);
 	}
 	else
 	{
@@ -568,6 +565,11 @@ void *open(
 	}
 
 	mrudp_listen(proxy->socket, proxy, nullptr, on_socket_accept, on_socket_close);
+
+	proxy->ticker = std::thread([proxy_weak=weak(proxy_retain)]() {
+		if (auto proxy = strong(proxy_weak))
+			ticker(ptr_of(proxy));
+	});
 
 	return proxy;
 }

@@ -209,6 +209,7 @@
 		F6446EFD29AAA78400F8DB0F /* small_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = small_copy.hpp; sourceTree = "<group>"; };
 		F6446EFE29AAB19400F8DB0F /* mem_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mem_copy.hpp; sourceTree = "<group>"; };
 		F6446EFF29AAD4E800F8DB0F /* Thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
+		F65D0FBE29ABFF64000247E6 /* mrudp_proxy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mrudp_proxy.hpp; sourceTree = "<group>"; };
 		F65E0508284A936400AD9687 /* AsioTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsioTesting.h; sourceTree = "<group>"; };
 		F65E0509284A93D500AD9687 /* AsioTesting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AsioTesting.cpp; sourceTree = "<group>"; };
 		F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InstrusiveAsioTests.cpp; sourceTree = "<group>"; };
@@ -462,6 +463,7 @@
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
 				F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */,
 				F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */,
+				F65D0FBE29ABFF64000247E6 /* mrudp_proxy.hpp */,
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
 				F6915A1F26A4E128001C2E1E /* mrudp.h */,
 				F611E489270F2CFA0038D6D4 /* mrudp.hpp */,

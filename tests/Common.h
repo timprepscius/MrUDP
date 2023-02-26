@@ -90,7 +90,7 @@ struct State {
 	mrudp_service_t service;
 	std::list<mrudp_socket_t> sockets;
 	
-	Mutex connectionsMutex;
+	RecursiveMutex connectionsMutex;
 	std::set<mrudp_connection_t> connections;
 	
 	Mutex packetsMutex;
@@ -115,16 +115,15 @@ struct State {
 		}
 
 		{
-			decltype(connections) connections_;
-			
 			{
 				auto lock = lock_of(connectionsMutex);
-				connections_ = std::move(connections);
+				auto copy = std::vector<mrudp_connection_t>(connections.begin(), connections.end());
+				for (auto &connection: copy)
+					if (connections.find(connection) != connections.end())
+						mrudp_close_connection(connection);
 			}
-			
-			for (auto &connection: connections_)
-				mrudp_close_connection(connection);
 		}
+
 
 		{
 			mrudp_close_service(service, true);
