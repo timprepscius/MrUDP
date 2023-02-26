@@ -8,13 +8,13 @@ namespace mrudp {
 struct Connection;
 
 // --------------------------------------------------------
-// Handshake_Options
+// Handshake_Proxy
 //
-// Sends the options along with the handshake
+// Sends proxy information along with the handshake
 // --------------------------------------------------------
-struct Handshake_Options
+struct Handshake_Proxy
 {
-	Handshake_Options(Connection *connection);
+	Handshake_Proxy(Connection *connection);
 	Connection *connection;
 	
 	PacketDiscard onReceive (Packet &packet);

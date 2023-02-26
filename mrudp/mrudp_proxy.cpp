@@ -1,5 +1,5 @@
 #include "mrudp_proxy.h"
-#include "proxy/Proxy.h"
+#include "Proxy.hpp"
 
 using namespace timprepscius::mrudp;
 
@@ -8,12 +8,59 @@ void mrudp_proxy_close(void *proxy)
 	return proxy::close(proxy);
 }
 
-void *mrudp_proxy_open(const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, mrudp_proxy_magic_t magic)
+void *mrudp_proxy_open(mrudp_service_t service, const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, mrudp_proxy_magic_t wireMagic, mrudp_proxy_magic_t connectionMagic)
 {
-	return proxy::open(from, to, bound, magic);
+	return proxy::open(service, from, to, bound, wireMagic, connectionMagic);
 }
 
-void mrudp_send_proxy_connect(mrudp_socket_t socket, const mrudp_addr_t *to, mrudp_proxy_magic_t magic)
+mrudp_error_code_t mrudp_proxy_connect(mrudp_connection_t connection, const mrudp_addr_t *remote, mrudp_proxy_magic_t magic)
 {
-	return proxy::send_connect(socket, to, magic);
+	return proxy::connect(connection, remote, magic);
 }
+
+mrudp_connection_t mrudp_connect_proxy(
+	mrudp_socket_t socket,
+	const mrudp_addr_t *remote,
+	
+	void *userData,
+	mrudp_receive_callback_fn on_receive,
+	mrudp_close_callback_fn on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	return mrudp_connect_ex_proxy(
+		socket, remote, nullptr,
+		userData, on_receive, on_close,
+		proxy, magic
+	);
+}
+
+mrudp_connection_t mrudp_connect_ex_proxy(
+	mrudp_socket_t socket,
+	const mrudp_addr_t *remote,
+	const mrudp_connection_options_t *options,
+	
+	void *userData,
+	mrudp_receive_callback_fn on_receive,
+	mrudp_close_callback_fn on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	auto connection = mrudp_connect_ex(socket, proxy, options, userData, on_receive, on_close);
+	
+	if (!connection)
+		return nullptr;
+		
+	if (mrudp_failed(mrudp_proxy_connect(connection, remote, magic)))
+	{
+		mrudp_close_connection(connection);
+		return nullptr;
+	}
+	
+	return connection;
+}
+

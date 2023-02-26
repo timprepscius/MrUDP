@@ -11,7 +11,7 @@
 #include "catch.hpp"
 
 #include "../mrudp/base/Core.h"
-#include "../mrudp/base/Mutex.h"
+#include "../mrudp/base/Thread.h"
 
 namespace timprepscius {
 namespace mrudp {

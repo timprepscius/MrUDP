@@ -14,6 +14,10 @@
 		F634A8EE26A6148E00869A6F /* Connections.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634A8EB26A613AC00869A6F /* Connections.cpp */; };
 		F639D07628181F830031D309 /* EchoClient.c in Sources */ = {isa = PBXBuildFile; fileRef = F639D07528181F830031D309 /* EchoClient.c */; };
 		F639D078281820E00031D309 /* EchoClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F639D077281820DF0031D309 /* EchoClient.cpp */; };
+		F6446EF329A992D000F8DB0F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6446EF229A98D5100F8DB0F /* Proxy.cpp */; };
+		F6446EF429A992D000F8DB0F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6446EF229A98D5100F8DB0F /* Proxy.cpp */; };
+		F6446EF829AA84A400F8DB0F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6446EF629AA7F0000F8DB0F /* Proxy.cpp */; };
+		F6446EF929AA84D200F8DB0F /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A4826A4E128001C2E1E /* Run.cpp */; };
 		F64AC0E526A63FA5001829A0 /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A2626A4E128001C2E1E /* Socket.cpp */; };
 		F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3426A4E128001C2E1E /* Packet.cpp */; };
 		F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6915A3326A4E128001C2E1E /* mrudp.cpp */; };
@@ -31,8 +35,6 @@
 		F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E0509284A93D500AD9687 /* AsioTesting.cpp */; };
 		F65E050D284AA0D000AD9687 /* InstrusiveAsioTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */; };
 		F66C41112911F50A00E99C6C /* Platform.h in Sources */ = {isa = PBXBuildFile; fileRef = F66C41102911F50A00E99C6C /* Platform.h */; };
-		F67A363B28EDEEDA00DA78E7 /* Transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */; };
-		F67A363C28EDEEDB00DA78E7 /* Transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */; };
 		F67A364928EDF72400DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
 		F67A364F28EDF73000DA78E7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A363828EDA8F600DA78E7 /* main.cpp */; };
 		F67A366028EE032A00DA78E7 /* libMrUDP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6915A1526A4E107001C2E1E /* libMrUDP.a */; };
@@ -93,9 +95,6 @@
 		F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF314826DE51FE003FCCAE /* UnreliableReceiveQueue.cpp */; };
 		F6B42A9B26D2AC8900EBAD8B /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */; };
-		F6B49B9C28EE32FF00258B1F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A367128EE31EB00DA78E7 /* Proxy.cpp */; };
-		F6B49B9D28EE32FF00258B1F /* Proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A367128EE31EB00DA78E7 /* Proxy.cpp */; };
-		F6B49BA128EE34A700258B1F /* Proxy+Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */; };
 		F6B49BA228EE36A200258B1F /* mrudp_proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */; };
 		F6B49BA328EE36A200258B1F /* mrudp_proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */; };
 		F6B6241B2860A131003F604E /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B6241A28609AE1003F604E /* Scheduler.cpp */; };
@@ -200,6 +199,16 @@
 		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
 		F639D07528181F830031D309 /* EchoClient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = EchoClient.c; sourceTree = "<group>"; };
 		F639D077281820DF0031D309 /* EchoClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoClient.cpp; sourceTree = "<group>"; };
+		F6446EEF29A98A2500F8DB0F /* _remove */ = {isa = PBXFileReference; lastKnownFileType = folder; path = _remove; sourceTree = "<group>"; };
+		F6446EF129A98D1E00F8DB0F /* Proxy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Proxy.hpp; sourceTree = "<group>"; };
+		F6446EF229A98D5100F8DB0F /* Proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
+		F6446EF529AA5B7600F8DB0F /* CircularBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularBuffer.hpp; sourceTree = "<group>"; };
+		F6446EF629AA7F0000F8DB0F /* Proxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
+		F6446EFA29AA9F2800F8DB0F /* SizedVector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SizedVector.hpp; sourceTree = "<group>"; };
+		F6446EFC29AAA00800F8DB0F /* Misc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Misc.h; sourceTree = "<group>"; };
+		F6446EFD29AAA78400F8DB0F /* small_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = small_copy.hpp; sourceTree = "<group>"; };
+		F6446EFE29AAB19400F8DB0F /* mem_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mem_copy.hpp; sourceTree = "<group>"; };
+		F6446EFF29AAD4E800F8DB0F /* Thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		F65E0508284A936400AD9687 /* AsioTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsioTesting.h; sourceTree = "<group>"; };
 		F65E0509284A93D500AD9687 /* AsioTesting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AsioTesting.cpp; sourceTree = "<group>"; };
 		F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InstrusiveAsioTests.cpp; sourceTree = "<group>"; };
@@ -214,17 +223,12 @@
 		F676C52226A78AC8001559F4 /* BoostAsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoostAsio.h; sourceTree = "<group>"; };
 		F676C52426A78DAA001559F4 /* Ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Ptr.h; sourceTree = "<group>"; };
 		F676C52626A7938A001559F4 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
-		F676C52726A793CF001559F4 /* Mutex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
+		F676C52726A793CF001559F4 /* Mutex_.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mutex_.h; sourceTree = "<group>"; };
 		F676C52926A794C1001559F4 /* Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		F676C55526A79EAE001559F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F67A363828EDA8F600DA78E7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		F67A363928EDEE4500DA78E7 /* Transformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Transformer.h; sourceTree = "<group>"; };
-		F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Transformer.cpp; sourceTree = "<group>"; };
 		F67A364E28EDF72400DA78E7 /* MrUDP-Proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Proxy"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "Proxy+Test.cpp"; sourceTree = "<group>"; };
 		F67A366528EE032A00DA78E7 /* MrUDP-Proxy-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Proxy-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F67A367028EE31EB00DA78E7 /* Proxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
-		F67A367128EE31EB00DA78E7 /* Proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
 		F67F173729A046EF00CF5EC5 /* OneConnection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OneConnection.cpp; sourceTree = "<group>"; };
 		F6915A1526A4E107001C2E1E /* libMrUDP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMrUDP.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6915A1C26A4E128001C2E1E /* Makefile.project */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
@@ -286,7 +290,6 @@
 		F6B42A9A26D2AA8700EBAD8B /* Streams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Streams.cpp; sourceTree = "<group>"; };
 		F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mrudp_proxy.h; sourceTree = "<group>"; };
 		F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mrudp_proxy.cpp; sourceTree = "<group>"; };
-		F6B49B9E28EE333800258B1F /* ProxyID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyID.h; sourceTree = "<group>"; };
 		F6B624192860931B003F604E /* Scheduler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scheduler.h; sourceTree = "<group>"; };
 		F6B6241A28609AE1003F604E /* Scheduler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scheduler.cpp; sourceTree = "<group>"; };
 		F6B6241D2860C23C003F604E /* libCore_Misc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCore_Misc.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -383,8 +386,14 @@
 			isa = PBXGroup;
 			children = (
 				F676C52626A7938A001559F4 /* Random.h */,
-				F676C52726A793CF001559F4 /* Mutex.h */,
+				F6446EF529AA5B7600F8DB0F /* CircularBuffer.hpp */,
+				F6446EFD29AAA78400F8DB0F /* small_copy.hpp */,
+				F6446EFE29AAB19400F8DB0F /* mem_copy.hpp */,
+				F6446EFA29AA9F2800F8DB0F /* SizedVector.hpp */,
+				F676C52726A793CF001559F4 /* Mutex_.h */,
+				F6446EFF29AAD4E800F8DB0F /* Thread.h */,
 				F676C52926A794C1001559F4 /* Core.h */,
+				F6446EFC29AAA00800F8DB0F /* Misc.h */,
 				F62EE9A9290EC3500082C0E5 /* Log.h */,
 				F66C410F2911B6FD00E99C6C /* Pack.h */,
 				F62EE9AA290EC38B0082C0E5 /* debug_assert.h */,
@@ -399,19 +408,6 @@
 				F67A363828EDA8F600DA78E7 /* main.cpp */,
 			);
 			path = mrudp_proxy;
-			sourceTree = "<group>";
-		};
-		F67A366F28EE31DC00DA78E7 /* proxy */ = {
-			isa = PBXGroup;
-			children = (
-				F6B49B9E28EE333800258B1F /* ProxyID.h */,
-				F67A363928EDEE4500DA78E7 /* Transformer.h */,
-				F67A363A28EDEE6F00DA78E7 /* Transformer.cpp */,
-				F67A365428EE02F800DA78E7 /* Proxy+Test.cpp */,
-				F67A367128EE31EB00DA78E7 /* Proxy.cpp */,
-				F67A367028EE31EB00DA78E7 /* Proxy.h */,
-			);
-			path = proxy;
 			sourceTree = "<group>";
 		};
 		F6915A0C26A4E107001C2E1E = {
@@ -446,44 +442,46 @@
 		F6915A1D26A4E128001C2E1E /* mrudp */ = {
 			isa = PBXGroup;
 			children = (
-				F67A366F28EE31DC00DA78E7 /* proxy */,
+				F6446EEF29A98A2500F8DB0F /* _remove */,
 				F676C52526A79378001559F4 /* base */,
-				F6915A2126A4E128001C2E1E /* connection */,
-				F676C52326A78AE3001559F4 /* imp */,
-				F6915A3926A4E128001C2E1E /* receiver */,
-				F6915A2826A4E128001C2E1E /* sender */,
-				F6915A4326A4E128001C2E1E /* socket */,
-				F6915A4526A4E128001C2E1E /* Base.h */,
 				F6FB586626AA0D6E00C24EAA /* Base.cpp */,
+				F6915A4526A4E128001C2E1E /* Base.h */,
 				F676C51C26A6FBDE001559F4 /* Config.h */,
+				F6915A2126A4E128001C2E1E /* connection */,
 				F6915A4126A4E128001C2E1E /* Connection.cpp */,
 				F6915A1E26A4E128001C2E1E /* Connection.h */,
-				F66B0ACB26B0338C0055F46D /* Crypto.h */,
 				F66B0ACD26B03A3A0055F46D /* Crypto.cpp */,
-				F6A176BF26B3497F003708D8 /* Handshake.h */,
-				F6A176C326B41B2C003708D8 /* Handshake.cpp */,
-				F6A18EB529A2E2C300775991 /* Handshake_Options.h */,
+				F66B0ACB26B0338C0055F46D /* Crypto.h */,
 				F6A18EB629A2E2C300775991 /* Handshake_Options.cpp */,
-				F6960F4726E92594007C3EB5 /* NetworkPath.h */,
-				F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */,
+				F6A18EB529A2E2C300775991 /* Handshake_Options.h */,
+				F6A176C326B41B2C003708D8 /* Handshake.cpp */,
+				F6A176BF26B3497F003708D8 /* Handshake.h */,
+				F676C52326A78AE3001559F4 /* imp */,
 				F6915A3526A4E128001C2E1E /* Implementation.h */,
+				F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */,
+				F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */,
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
 				F6915A1F26A4E128001C2E1E /* mrudp.h */,
-				F6B49B9A28EE322D00258B1F /* mrudp_proxy.h */,
-				F6B49B9B28EE325700258B1F /* mrudp_proxy.cpp */,
 				F611E489270F2CFA0038D6D4 /* mrudp.hpp */,
-				F6AE8D86278CA33700BF1EA9 /* Precompile.pch */,
+				F6446EF129A98D1E00F8DB0F /* Proxy.hpp */,
+				F6446EF229A98D5100F8DB0F /* Proxy.cpp */,
+				F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */,
+				F6960F4726E92594007C3EB5 /* NetworkPath.h */,
 				F6915A3426A4E128001C2E1E /* Packet.cpp */,
 				F6915A3826A4E128001C2E1E /* Packet.h */,
 				F6915A3F26A4E128001C2E1E /* Packet.inl */,
-				F6B624192860931B003F604E /* Scheduler.h */,
+				F6AE8D86278CA33700BF1EA9 /* Precompile.pch */,
+				F6915A3926A4E128001C2E1E /* receiver */,
 				F6B6241A28609AE1003F604E /* Scheduler.cpp */,
+				F6B624192860931B003F604E /* Scheduler.h */,
+				F6915A2826A4E128001C2E1E /* sender */,
 				F6915A3726A4E128001C2E1E /* Service.cpp */,
 				F6915A2526A4E128001C2E1E /* Service.h */,
+				F6915A4326A4E128001C2E1E /* socket */,
 				F6915A2626A4E128001C2E1E /* Socket.cpp */,
 				F6915A4226A4E128001C2E1E /* Socket.h */,
-				F6BEFDA326CF1A85008EB30E /* Statistics.h */,
 				F6BEFDA426CF1FD3008EB30E /* Statistics.cpp */,
+				F6BEFDA326CF1A85008EB30E /* Statistics.h */,
 				F6915A2026A4E128001C2E1E /* Types.cpp */,
 				F6915A2426A4E128001C2E1E /* Types.h */,
 			);
@@ -540,6 +538,7 @@
 		F6915A4626A4E128001C2E1E /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				F6446EF629AA7F0000F8DB0F /* Proxy.cpp */,
 				F6915A4726A4E128001C2E1E /* Basics.cpp */,
 				F6915A4A26A4E128001C2E1E /* Common.h */,
 				F634A8EB26A613AC00869A6F /* Connections.cpp */,
@@ -781,7 +780,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6B49BA128EE34A700258B1F /* Proxy+Test.cpp in Sources */,
+				F6446EF829AA84A400F8DB0F /* Proxy.cpp in Sources */,
+				F6446EF929AA84D200F8DB0F /* Run.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -802,7 +802,6 @@
 				F6915A5726A4E128001C2E1E /* Retrier.cpp in Sources */,
 				F6915A6326A4E129001C2E1E /* Service.cpp in Sources */,
 				F6AF314B26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
-				F6B49B9C28EE32FF00258B1F /* Proxy.cpp in Sources */,
 				F6915A5426A4E128001C2E1E /* Socket.cpp in Sources */,
 				F6915A4F26A4E128001C2E1E /* Types.cpp in Sources */,
 				F65E050A284A973C00AD9687 /* AsioTesting.cpp in Sources */,
@@ -810,9 +809,9 @@
 				F6915A6B26A4E129001C2E1E /* Connection.cpp in Sources */,
 				F6A176C926B4207D003708D8 /* Handshake.cpp in Sources */,
 				F6A176BB26B1B80E003708D8 /* Base.cpp in Sources */,
-				F67A363B28EDEEDA00DA78E7 /* Transformer.cpp in Sources */,
 				F6915A6926A4E129001C2E1E /* Asio.cpp in Sources */,
 				F6915A6526A4E129001C2E1E /* Receiver.cpp in Sources */,
+				F6446EF329A992D000F8DB0F /* Proxy.cpp in Sources */,
 				F6B49BA228EE36A200258B1F /* mrudp_proxy.cpp in Sources */,
 				F6A176D626B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */,
 			);
@@ -855,7 +854,6 @@
 				F64AC0F026A63FAE001829A0 /* SendQueue.cpp in Sources */,
 				F64AC0E826A63FA5001829A0 /* Asio.cpp in Sources */,
 				F6AF314A26DE5411003FCCAE /* UnreliableReceiveQueue.cpp in Sources */,
-				F6B49B9D28EE32FF00258B1F /* Proxy.cpp in Sources */,
 				F64AC0EB26A63FA5001829A0 /* Connection.cpp in Sources */,
 				F64AC0F426A63FB6001829A0 /* Probe.cpp in Sources */,
 				F65E050B284A973D00AD9687 /* AsioTesting.cpp in Sources */,
@@ -863,9 +861,9 @@
 				F64AC0E626A63FA5001829A0 /* Packet.cpp in Sources */,
 				F6A176C826B4207C003708D8 /* Handshake.cpp in Sources */,
 				F6A176BA26B1B80E003708D8 /* Base.cpp in Sources */,
-				F67A363C28EDEEDB00DA78E7 /* Transformer.cpp in Sources */,
 				F64AC0F326A63FB3001829A0 /* ReceiveQueue.cpp in Sources */,
 				F64AC0E726A63FA5001829A0 /* mrudp.cpp in Sources */,
+				F6446EF429A992D000F8DB0F /* Proxy.cpp in Sources */,
 				F6B49BA328EE36A200258B1F /* mrudp_proxy.cpp in Sources */,
 				F6A176D526B42B0F003708D8 /* CryptoOpenSSL.cpp in Sources */,
 			);
@@ -961,6 +959,13 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				OTHER_LDFLAGS = (
+					"-lCore_Misc",
+					"-lCore_Zero",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -973,6 +978,13 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				OTHER_LDFLAGS = (
+					"-lCore_Misc",
+					"-lCore_Zero",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

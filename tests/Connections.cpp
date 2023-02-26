@@ -73,10 +73,10 @@ SCENARIO("connections")
 			mrudp_socket_addr(local.sockets.back(), &localAddress);
 			
 			auto localConnectionDispatch = Connection {
-				[&](auto data, auto size, auto isReliable) {
+				.receive = [&](auto data, auto size, auto isReliable) {
 					return 0;
 				},
-				[&](auto event) {
+				.close = [&](auto event) {
 					return 0;
 				}
 			} ;

@@ -298,6 +298,8 @@ mrudp_error_code_t ConnectionImp::open ()
 		
 	if (parent_->socket->imp->options.overlapped_io)
 	{
+		// Proxy Tunnel
+		// I think I want to change this to parent_->sendToAddress
 		overlappedSocket = parent_->socket->imp->getOverlappedSocket(parent_->remoteAddress);
 		
 		if (!overlappedSocket)
@@ -379,6 +381,9 @@ void ConnectionImp::reacquireOverlappedSocket ()
 	auto parent_ = strong(parent);
 	debug_assert(parent_);
 	
+	// Proxy Tunnel
+	// I think I want to change this to parent_->sendToAddress
+
 	overlappedSocket = nullptr;
 	if (parent_->socket->imp->options.overlapped_io)
 		overlappedSocket = parent_->socket->imp->getOverlappedSocket(parent_->remoteAddress);
@@ -420,6 +425,8 @@ void SocketNative::send(const Send &send, Function<void (const error_code &)> &&
 	}
 	else
 	{
+		// Proxy Tunnel
+		// this may need a change or not?
 		auto endpoint = toEndpoint(send.address);
 
 		handle.async_send_to(

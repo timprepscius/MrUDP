@@ -226,6 +226,10 @@ mrudp_error_code_t mrudp_send (mrudp_connection_t connection, const char *, int 
 // gets the statistics for the connect connection
 mrudp_error_code_t mrudp_connection_statistics(mrudp_connection_t connection, mrudp_connection_statistics_t *statistics);
 
+// gets and sets the options for a connection
+mrudp_error_code_t mrudp_connection_options(mrudp_connection_t connection, mrudp_connection_options_t *options);
+mrudp_error_code_t mrudp_connection_options_set(mrudp_connection_t connection, mrudp_connection_options_t *options);
+
 #ifdef __cplusplus
 }
 #endif

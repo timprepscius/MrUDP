@@ -151,6 +151,28 @@ mrudp_error_code_t mrudp_connection_statistics (mrudp_connection_t connection_, 
 	return MRUDP_OK;
 }
 
+mrudp_error_code_t mrudp_connection_options (mrudp_connection_t connection_, mrudp_connection_options_t *options)
+{
+	auto connection = toNative(connection_);
+	if (!connection)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+
+	*options = connection->options;
+	
+	return MRUDP_OK;
+}
+
+mrudp_error_code_t mrudp_connection_options_set (mrudp_connection_t connection_, mrudp_connection_options_t *options)
+{
+	auto connection = toNative(connection_);
+	if (!connection)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+
+	connection->options = *options;
+	
+	return MRUDP_OK;
+}
+
 mrudp_error_code_t mrudp_relocate_socket(mrudp_socket_t socket_, const mrudp_addr_t *address)
 {
 	auto socket = toNative(socket_);
@@ -331,6 +353,7 @@ void mrudp_close_service(mrudp_service_t service_, int waitForFinish)
 		service->close = &close;
 	}
 	
+	auto *spy = ptr_of(service);
 	service = nullptr;
 	deleteHandle(service_);
 	

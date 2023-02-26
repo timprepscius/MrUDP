@@ -24,11 +24,6 @@ enum TypeID : uint8_t {
 	
 	ENCRYPTED_VIA_PUBLIC_KEY = 'Z',
 	ENCRYPTED_VIA_AES = 'Y',
-	
-	// THESE ARE A MISTAKE, but I need them at the moment
-	PROXY_FORWARD = '>',
-	PROXY_BACKWARD = '<',
-	PROXY_MAGIC = '!'
 } ;
 
 inline
