@@ -10,5 +10,7 @@ void close(void *proxy);
 
 mrudp_error_code_t connect(mrudp_connection_t connection, const mrudp_addr_t *remote, mrudp_proxy_magic_t connectionMagic);
 
+mrudp_proxy_options_t options_default();
+
 }
 

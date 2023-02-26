@@ -605,5 +605,15 @@ mrudp_error_code_t connect (mrudp_connection_t connection, const mrudp_addr_t *r
 	return mrudp_send(connection, data.data(), (int)data.size(), 1);
 }
 
+mrudp_proxy_options_t options_default()
+{
+	return {
+		.magic_wire = 42,
+		.magic_connection = 13,
+		.tick_interval_ms = 250,
+		.compression_level = 1
+	} ;
+}
+
 }
 
