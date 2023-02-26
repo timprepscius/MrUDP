@@ -8,9 +8,9 @@ void mrudp_proxy_close(void *proxy)
 	return proxy::close(proxy);
 }
 
-void *mrudp_proxy_open(mrudp_service_t service, const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, mrudp_proxy_magic_t wireMagic, mrudp_proxy_magic_t connectionMagic)
+void *mrudp_proxy_open(mrudp_service_t service, const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, const mrudp_proxy_options_t *options)
 {
-	return proxy::open(service, from, to, bound, wireMagic, connectionMagic);
+	return proxy::open(service, from, to, bound, options);
 }
 
 mrudp_error_code_t mrudp_proxy_connect(mrudp_connection_t connection, const mrudp_addr_t *remote, mrudp_proxy_magic_t magic)
@@ -64,3 +64,57 @@ mrudp_connection_t mrudp_connect_ex_proxy(
 	return connection;
 }
 
+mrudp_connection_t mrudp_connect_proxy_resolve(
+	mrudp_socket_t socket,
+	const char *remote_,
+	
+	void *userData,
+	mrudp_receive_callback_fn on_receive,
+	mrudp_close_callback_fn on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	mrudp_addr_t remote;
+	mrudp_str_to_addr(remote_, &remote);
+	
+	return mrudp_connect_proxy(
+		socket, &remote,
+		userData, on_receive, on_close,
+		proxy, magic
+	);
+}
+
+mrudp_connection_t mrudp_connect_ex_proxy_resolve(
+	mrudp_socket_t socket,
+	const char *remote_,
+	const mrudp_connection_options_t *options,
+	
+	void *userData,
+	mrudp_receive_callback_fn on_receive,
+	mrudp_close_callback_fn on_close,
+	
+	const mrudp_addr_t *proxy,
+	mrudp_proxy_magic_t magic
+)
+{
+	mrudp_addr_t remote;
+	mrudp_str_to_addr(remote_, &remote);
+	
+	return mrudp_connect_ex_proxy(
+		socket, &remote, options,
+		userData, on_receive, on_close,
+		proxy, magic
+	);
+}
+
+mrudp_proxy_options_t mrudp_proxy_options_default()
+{
+	return {
+		.magic_wire = 42,
+		.magic_connection = 13,
+		.tick_interval_ms = 250,
+		.compression_level = 9
+	} ;
+}

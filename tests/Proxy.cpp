@@ -42,13 +42,12 @@ SCENARIO("proxy")
 				auto proxyA_service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 				auto proxyB_service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 
-				mrudp_proxy_magic_t wireMagic = 42;
-				mrudp_proxy_magic_t connectionMagic = 24;
-
+				mrudp_proxy_options_t proxyOptions = mrudp_proxy_options_default();
+				
 				mrudp_addr_t proxyA_address, proxyB_address;
 				
-				auto *proxyA = mrudp_proxy_open(proxyA_service, &anyAddress, nullptr, &proxyA_address, wireMagic, connectionMagic);
-				auto *proxyB = mrudp_proxy_open(proxyB_service, &anyAddress, &proxyA_address, &proxyB_address, wireMagic, connectionMagic);
+				auto *proxyA = mrudp_proxy_open(proxyA_service, &anyAddress, nullptr, &proxyA_address, &proxyOptions);
+				auto *proxyB = mrudp_proxy_open(proxyB_service, &anyAddress, &proxyA_address, &proxyB_address, &proxyOptions);
 				
 				core::ExecuteOnDestruct e1([=]() {
 					sLogDebug("testing", "closing proxyA");
@@ -150,7 +149,7 @@ SCENARIO("proxy")
 										local.sockets.back(), &remoteAddress,
 										&options,
 										&localConnectionDispatch, connectionReceive, connectionClose,
-										&proxyB_address, connectionMagic
+										&proxyB_address, proxyOptions.magic_connection
 									)
 								);
 							}
@@ -238,7 +237,7 @@ SCENARIO("proxy")
 									mrudp_connect_proxy(
 										local.sockets.back(), &remoteAddress,
 										&localConnectionDispatch, connectionReceive, connectionClose,
-										&proxyB_address, connectionMagic
+										&proxyB_address, proxyOptions.magic_connection
 									)
 								);
 							}
@@ -307,7 +306,7 @@ SCENARIO("proxy")
 								local.connections.insert(mrudp_connect_proxy(
 									local.sockets.back(), &remoteAddress,
 									&localConnectionDispatch, connectionReceive, connectionClose,
-									&proxyB_address, connectionMagic
+									&proxyB_address, proxyOptions.magic_connection
 								));
 							}
 

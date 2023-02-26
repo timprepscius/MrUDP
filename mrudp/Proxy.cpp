@@ -59,7 +59,7 @@ struct Proxy {
 	StrongPtr<Proxy> retain;
 	
 	mrudp_socket_t socket;
-	mrudp_proxy_magic_t wireMagic, connectionMagic;
+	mrudp_proxy_options_t options;
 	std::thread ticker;
 	
 	RecursiveMutex mutex;
@@ -272,7 +272,7 @@ mrudp_error_code_t on_mode_packet(Proxy *proxy, ProxyConnection *connection, cha
 	if (mrudp_failed(read(magic, data, size)))
 		return -1;
 		
-	if (magic == proxy->wireMagic)
+	if (magic == proxy->options.magic_wire)
 	{
 		connection->mode = ProxyMode::WIRE;
 		proxy->wire = connection->connection;
@@ -289,7 +289,7 @@ mrudp_error_code_t on_mode_packet(Proxy *proxy, ProxyConnection *connection, cha
 		return on_connection_packet(connection, data, size, is_reliable);
 	}
 	else
-	if (magic == proxy->connectionMagic)
+	if (magic == proxy->options.magic_connection)
 	{
 		mrudp_addr_t addr;
 		if (mrudp_failed(read(addr, data, size)))
@@ -414,12 +414,12 @@ void proxy_tick(Proxy *proxy)
 		uLongf sourceLen = proxy->out.size();
 		Bytef *dest = (Bytef *)compressionDest;
 		uLongf destLen = proxy->out.size();
-		int level = 1;
+		int level = proxy->options.compression_level;
 		
 		PayloadSize payloadSize = 0;
 		payloadSize += sizeof(WasCompressed);
 
-		if (compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
+		if (level > 0 && compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
 		{
 			UncompressedSize uncompressedSize_ = (PayloadSize)sourceLen;
 
@@ -507,22 +507,21 @@ void ticker (Proxy *proxy)
 	while (!proxy->closed)
 	{
 		proxy_tick(proxy);
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		std::this_thread::sleep_for(std::chrono::milliseconds(proxy->options.tick_interval_ms));
 	}
 }
 
 void *open(
 	mrudp_service_t service,
 	const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound,
-	mrudp_proxy_magic_t wireMagic, mrudp_proxy_magic_t connectionMagic)
+	const mrudp_proxy_options_t *options)
 {
 	auto proxy_retain = strong<Proxy>();
 	auto *proxy = ptr_of(proxy_retain);
 	proxy->retain = proxy_retain;
 	
 	proxy->closed = false;
-	proxy->wireMagic = wireMagic;
-	proxy->connectionMagic = connectionMagic;
+	proxy->options = *options;
 	proxy->socket = mrudp_socket(service, from);
 	proxy->wire = nullptr;
 	
@@ -558,7 +557,7 @@ void *open(
 			on_connection_close
 		);
 		
-		mrudp_send(proxy->wire, (char *)&wireMagic, sizeof(wireMagic), 1);
+		mrudp_send(proxy->wire, (char *)&proxy->options.magic_wire, sizeof(proxy->options.magic_wire), 1);
 	}
 	else
 	{
