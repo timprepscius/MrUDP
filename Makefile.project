@@ -14,6 +14,8 @@ INCPATH := \
 	$(timprepscius.core.include) \
 	$(timprepscius.standard.include)
 	
+SRC_PCH := mrudp/Precompile.pch
+	
 LIBFILE := libMrUDP.a
 
 COPYTO := $(LIBRARIES)/project

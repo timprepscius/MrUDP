@@ -28,11 +28,12 @@ int main (int argc, const char *argv[])
 		return (void)usage(), -1;
 	
 	mrudp_addr_t *to_ = nullptr;
-	mrudp_proxy_magic_t magic = 0;
+	mrudp_proxy_magic_t wireMagic = 0, connectionMagic = 0;
 	for (auto i=2;i<argc;++i)
 	{
 		auto remote_ = get_arg("remote=", argv[i]);
-		auto magic_ = get_arg("magic=", argv[i]);
+		auto wireMagic_ = get_arg("wireMagic=", argv[i]);
+		auto connectionMagic_ = get_arg("connectionMagic=", argv[i]);
 		if (!remote_.empty())
 		{
 			if (mrudp_str_to_addr(remote_.data(), &to) != MRUDP_OK)
@@ -41,14 +42,21 @@ int main (int argc, const char *argv[])
 			to_ = &to;
 		}
 		else
-		if (!magic_.empty())
+		if (!wireMagic_.empty())
 		{
-			magic = atoll(magic_.data());
+			wireMagic = atoll(wireMagic_.data());
+		}
+		else
+		if (!connectionMagic_.empty())
+		{
+			connectionMagic = atoll(connectionMagic_.data());
 		}
 	}
 	
+	auto service = mrudp_service();
+	
 	mrudp_addr_t bound;
-	auto *proxy = mrudp_proxy_open(&from, to_, &bound, magic);
+	auto *proxy = mrudp_proxy_open(service, &from, to_, &bound, wireMagic, connectionMagic);
 	
 	while (true)
 		std::this_thread::sleep_for(std::chrono::seconds(1));

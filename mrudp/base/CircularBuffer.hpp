@@ -3,6 +3,7 @@
 #include "debug_assert.h"
 #include <vector>
 #include <array>
+#include <cstring>
 
 namespace timprepscius::core {
 
@@ -125,7 +126,7 @@ struct CircularBuffer {
 				debug_assert(segment.to + segment.size <= buffer.size());
 				
 				if (data)
-					std::memmove(buffer.data() + segment.to, data + segment.from, segment.size * sizeof(T));
+					std::memcpy(buffer.data() + segment.to, data + segment.from, segment.size * sizeof(T));
 				else
 					std::memset(buffer.data() + segment.to, 0, segment.size * sizeof(T));
 					

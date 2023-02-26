@@ -276,6 +276,7 @@
 		F6915A7426A4E181001C2E1E /* Makefile.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.def; sourceTree = "<group>"; };
 		F6915A7926A4E277001C2E1E /* MrUDP-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MrUDP-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6915A9826A4E346001C2E1E /* libMrUDP-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMrUDP-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6945E8929AB281D00938F1D /* Makefile.project */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.project; sourceTree = "<group>"; };
 		F6960F4726E92594007C3EB5 /* NetworkPath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkPath.h; sourceTree = "<group>"; };
 		F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkPath.cpp; sourceTree = "<group>"; };
 		F6A176BD26B1C0C4003708D8 /* Crypto.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
@@ -405,6 +406,7 @@
 		F67A363728EDA8E000DA78E7 /* mrudp_proxy */ = {
 			isa = PBXGroup;
 			children = (
+				F6945E8929AB281D00938F1D /* Makefile.project */,
 				F67A363828EDA8F600DA78E7 /* main.cpp */,
 			);
 			path = mrudp_proxy;
@@ -463,14 +465,14 @@
 				F6915A3326A4E128001C2E1E /* mrudp.cpp */,
 				F6915A1F26A4E128001C2E1E /* mrudp.h */,
 				F611E489270F2CFA0038D6D4 /* mrudp.hpp */,
-				F6446EF129A98D1E00F8DB0F /* Proxy.hpp */,
-				F6446EF229A98D5100F8DB0F /* Proxy.cpp */,
 				F6960F4826E9259F007C3EB5 /* NetworkPath.cpp */,
 				F6960F4726E92594007C3EB5 /* NetworkPath.h */,
 				F6915A3426A4E128001C2E1E /* Packet.cpp */,
 				F6915A3826A4E128001C2E1E /* Packet.h */,
 				F6915A3F26A4E128001C2E1E /* Packet.inl */,
 				F6AE8D86278CA33700BF1EA9 /* Precompile.pch */,
+				F6446EF229A98D5100F8DB0F /* Proxy.cpp */,
+				F6446EF129A98D1E00F8DB0F /* Proxy.hpp */,
 				F6915A3926A4E128001C2E1E /* receiver */,
 				F6B6241A28609AE1003F604E /* Scheduler.cpp */,
 				F6B624192860931B003F604E /* Scheduler.h */,
@@ -935,6 +937,10 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				OTHER_LDFLAGS = (
+					"${inherited}",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -947,6 +953,10 @@
 				DEVELOPMENT_TEAM = T2M28D3T75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				OTHER_LDFLAGS = (
+					"${inherited}",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -960,10 +970,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				OTHER_LDFLAGS = (
-					"-lCore_Misc",
-					"-lCore_Zero",
-					"-lssl",
-					"-lcrypto",
+					"${inherited}",
 					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -979,10 +986,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				OTHER_LDFLAGS = (
-					"-lCore_Misc",
-					"-lCore_Zero",
-					"-lssl",
-					"-lcrypto",
+					"${inherited}",
 					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

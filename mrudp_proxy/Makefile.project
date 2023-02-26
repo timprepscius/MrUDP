@@ -19,7 +19,7 @@ INCPATH := \
 	$(timprepscius.vectormap.include) \
 	$(timprepscius.libraries.cpp.include)
 	
-#SRC_PCH := server/Precompile.pch
+SRC_PCH := mrudp/Precompile.pch
 
 LDPATH := $(timprepscius.libraries.cpp.link)
 
@@ -30,8 +30,6 @@ LIBS := \
 	-lCoreMisc -lCoreVariant -lCoreFuture -lCoreIO -lCoreMath -lCoreZero \
 
 LIBS += \
-	$(timprepscius.com.libs) \
-	$(timprepscius.audio.libs) \
 	-lboost-system \
 	-lboost-thread \
 	-lssl \
