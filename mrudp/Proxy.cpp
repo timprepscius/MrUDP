@@ -1,5 +1,6 @@
 #include "Proxy.hpp"
 #include "Base.h"
+#include "Types.h"
 
 #include <zlib.h>
 
