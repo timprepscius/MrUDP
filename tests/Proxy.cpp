@@ -44,12 +44,14 @@ SCENARIO("proxy")
 
 				mrudp_proxy_options_t proxyOptions = mrudp_proxy_options_default();
 				
-				mrudp_addr_t proxyA_address, proxyB_address;
-				mrudp_str_to_addr("127.0.0.1:7654", &proxyA_address);
-				mrudp_str_to_addr("127.0.0.1:4567", &proxyB_address);
+				mrudp_addr_t proxyA_address, proxyA_on_address, proxyB_address, proxyB_on_address;
+				mrudp_str_to_addr("127.0.0.1:7650", &proxyA_address);
+				mrudp_str_to_addr("127.0.0.1:7651", &proxyA_on_address);
+				mrudp_str_to_addr("127.0.0.1:4560", &proxyB_address);
+				mrudp_str_to_addr("127.0.0.1:7661", &proxyB_on_address);
 				
-				auto *proxyA = mrudp_proxy_open(proxyA_service, &proxyA_address, nullptr, &proxyA_address, &proxyOptions);
-				auto *proxyB = mrudp_proxy_open(proxyB_service, &proxyB_address, &proxyA_address, &proxyB_address, &proxyOptions);
+				auto *proxyA = mrudp_proxy_open(proxyA_service, &proxyA_address, &proxyA_on_address, nullptr, &proxyOptions, &proxyA_address, &proxyA_on_address);
+				auto *proxyB = mrudp_proxy_open(proxyB_service, &proxyB_address, &proxyB_on_address, &proxyA_on_address, &proxyOptions, &proxyB_address, &proxyB_on_address);
 				
 				core::ExecuteOnDestruct e1([=]() {
 					sLogDebug("testing", "closing proxyA");

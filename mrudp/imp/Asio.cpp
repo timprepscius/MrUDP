@@ -647,68 +647,72 @@ SocketImp::~SocketImp ()
 
 StrongPtr<SocketNative> SocketImp::getOverlappedSocket(const Address &remoteAddress)
 {
-	auto lock = lock_of(overlappedSocketsMutex);
+	StrongPtr<SocketNative> overlappedSocket;
 	
-	auto &overlappedSocket_ = overlappedSockets[remoteAddress];
-	if (auto overlappedSocket = strong(overlappedSocket_))
 	{
-		return overlappedSocket;
-	}
-	
-	if (auto parent_ = strong(parent))
-	{
-		auto localEndpoint = toEndpoint(parent_->getLocalAddress());
-		auto remoteEndpoint = toEndpoint(remoteAddress);
-
-		auto handleError = [&](auto &error) {
-			sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint) << logVar(error.message()));
-		};
-
-		boost::system::error_code error;
-
-		sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
-
-		auto overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint, weak_this(this), remoteAddress);
-
-		overlappedSocket->handle.open(localEndpoint.protocol(), error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_open, error);
-
-		if (error)
+		auto lock = lock_of(overlappedSocketsMutex);
+		
+		auto &overlappedSocket_ = overlappedSockets[remoteAddress];
+		if (auto overlappedSocket = strong(overlappedSocket_))
 		{
-			handleError(error);
-			return nullptr;
+			return overlappedSocket;
 		}
 		
-		overlappedSocket->handle.set_option(overlap_socket(true), error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_set_option, error);
-		
-		if (error)
+		if (auto parent_ = strong(parent))
 		{
-			handleError(error);
-			return nullptr;
-		}
+			auto localEndpoint = toEndpoint(parent_->getLocalAddress());
+			auto remoteEndpoint = toEndpoint(remoteAddress);
 
-		overlappedSocket->handle.bind(localEndpoint, error);
-		MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_bind, error);
+			auto handleError = [&](auto &error) {
+				sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint) << logVar(error.message()));
+			};
 
-		if (error)
-		{
-			handleError(error);
-			return nullptr;
+			boost::system::error_code error;
+
+			sLogDebug("mrudp::asio", logVar(this) << logVar(localEndpoint) << logVar(remoteEndpoint));
+
+			overlappedSocket = strong<SocketNative>(*parent_->service->imp->service, remoteEndpoint, weak_this(this), remoteAddress);
+
+			overlappedSocket->handle.open(localEndpoint.protocol(), error);
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_open, error);
+
+			if (error)
+			{
+				handleError(error);
+				return nullptr;
+			}
+			
+			overlappedSocket->handle.set_option(overlap_socket(true), error);
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_set_option, error);
+			
+			if (error)
+			{
+				handleError(error);
+				return nullptr;
+			}
+
+			overlappedSocket->handle.bind(localEndpoint, error);
+			MRUDP_ASIO_TEST_GENERATE_FAILURE(getOverlappedSocket__overlappedSocket_handle_bind, error);
+
+			if (error)
+			{
+				handleError(error);
+				return nullptr;
+			}
+			
+			overlappedSocket->handle.connect(remoteEndpoint, error);
+			if (error)
+			{
+				handleError(error);
+				return nullptr;
+			}
+			
+			overlappedSocket_ = weak(overlappedSocket);
+			
+			doReceive(overlappedSocket, strong<Receive>());
+			
+			return overlappedSocket;
 		}
-		
-		overlappedSocket->handle.connect(remoteEndpoint, error);
-		if (error)
-		{
-			handleError(error);
-			return nullptr;
-		}
-		
-		overlappedSocket_ = weak(overlappedSocket);
-		
-		doReceive(overlappedSocket, strong<Receive>());
-		
-		return overlappedSocket;
 	}
 	
 	return nullptr;

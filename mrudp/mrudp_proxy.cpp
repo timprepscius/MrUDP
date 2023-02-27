@@ -8,9 +8,16 @@ void mrudp_proxy_close(void *proxy)
 	return proxy::close(proxy);
 }
 
-void *mrudp_proxy_open(mrudp_service_t service, const mrudp_addr_t *from, const mrudp_addr_t *to, mrudp_addr_t *bound, const mrudp_proxy_options_t *options)
+void *mrudp_proxy_open(
+	mrudp_service_t service,
+	const mrudp_addr_t *from,
+	const mrudp_addr_t *on,
+	const mrudp_addr_t *to,
+	const mrudp_proxy_options_t *options,
+	mrudp_addr_t *from_bound, mrudp_addr_t *on_bound
+)
 {
-	return proxy::open(service, from, to, bound, options);
+	return proxy::open(service, from, on, to, options, from_bound, on_bound);
 }
 
 mrudp_error_code_t mrudp_proxy_connect(mrudp_connection_t connection, const mrudp_addr_t *remote, mrudp_proxy_magic_t magic)
