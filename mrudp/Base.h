@@ -18,10 +18,9 @@
 #include <initializer_list>
 #include <queue>
 #include <atomic>
-#include "base/Random.h"
 #include "base/Thread.h"
 #include "base/Core.h"
-#include "base/Pack.h"
+#include "base/Misc.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -64,68 +63,6 @@ using Tuple = std::tuple<T...>;
 
 template<typename ... T>
 using PriorityQueue = std::priority_queue<T...>;
-
-template<typename T, size_t N>
-using Array = std::array<T, N>;
-
-template<typename T, size_t N>
-struct StackArray
-{
-	size_t size_;
-	Array<T, N> array;
-	
-	template<typename ... TS>
-	StackArray(TS && ...list) :
-		size_(sizeof...(list)),
-		array {{ std::forward<TS>(list)... }}
-	{
-	}
-
-	auto begin()
-	{
-		return array.begin();
-	}
-	
-	auto end ()
-	{
-		return array.begin() + size_;
-	}
-	
-	auto begin() const
-	{
-		return array.begin();
-	}
-	
-	auto end () const
-	{
-		return array.begin() + size_;
-	}
-	
-	auto front() const
-	{
-		return array.front();
-	}
-
-	auto front()
-	{
-		return array.front();
-	}
-
-	auto empty() const
-	{
-		return array.empty();
-	}
-	
-	auto push_back(T &&t)
-	{
-		debug_assert(size_ < N);
-		array[size_++] = std::move(t);
-	}
-
-	size_t size() const {
-		return size_;
-	}
-} ;
 
 typedef std::chrono::steady_clock Clock;
 typedef std::chrono::time_point<Clock> Timepoint;

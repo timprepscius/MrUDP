@@ -17,7 +17,7 @@ EXEFILE := MrUDP-Proxy.exe
 
 LIBS := \
 	-lMrUDP \
-	-lCoreMisc -lCoreVariant -lCoreFuture -lCoreIO -lCoreMath -lCoreZero \
+	-lCore_Misc -lCore_Zero \
 
 LIBS += \
 	-lboost-system \

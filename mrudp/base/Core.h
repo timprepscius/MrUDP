@@ -16,18 +16,43 @@
 	#include <core/assert/debug_assert.h>
 	#include <core/profile/PROFILE_SCOPE.h>
 	#include <core/debug/Allocations.h>
+	#include <core/random/Random.h>
+	#include <core/containers/Pack.h>
+	#include <core/containers/Array.hpp>
+	#include <core/containers/InPlaceArray.hpp>
+	
+	#define core_only(x) x
+	
+namespace timprepscius::mrudp {
+	using namespace core::ptr;
+	
+	using Random = core::RealRandom;
+}
+
 #else
 	
 	#include <cassert>
-	#include "Ptr.h"
-	#include "Log.h"
-	#include "debug_assert.h"
+	#include "detail/Ptr.h"
+	#include "detail/Log.h"
+	#include "detail/debug_assert.h"
+	#include "detail/Random.h"
+	#include "detail/Pack.h"
+	#include "detail/Array.h"
+	#include "detail/SimpleInPlaceArray.hpp"
 
 	#define ALLOC_RECORD(...)
 	#define DEALLOC_RECORD(...)
 	#define PROFILE_FUNCTION(...)
-#endif
+	#define core_only(x)
 
 namespace timprepscius::mrudp {
 	using namespace core::ptr;
+	
+	using Random = core::RealRandom;
+	
+	template<typename T, int N>
+	using InPlaceArray = core::SimpleInPlaceArray<T, N>;
 }
+
+#endif
+

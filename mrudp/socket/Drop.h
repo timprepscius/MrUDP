@@ -26,7 +26,7 @@ struct DropPercentage
 	Random random;
 	bool shouldDrop ()
 	{
-		return random.nextFloat() < percentage;
+		return random.nextReal<float>() < percentage;
 	}
 } ;
 

@@ -1,9 +1,5 @@
 #include "Proxy.hpp"
-#include "base/Core.h"
-#include "base/Pack.h"
-#include "base/Thread.h"
-#include "base/Misc.h"
-#include "Types.h"
+#include "Base.h"
 
 #include <zlib.h>
 
@@ -74,7 +70,7 @@ struct Proxy {
 	
 	ProxyID nextProxyID;
 	
-	core::Map<ProxyID, ProxyConnection> connections;
+	OrderedMap<ProxyID, ProxyConnection> connections;
 } ;
 
 void incrementProxyID(ProxyID &id)
@@ -200,7 +196,7 @@ mrudp_error_code_t read(V &v, mrudp_addr_t &a)
 
 mrudp_error_code_t proxy_send_queue(Proxy *proxy, ProxyConnection *connection, ProxyPacketMode::Enum mode, char *data, size_t size)
 {
-	debug_assert(proxy->mutex.locked_by_caller());
+	core_only(debug_assert(proxy->mutex.locked_by_caller()));
 	
 	ProxyPacketHeader header;
 	header.size = size;
@@ -215,7 +211,7 @@ mrudp_error_code_t proxy_send_queue(Proxy *proxy, ProxyConnection *connection, P
 
 mrudp_error_code_t proxy_receive_queue(Proxy *proxy, char *data, size_t size)
 {
-	debug_assert(proxy->mutex.locked_by_caller());
+	core_only(debug_assert(proxy->mutex.locked_by_caller()));
 	
 	sLogDebug("mrudp::proxy", logVar(size));
 	
@@ -248,7 +244,7 @@ ProxyConnection &on_connection_open(Proxy *proxy, ProxyMode::Enum mode, ProxyID 
 
 void initiate_connection_close(Proxy *proxy, ProxyID id)
 {
-	debug_assert(proxy->mutex.locked_by_caller());
+	core_only(debug_assert(proxy->mutex.locked_by_caller()));
 //	auto lock = lock_of(proxy->mutex);
 	
 	auto i = proxy->connections.find(id);
@@ -311,7 +307,7 @@ mrudp_error_code_t on_wire_packet(Proxy *proxy, char *data_, int size_)
 			auto connection_ = proxy->connections.find(header.id);
 			if (connection_ != proxy->connections.end())
 			{
-				sLogDebug("mrudp::proxy::detail", logVar(connection_->second.id) << logVar(header.size));
+				sLogDebug("mrudp::proxy::detail", logVar(connection_->second.id) << logVarV(header.size));
 				auto connection = connection_->second.connection;
 				mrudp_send(connection, in.data, header.size, header.type == ProxyPacketMode::RELIABLE);
 			}
@@ -361,7 +357,7 @@ mrudp_error_code_t on_proxy_close(Proxy *proxy, ProxyConnection *connection, mru
 
 mrudp_error_code_t on_mode_packet(Proxy *proxy, ProxyConnection *connection, char *data_, int size_, int is_reliable)
 {
-	debug_assert(proxy->mutex.locked_by_caller());
+	core_only(debug_assert(proxy->mutex.locked_by_caller()));
 
 	DataIn in { data_, size_ };
 
@@ -380,7 +376,7 @@ mrudp_error_code_t on_mode_packet(Proxy *proxy, ProxyConnection *connection, cha
 		options.coalesce_reliable.mode = MRUDP_COALESCE_STREAM;
 		mrudp_connection_options_set(connection->connection, &options);
 		
-		sLogRelease("mrudp::proxy", "setting WIRE " << logVar(connection->id));
+		sLogRelease("mrudp::proxy::run", "setting WIRE " << logVar(connection->id));
 		
 		// process any remaining
 		return on_connection_packet(connection, in.data, in.remaining, is_reliable);

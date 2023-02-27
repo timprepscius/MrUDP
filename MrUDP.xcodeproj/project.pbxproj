@@ -194,22 +194,28 @@
 		F61E17022703AA3B00E69317 /* EchoServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoServer.cpp; sourceTree = "<group>"; };
 		F61E17072703B03000E69317 /* libCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F61FD09426F153F800F58003 /* NetworkPathChange.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkPathChange.cpp; sourceTree = "<group>"; };
-		F62EE9A9290EC3500082C0E5 /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
-		F62EE9AA290EC38B0082C0E5 /* debug_assert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_assert.h; sourceTree = "<group>"; };
 		F634A8EB26A613AC00869A6F /* Connections.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connections.cpp; sourceTree = "<group>"; };
 		F639D07528181F830031D309 /* EchoClient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = EchoClient.c; sourceTree = "<group>"; };
 		F639D077281820DF0031D309 /* EchoClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EchoClient.cpp; sourceTree = "<group>"; };
 		F6446EEF29A98A2500F8DB0F /* _remove */ = {isa = PBXFileReference; lastKnownFileType = folder; path = _remove; sourceTree = "<group>"; };
 		F6446EF129A98D1E00F8DB0F /* Proxy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Proxy.hpp; sourceTree = "<group>"; };
 		F6446EF229A98D5100F8DB0F /* Proxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
-		F6446EF529AA5B7600F8DB0F /* CircularBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularBuffer.hpp; sourceTree = "<group>"; };
 		F6446EF629AA7F0000F8DB0F /* Proxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Proxy.cpp; sourceTree = "<group>"; };
-		F6446EFA29AA9F2800F8DB0F /* SizedVector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SizedVector.hpp; sourceTree = "<group>"; };
 		F6446EFC29AAA00800F8DB0F /* Misc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Misc.h; sourceTree = "<group>"; };
-		F6446EFD29AAA78400F8DB0F /* small_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = small_copy.hpp; sourceTree = "<group>"; };
-		F6446EFE29AAB19400F8DB0F /* mem_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mem_copy.hpp; sourceTree = "<group>"; };
 		F6446EFF29AAD4E800F8DB0F /* Thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		F65D0FBE29ABFF64000247E6 /* mrudp_proxy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mrudp_proxy.hpp; sourceTree = "<group>"; };
+		F65D0FCF29AD6C27000247E6 /* small_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = small_copy.hpp; sourceTree = "<group>"; };
+		F65D0FD029AD6C27000247E6 /* Pack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pack.h; sourceTree = "<group>"; };
+		F65D0FD129AD6C27000247E6 /* SizedVector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SizedVector.hpp; sourceTree = "<group>"; };
+		F65D0FD229AD6C27000247E6 /* CircularBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularBuffer.hpp; sourceTree = "<group>"; };
+		F65D0FD329AD6C27000247E6 /* Mutex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
+		F65D0FD429AD6C27000247E6 /* debug_assert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_assert.h; sourceTree = "<group>"; };
+		F65D0FD529AD6C27000247E6 /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
+		F65D0FD629AD6C27000247E6 /* Ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Ptr.h; sourceTree = "<group>"; };
+		F65D0FD729AD6C27000247E6 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
+		F65D0FD829AD6C27000247E6 /* mem_copy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mem_copy.hpp; sourceTree = "<group>"; };
+		F65D0FD929AD6F3D000247E6 /* SimpleInPlaceArray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleInPlaceArray.hpp; sourceTree = "<group>"; };
+		F65D0FDB29AD717E000247E6 /* Array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		F65E0508284A936400AD9687 /* AsioTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsioTesting.h; sourceTree = "<group>"; };
 		F65E0509284A93D500AD9687 /* AsioTesting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AsioTesting.cpp; sourceTree = "<group>"; };
 		F65E050C284A9EEB00AD9687 /* InstrusiveAsioTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InstrusiveAsioTests.cpp; sourceTree = "<group>"; };
@@ -218,13 +224,9 @@
 		F66B0AD126B03D080055F46D /* Crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
 		F66B0AD226B03EDA0055F46D /* Crypto.inl */ = {isa = PBXFileReference; lastKnownFileType = text; path = Crypto.inl; sourceTree = "<group>"; };
 		F66B0AD326B045330055F46D /* CryptoOpenSSL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CryptoOpenSSL.cpp; sourceTree = "<group>"; };
-		F66C410F2911B6FD00E99C6C /* Pack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pack.h; sourceTree = "<group>"; };
 		F66C41102911F50A00E99C6C /* Platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		F676C51C26A6FBDE001559F4 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		F676C52226A78AC8001559F4 /* BoostAsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoostAsio.h; sourceTree = "<group>"; };
-		F676C52426A78DAA001559F4 /* Ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Ptr.h; sourceTree = "<group>"; };
-		F676C52626A7938A001559F4 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
-		F676C52726A793CF001559F4 /* Mutex_.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mutex_.h; sourceTree = "<group>"; };
 		F676C52926A794C1001559F4 /* Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		F676C55526A79EAE001559F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F67A363828EDA8F600DA78E7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -368,6 +370,25 @@
 			path = examples;
 			sourceTree = "<group>";
 		};
+		F65D0FCE29AD6C27000247E6 /* detail */ = {
+			isa = PBXGroup;
+			children = (
+				F65D0FCF29AD6C27000247E6 /* small_copy.hpp */,
+				F65D0FD029AD6C27000247E6 /* Pack.h */,
+				F65D0FDB29AD717E000247E6 /* Array.h */,
+				F65D0FD129AD6C27000247E6 /* SizedVector.hpp */,
+				F65D0FD229AD6C27000247E6 /* CircularBuffer.hpp */,
+				F65D0FD329AD6C27000247E6 /* Mutex.h */,
+				F65D0FD429AD6C27000247E6 /* debug_assert.h */,
+				F65D0FD529AD6C27000247E6 /* Log.h */,
+				F65D0FD629AD6C27000247E6 /* Ptr.h */,
+				F65D0FD729AD6C27000247E6 /* Random.h */,
+				F65D0FD929AD6F3D000247E6 /* SimpleInPlaceArray.hpp */,
+				F65D0FD829AD6C27000247E6 /* mem_copy.hpp */,
+			);
+			path = detail;
+			sourceTree = "<group>";
+		};
 		F676C52326A78AE3001559F4 /* imp */ = {
 			isa = PBXGroup;
 			children = (
@@ -387,19 +408,10 @@
 		F676C52526A79378001559F4 /* base */ = {
 			isa = PBXGroup;
 			children = (
-				F676C52626A7938A001559F4 /* Random.h */,
-				F6446EF529AA5B7600F8DB0F /* CircularBuffer.hpp */,
-				F6446EFD29AAA78400F8DB0F /* small_copy.hpp */,
-				F6446EFE29AAB19400F8DB0F /* mem_copy.hpp */,
-				F6446EFA29AA9F2800F8DB0F /* SizedVector.hpp */,
-				F676C52726A793CF001559F4 /* Mutex_.h */,
+				F65D0FCE29AD6C27000247E6 /* detail */,
 				F6446EFF29AAD4E800F8DB0F /* Thread.h */,
 				F676C52926A794C1001559F4 /* Core.h */,
 				F6446EFC29AAA00800F8DB0F /* Misc.h */,
-				F62EE9A9290EC3500082C0E5 /* Log.h */,
-				F66C410F2911B6FD00E99C6C /* Pack.h */,
-				F62EE9AA290EC38B0082C0E5 /* debug_assert.h */,
-				F676C52426A78DAA001559F4 /* Ptr.h */,
 			);
 			path = base;
 			sourceTree = "<group>";

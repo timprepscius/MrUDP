@@ -65,11 +65,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #Generate the static library from the library sources
 add_library(MrUDP STATIC 
     mrudp/mrudp.cpp
+    mrudp/mrudp_proxy.hpp
     mrudp/Base.cpp
     mrudp/Connection.cpp
     mrudp/Handshake.cpp
     mrudp/NetworkPath.cpp
     mrudp/Packet.cpp
+    mrudp/Proxy.cpp
     mrudp/Scheduler.cpp
     mrudp/Service.cpp
     mrudp/Socket.cpp
@@ -78,7 +80,6 @@ add_library(MrUDP STATIC
     mrudp/Handshake_Options.cpp
     mrudp/connection/Probe.cpp
     mrudp/imp/Asio.cpp
-    mrudp/proxy/Transformer.cpp
     mrudp/receiver/ReceiveQueue.cpp
     mrudp/receiver/Receiver.cpp
     mrudp/sender/Retrier.cpp

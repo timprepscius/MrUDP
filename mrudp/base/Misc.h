@@ -13,10 +13,10 @@
 	#include <core/algorithm/small_copy.hpp>
 	#include <core/algorithm/mem_copy.hpp>
 #else
-	#include "CircularBuffer.hpp"
-	#include "SizedVector.hpp"
-	#include "small_copy.hpp"
-	#include "mem_copy.hpp"
+	#include "detail/CircularBuffer.hpp"
+	#include "detail/SizedVector.hpp"
+	#include "detail/small_copy.hpp"
+	#include "detail/mem_copy.hpp"
 #endif
 
 namespace timprepscius::mrudp {

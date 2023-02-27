@@ -27,7 +27,7 @@ int main (int argc, const char *argv[])
 {
 	xLogInitialize("mrudp-proxy.log");
 //	xLogActivateStory("mrudp::proxy::detail");
-	xLogActivateStory("mrudp::proxy");
+	xLogActivateStory("mrudp::proxy::run");
 	xLogActivateStory("mrudp::proxy::compress");
 	
 	mrudp_addr_t from, on, to;

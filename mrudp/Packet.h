@@ -114,7 +114,7 @@ struct PacketPath {
 	Optional<Address> address;
 } ;
 
-using MultiPacketPath = StackArray<PacketPath, 2>;
+using MultiPacketPath = InPlaceArray<PacketPath, 2>;
 
 enum PacketDiscard {
 	Keep,

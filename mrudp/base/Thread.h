@@ -14,5 +14,5 @@ namespace timprepscius::mrudp {
 	using namespace core;
 }
 #else
-	#include "Mutex.h"
+	#include "detail/Mutex.h"
 #endif
