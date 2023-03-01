@@ -331,6 +331,8 @@ mrudp_error_code_t on_wire_close(Proxy *proxy, ProxyConnection *connection, mrud
 {
 	on_connection_close(proxy, connection);
 
+	sLogRelease("mrudp::proxy::run", logVar(connection->id) << " WIRE disconnected");
+	
 	return 0;
 }
 
