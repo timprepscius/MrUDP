@@ -62,6 +62,9 @@ ConnectionOptions merge(const ConnectionOptions &lhs, const ConnectionOptions &r
 	if (merged.probe_delay_ms == -1)
 		merged.probe_delay_ms = rhs.probe_delay_ms;
 
+	if (merged.maximum_retry_attempts == -1)
+		merged.maximum_retry_attempts = rhs.maximum_retry_attempts;
+
 	return merged;
 }
 

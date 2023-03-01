@@ -27,6 +27,7 @@ ConnectionOptions getDefaultConnectionOptions ()
 		},
 		
 		.probe_delay_ms = -1,
+		.maximum_retry_attempts = 5
 	} ;
 }
 

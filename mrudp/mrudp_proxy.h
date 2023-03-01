@@ -8,6 +8,7 @@ struct mrudp_proxy_options {
 	mrudp_proxy_magic_t magic_wire;
 	mrudp_proxy_magic_t magic_connection;
 	uint16_t tick_interval_ms;
+	uint16_t maximum_wire_retry_attempts;
 	uint8_t compression_level;
 } ;
 

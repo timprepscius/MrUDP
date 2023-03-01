@@ -23,6 +23,7 @@ mrudp_connection_options_t mrudp_default_connection_options()
 		},
 		
 		.probe_delay_ms = -1,
+		.maximum_retry_attempts = -1
 	} ;
 }
 
@@ -147,6 +148,19 @@ mrudp_error_code_t mrudp_connection_statistics (mrudp_connection_t connection_, 
 		return MRUDP_ERROR_GENERAL_FAILURE;
 
 	*statistics = connection->statistics.query();
+	
+	return MRUDP_OK;
+}
+
+mrudp_error_code_t mrudp_connection_state (mrudp_connection_t connection_, mrudp_connection_state_t *statistics)
+{
+	auto connection = toNative(connection_);
+	if (!connection)
+		return MRUDP_ERROR_GENERAL_FAILURE;
+
+	*statistics = {
+		.packets_awaiting_ack = (uint32_t)connection->sender.retrier.numUnacked()
+	};
 	
 	return MRUDP_OK;
 }

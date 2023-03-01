@@ -36,7 +36,8 @@ typedef enum {
 typedef int mrudp_error_code_t;
 
 // A useful macro to check if a function failed
-#define mrudp_failed(x) ( (x) != MRUDP_OK )
+#define mrudp_failed(x) 	( (x) != MRUDP_OK )
+#define mrudp_succeeded(x) 	( (x) == MRUDP_OK )
 
 // An anonymous structure for the service handle
 typedef struct { int silence_warnings; } mrudp_service_t_;
@@ -72,6 +73,7 @@ typedef struct {
 	mrudp_coalesce_options_t coalesce_reliable;
 	mrudp_coalesce_options_t coalesce_unreliable;
 	int32_t probe_delay_ms;
+	int16_t maximum_retry_attempts;
 } mrudp_connection_options_t;
 
 typedef struct {
@@ -102,6 +104,10 @@ typedef struct {
 	uint32_t acks_sent;
 	uint32_t packets_resent;
 } mrudp_connection_statistics_t;
+
+typedef struct {
+	uint32_t packets_awaiting_ack;
+} mrudp_connection_state_t;
 
 #define MRUDP_IMP_ASIO 0x01
 
@@ -225,6 +231,9 @@ mrudp_error_code_t mrudp_send (mrudp_connection_t connection, const char *, int 
 
 // gets the statistics for the connect connection
 mrudp_error_code_t mrudp_connection_statistics(mrudp_connection_t connection, mrudp_connection_statistics_t *statistics);
+
+// gets the statistics for the connect connection
+mrudp_error_code_t mrudp_connection_state(mrudp_connection_t connection, mrudp_connection_state_t *statistics);
 
 // gets and sets the options for a connection
 mrudp_error_code_t mrudp_connection_options(mrudp_connection_t connection, mrudp_connection_options_t *options);

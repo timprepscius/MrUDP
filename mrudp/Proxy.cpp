@@ -16,6 +16,7 @@ constexpr ProxyID ProxyID_SERVER_LBITS = 24;
 constexpr ProxyID ProxyID_CONNECTION = ~(ProxyID_SERVER);
 
 const int proxyProbeDelay = 30;
+const int maxOutstandingMessages = 16;
 
 struct ProxyMode{
 	enum Enum : u8 {
@@ -491,6 +492,33 @@ mrudp_error_code_t on_socket_accept(void *proxy_, mrudp_connection_t connection)
 	);
 }
 
+mrudp_error_code_t on_wire_socket_accept(void *proxy_, mrudp_connection_t connection)
+{
+	auto proxy = (Proxy *)proxy_;
+	auto proxyID = proxy->nextProxyID;
+	incrementProxyID(proxy->nextProxyID);
+	
+	auto &proxyConnection = proxy->connections[proxyID];
+	proxyConnection.id = proxyID;
+	proxyConnection.proxy = proxy;
+	proxyConnection.mode = ProxyMode::NONE;
+	proxyConnection.connection = connection;
+	
+	mrudp_connection_options_t options = mrudp_default_connection_options();
+	options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
+	options.coalesce_unreliable.mode = MRUDP_COALESCE_NONE;
+	options.probe_delay_ms = proxyProbeDelay;
+	options.maximum_retry_attempts = proxy->options.maximum_wire_retry_attempts;
+	
+	return mrudp_accept_ex(
+		connection,
+		&options,
+		&proxyConnection,
+		on_connection_packet,
+		on_connection_close
+	);
+}
+
 void proxy_tick(Proxy *proxy)
 {
 	if (!proxy->wire)
@@ -500,50 +528,59 @@ void proxy_tick(Proxy *proxy)
 	using UncompressedSize = PayloadSize;
 	// TODO: go through and fast fail
 	auto lock = lock_of(proxy->mutex);
-	if (!proxy->out.empty())
+	if (proxy->wire)
 	{
-		proxy->scratch[0].resize(sizeof(PayloadPacketSize) + sizeof(WasCompressed) + sizeof(UncompressedSize) + proxy->out.size());
+		mrudp_connection_state_t state;
 
-		auto *size = (PayloadPacketSize *)proxy->scratch[0].data();
-		auto *wasCompressed = (WasCompressed *)(size+1);
-		auto *uncompressedSize = (u8 *)(wasCompressed + 1);
-		auto *compressionDest = (u8 *)(uncompressedSize + sizeof(UncompressedSize));
-		
-		const Bytef *source = (const Bytef *)proxy->out.data();
-		uLongf sourceLen = proxy->out.size();
-		Bytef *dest = (Bytef *)compressionDest;
-		uLongf destLen = proxy->out.size();
-		int level = proxy->options.compression_level;
-		
-		PayloadSize payloadSize = 0;
-		payloadSize += sizeof(WasCompressed);
-
-		if (level > 0 && compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
+		if (!proxy->out.empty())
+		if (mrudp_succeeded(mrudp_connection_state(proxy->wire, &state)))
+		if (state.packets_awaiting_ack < maxOutstandingMessages)
 		{
-			UncompressedSize uncompressedSize_ = (PayloadSize)sourceLen;
-
-			*wasCompressed = 1;
-
-			core::small_copy((char *)uncompressedSize, (const char *)&uncompressedSize_, sizeof(UncompressedSize));
-			payloadSize += sizeof(UncompressedSize);
-			payloadSize += destLen;
-
-			sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << logVar(destLen));
-		}
-		else
-		{
-			sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << "no compression");
-
-			*wasCompressed = 0;
+			sLogRelease("debug", logVar(state.packets_awaiting_ack));
 			
-			auto *uncompressedDest = ((u8 *)wasCompressed) + sizeof(WasCompressed);
-			core::mem_copy((char *)uncompressedDest, proxy->out.data(), sourceLen);
-			payloadSize += sourceLen;
-		}
+			proxy->scratch[0].resize(sizeof(PayloadPacketSize) + sizeof(WasCompressed) + sizeof(UncompressedSize) + proxy->out.size());
 
-		*size = payloadSize;
-		mrudp_send(proxy->wire, proxy->scratch[0].data(), sizeof(PayloadPacketSize) + payloadSize, 1);
-		proxy->out.resize(0);
+			auto *size = (PayloadPacketSize *)proxy->scratch[0].data();
+			auto *wasCompressed = (WasCompressed *)(size+1);
+			auto *uncompressedSize = (u8 *)(wasCompressed + 1);
+			auto *compressionDest = (u8 *)(uncompressedSize + sizeof(UncompressedSize));
+			
+			const Bytef *source = (const Bytef *)proxy->out.data();
+			uLongf sourceLen = proxy->out.size();
+			Bytef *dest = (Bytef *)compressionDest;
+			uLongf destLen = proxy->out.size();
+			int level = proxy->options.compression_level;
+			
+			PayloadSize payloadSize = 0;
+			payloadSize += sizeof(WasCompressed);
+
+			if (level > 0 && compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
+			{
+				UncompressedSize uncompressedSize_ = (PayloadSize)sourceLen;
+
+				*wasCompressed = 1;
+
+				core::small_copy((char *)uncompressedSize, (const char *)&uncompressedSize_, sizeof(UncompressedSize));
+				payloadSize += sizeof(UncompressedSize);
+				payloadSize += destLen;
+
+				sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << logVar(destLen));
+			}
+			else
+			{
+				sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << "no compression");
+
+				*wasCompressed = 0;
+				
+				auto *uncompressedDest = ((u8 *)wasCompressed) + sizeof(WasCompressed);
+				core::mem_copy((char *)uncompressedDest, proxy->out.data(), sourceLen);
+				payloadSize += sourceLen;
+			}
+
+			*size = payloadSize;
+			mrudp_send(proxy->wire, proxy->scratch[0].data(), sizeof(PayloadPacketSize) + payloadSize, 1);
+			proxy->out.resize(0);
+		}
 	}
 	
 	sLogDebug("mrudp::proxy::detail", logVar(proxy->in.size()));
@@ -640,6 +677,7 @@ void *open(
 		options.coalesce_reliable.delay_ms = 0;
 		options.coalesce_unreliable.mode = MRUDP_COALESCE_NONE;
 		options.probe_delay_ms = proxyProbeDelay;
+		options.maximum_retry_attempts = proxy->options.maximum_wire_retry_attempts;
 
 		auto id = proxy->nextProxyID;
 		incrementProxyID(proxy->nextProxyID);
@@ -671,7 +709,7 @@ void *open(
 	mrudp_listen(proxy->clientSocket, proxy, nullptr, on_socket_accept, on_socket_close);
 	
 	if (proxy->serverSocket != proxy->clientSocket)
-		mrudp_listen(proxy->serverSocket, proxy, nullptr, on_socket_accept, on_socket_close);
+		mrudp_listen(proxy->serverSocket, proxy, nullptr, on_wire_socket_accept, on_socket_close);
 
 	proxy->ticker = std::thread([proxy_weak=weak(proxy_retain)]() {
 		if (auto proxy = strong(proxy_weak))
@@ -725,6 +763,7 @@ mrudp_proxy_options_t options_default()
 		.magic_wire = 42,
 		.magic_connection = 13,
 		.tick_interval_ms = 250,
+		.maximum_wire_retry_attempts = 16384,
 		.compression_level = 9
 	} ;
 }

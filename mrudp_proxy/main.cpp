@@ -9,7 +9,7 @@
 
 void usage ()
 {
-	std::cout << "proxy LOCAL on=<LOCAL> remote=<REMOTE> wireMagic=<MAGIC> connectionMagic=<MAGIC> compressionLevel=<> tickIntervalMS=<>" << std::endl;
+	std::cout << "proxy LOCAL on=<LOCAL> remote=<REMOTE> wireMagic=<MAGIC> connectionMagic=<MAGIC> compressionLevel=<> tickIntervalMS=<> wireRetryAttempts_=<>" << std::endl;
 }
 
 std::string_view get_arg(const std::string_view &key, const std::string_view &arg)
@@ -27,6 +27,7 @@ int main (int argc, const char *argv[])
 {
 	xLogInitialize("mrudp-proxy.log");
 //	xLogActivateStory("mrudp::proxy::detail");
+	xLogActivateStory("debug");
 	xLogActivateStory("mrudp::proxy::run");
 	xLogActivateStory("mrudp::proxy::compress");
 	
@@ -47,6 +48,7 @@ int main (int argc, const char *argv[])
 		auto connectionMagic_ = get_arg("connectionMagic=", argv[i]);
 		auto compressionLevel_ = get_arg("compressionLevel=", argv[i]);
 		auto tickIntervalMS_ = get_arg("tickIntervalMS=", argv[i]);
+		auto wireRetryAttempts_ = get_arg("wireRetryAttempts=", argv[i]);
 		if (!remote_.empty())
 		{
 			if (mrudp_str_to_addr(remote_.data(), &to) != MRUDP_OK)
@@ -81,6 +83,11 @@ int main (int argc, const char *argv[])
 		if (!tickIntervalMS_.empty())
 		{
 			options.tick_interval_ms = atoll(tickIntervalMS_.data());
+		}
+		else
+		if (!wireRetryAttempts_.empty())
+		{
+			options.maximum_wire_retry_attempts = atoll(wireRetryAttempts_.data());
 		}
 	}
 	

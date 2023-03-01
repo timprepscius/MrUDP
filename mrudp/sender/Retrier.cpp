@@ -8,7 +8,8 @@ namespace timprepscius {
 namespace mrudp {
 
 Retrier::Retrier (Sender *sender_) :
-	sender(sender_)
+	sender(sender_),
+	maximumAttempts(sender_->connection->options.maximum_retry_attempts)
 {
 	sender->connection->socket->service->scheduler->allocate(
 		timeout,
@@ -188,7 +189,9 @@ void Retrier::onRetryTimeout()
 		{
 			retry->attempts++;
 			retry->sentAt = connection->socket->service->clock.now();
-			
+
+			sLogReleaseIf(retry->attempts > 8, "mrudp::retry::lots", logOfThis(this) << logVar(retry->attempts));
+
 			for (auto &path: retry->paths)
 			{
 				auto &header = path.packet->header;

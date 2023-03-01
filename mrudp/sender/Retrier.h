@@ -62,7 +62,7 @@ struct Retrier
 	~Retrier ();
 	
 	Sender *sender;
-	size_t maximumAttempts = 5;
+	int16_t &maximumAttempts;
 	Timeout timeout;
 
 	Mutex mutex;
