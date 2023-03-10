@@ -45,6 +45,7 @@ bool isAck(TypeID typeID)
 enum FrameTypeID : uint8_t {
 	DATA = 'T',
 	CLOSE_WRITE = 'W',
+	DATA_COMPRESSED = 'Z'
 } ;
 
 const int MAX_PACKET_SIZE = 1500;

@@ -3,6 +3,8 @@
 #include "../Socket.h"
 #include "../Service.h"
 
+#include <zlib.h>
+
 namespace timprepscius {
 namespace mrudp {
 
@@ -65,6 +67,11 @@ void Receiver::processReceived(ReceiveQueue::Frame &frame, Reliability reliabili
 		connection->receive(frame.data, frame.header.dataSize, reliability);
 	}
 	else
+	if (frame.header.type == DATA_COMPRESSED)
+	{
+		processCompressed(frame);
+	}
+	else
 	if (frame.header.type == CLOSE_WRITE)
 	{
 		if (reliability == RELIABLE)
@@ -73,6 +80,96 @@ void Receiver::processReceived(ReceiveQueue::Frame &frame, Reliability reliabili
 			connection->possiblyClose();
 		}
 	}
+}
+
+void Receiver::processCompressedSubframes(char *begin, int size)
+{
+	using BufferSize = u32;
+
+	// see SendQueue::coalesceStreamCompressed
+	auto end = begin + size;
+	
+	for (auto p = begin; p < end; )
+	{
+		FrameTypeID type;
+		small_copy((char *)&type, p, sizeof(type));
+		p += sizeof(type);
+		size -= sizeof(type);
+		
+		BufferSize frameSize;
+		small_copy((char *)&frameSize, p, sizeof(frameSize));
+		p += sizeof(frameSize);
+		size -= sizeof(frameSize);
+
+		debug_assert(size >= frameSize);
+		if (size < frameSize)
+			break;
+			
+		connection->receive(p, frameSize, RELIABLE);
+		p += frameSize;
+		size -= frameSize;
+	}
+}
+
+void Receiver::processCompressed(ReceiveQueue::Frame &frame)
+{
+	using WasCompressed = u8;
+	using BufferSize = u32;
+
+	auto &compressed = compressionBuffers[0];
+	auto at = compressed.size();
+	compressed.resize(compressed.size() + frame.header.dataSize);
+	mem_copy(compressed.data() + at, frame.data, frame.header.dataSize);
+	
+	if (compressed.size() < sizeof(BufferSize))
+		return;
+		
+	char *p = compressed.data();
+	auto inSize = compressed.size();
+	
+	BufferSize bufferSize;
+	small_copy((char *)&bufferSize, p, sizeof(BufferSize));
+	p += sizeof(BufferSize);
+	inSize -= sizeof(BufferSize);
+	
+	debug_assert(compressed.size() <= bufferSize);
+	if (compressed.size() < bufferSize)
+		return;
+		
+	WasCompressed wasCompressed = *p;
+	p += sizeof(WasCompressed);
+	inSize -= sizeof(WasCompressed);
+	
+	if (wasCompressed == 0)
+	{
+		processCompressedSubframes(p, inSize);
+	}
+	else
+	{
+		BufferSize uncompressedSize;
+		small_copy((char *)&uncompressedSize, p, sizeof(BufferSize));
+		p += sizeof(BufferSize);
+		inSize -= sizeof(BufferSize);
+
+		auto &uncompressed = compressionBuffers[1];
+		debug_assert(uncompressed.empty());
+		
+		uncompressed.resize(uncompressedSize);
+		
+		const Bytef *source = (const Bytef *)p;
+		uLongf sourceLen = inSize;
+		Bytef *dest = (Bytef *)uncompressed.data();
+		uLongf destLen = uncompressedSize;
+		
+		uncompress(dest, &destLen, source, sourceLen);
+		debug_assert(destLen == uncompressedSize);
+
+		processCompressedSubframes((char *)dest, (int)destLen);
+		uncompressed.resize(0);
+	}
+	
+	compressed.resize(0);
+	debug_assert(compressed.empty());
 }
 
 inline

@@ -15,6 +15,12 @@ SCENARIO("basics")
 
     GIVEN( "mrudp service, remote socket" )
     {
+//		Packet packet = { 'a', 'b', 'c', 'd', 'e' };
+
+		Packet packet(1024);
+		for (auto i=0; i<packet.size(); ++i)
+			packet[i] = i % 255;
+			
 		mrudp_options_asio_t options_;
 		mrudp_default_options(MRUDP_IMP_ASIO, &options_);
 		auto options_no_coalesce = options_;
@@ -26,13 +32,18 @@ SCENARIO("basics")
 		options_no_coalesce.connection.coalesce_unreliable.mode = MRUDP_COALESCE_PACKET;
 
 		auto options_coalesce_stream = options_;
-		options_no_coalesce.connection.coalesce_reliable.mode = MRUDP_COALESCE_STREAM;
-		options_no_coalesce.connection.coalesce_unreliable.mode = MRUDP_COALESCE_PACKET;
-		
+		options_coalesce_stream.connection.coalesce_reliable.mode = MRUDP_COALESCE_STREAM;
+		options_coalesce_stream.connection.coalesce_unreliable.mode = MRUDP_COALESCE_PACKET;
+
+		auto options_coalesce_stream_compressed = options_;
+		options_coalesce_stream_compressed.connection.coalesce_reliable.mode = MRUDP_COALESCE_STREAM_COMPRESSED;
+		options_coalesce_stream_compressed.connection.coalesce_unreliable.mode = MRUDP_COALESCE_PACKET;
+
 		List<std::tuple<String, mrudp_options_asio_t>> availableOptions = {
+			{ "coalesce stream compressed", options_coalesce_stream_compressed },
 			{ "no coalesce", options_no_coalesce },
 			{ "coalesce packet", options_coalesce_packet },
-			{ "coalesce stream", options_coalesce_stream },
+			{ "coalesce stream", options_coalesce_stream }
 		};
 		
 		for (auto &[name, options]: availableOptions)
@@ -48,7 +59,7 @@ SCENARIO("basics")
 				
 				mrudp_addr_t remoteAddress;
 				mrudp_socket_addr(remote.sockets.back(), &remoteAddress);
-		;
+
 				State local("local");
 				local.service = mrudp_service_ex(MRUDP_IMP_ASIO, &options);
 				
@@ -113,15 +124,12 @@ SCENARIO("basics")
 					{
 						for (auto i=0; i<numConnectionsToCreate; ++i)
 						{
-							mrudp_connection_options_t options;
-							options.coalesce_reliable.mode = MRUDP_COALESCE_PACKET;
-							options.coalesce_reliable.delay_ms = 20;
-							options.probe_delay_ms = -1;
+							mrudp_connection_options_t connection_options = options.connection;
 							
 							local.connections.insert(
 								mrudp_connect_ex(
 									local.sockets.back(), &remoteAddress,
-									&options,
+									&connection_options,
 									&localConnectionDispatch, connectionReceive, connectionClose
 								)
 							);
@@ -131,17 +139,16 @@ SCENARIO("basics")
 							return remote.connections.size() == numConnectionsToCreate;
 						});
 						
-						auto numPacketsToSendOnEachConnection = 512;
+						auto numPacketsToSendOnEachConnection = 2048;
 						
 						WHEN(numPacketsToSendOnEachConnection << " packets are sent in short bursts")
 						{
-							Packet packet = { 'a', 'b', 'c', 'd', 'e' };
 							auto packetsSent = 0;
 							auto bytesSent = 0;
 
 							for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
 							{
-								if (i % 32 == 0)
+								if (i % 16 == 0)
 									std::this_thread::sleep_for(std::chrono::milliseconds(100));
 							
 								for (auto &connection: local.connections)
@@ -157,12 +164,18 @@ SCENARIO("basics")
 								[&]() { return remote.bytesReceived == bytesSent; }
 							);
 
+							wait_until(
+								std::chrono::milliseconds(250),
+								[&]() { return remote.bytesReceived > bytesSent; }
+							);
+
 							THEN("all data arrives")
 							{
 								REQUIRE(remote.bytesReceived == bytesSent);
 							}
 
-							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM)
+							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM &&
+								options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM_COMPRESSED)
 							{
 								THEN("all packets arrive")
 								{
@@ -170,7 +183,21 @@ SCENARIO("basics")
 								}
 							}
 
-							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_NONE)
+							if (options.connection.coalesce_reliable.mode == MRUDP_COALESCE_STREAM_COMPRESSED)
+							{
+								THEN("number of packets is less than expected")
+								{
+									mrudp_connection_statistics_t statistics;
+									mrudp_connection_statistics(*remote.connections.begin(), &statistics);
+
+									auto expectedPackets = statistics.reliable.bytes.received / 1400;
+									REQUIRE(statistics.reliable.packets.received < expectedPackets);
+								}
+							}
+
+							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_NONE &&
+								options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM_COMPRESSED
+							)
 							{
 								THEN("the number of packets sent is far less than the number of data packets sent")
 								{
@@ -281,8 +308,6 @@ SCENARIO("basics")
 							));
 						}
 
-						Packet packet = { 'a', 'b', 'c', 'd', 'e' };
-
 						for (auto &connection: local.connections)
 						{
 							for (auto i=0; i<numPacketsToSendOnEachConnection; ++i)
@@ -293,7 +318,9 @@ SCENARIO("basics")
 							}
 						}
 						
-						if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM)
+						if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM &&
+							options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM_COMPRESSED
+						)
 						{
 							THEN(numPacketsToSendOnEachConnection << " packets show up and are correct")
 							{
@@ -322,6 +349,11 @@ SCENARIO("basics")
 								[&]() { return remote.bytesReceived == bytesSent; }
 							);
 
+							wait_until(
+								std::chrono::milliseconds(250),
+								[&]() { return remote.packetsReceived > packetsSent; }
+							);
+
 							REQUIRE(remote.bytesReceived == bytesSent);
 						}
 						
@@ -345,7 +377,9 @@ SCENARIO("basics")
 								}
 							}
 							
-							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM)
+							if (options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM &&
+								options.connection.coalesce_reliable.mode != MRUDP_COALESCE_STREAM_COMPRESSED
+							)
 							{
 								THEN("packets show up and are correct")
 								{

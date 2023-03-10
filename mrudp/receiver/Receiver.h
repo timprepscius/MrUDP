@@ -37,6 +37,8 @@ struct Receiver
 	
 	ReceiveQueue receiveQueue;
 	UnreliableReceiveQueue unreliableReceiveQueue;
+	SizedVector<char> compressionBuffers[2];
+
 	
 	// Called on a SYN packet, sets the status to Open, and
 	// sets the expected packet id.
@@ -50,6 +52,9 @@ struct Receiver
 	
 	// Dispatches to either reliable, unreliable, or probe paths
 	void processReceived(ReceiveQueue::Frame &frame, Reliability reliability);
+	
+	void processCompressedSubframes(char *data, int size);
+	void processCompressed(ReceiveQueue::Frame &frame);
 	
 	// Processes incoming packets
 	void onReceive (Packet &packet);

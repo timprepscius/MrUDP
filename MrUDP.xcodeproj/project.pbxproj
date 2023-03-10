@@ -1077,6 +1077,7 @@
 					"-lCore_Zero",
 					"-lssl",
 					"-lcrypto",
+					"-lz",
 				);
 				SDKROOT = macosx;
 				USE_HEADERMAP = NO;
@@ -1147,6 +1148,7 @@
 					"-lCore_Zero",
 					"-lssl",
 					"-lcrypto",
+					"-lz",
 				);
 				SDKROOT = macosx;
 				USE_HEADERMAP = NO;

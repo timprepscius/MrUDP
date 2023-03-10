@@ -31,7 +31,7 @@ struct ReceiveQueue
 
 	FrameID expectedID = 0;
 	Function<void(Frame &)> processor;
-	
+
 	Mutex mutex;
 	typedef OrderedMap<FrameID, Frame> Queue;
 	Queue queue;

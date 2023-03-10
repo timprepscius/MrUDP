@@ -61,7 +61,8 @@ typedef union {
 typedef enum {
 	MRUDP_COALESCE_NONE,
 	MRUDP_COALESCE_PACKET,
-	MRUDP_COALESCE_STREAM
+	MRUDP_COALESCE_STREAM,
+	MRUDP_COALESCE_STREAM_COMPRESSED
 } mrudp_coalesce_mode_t;
 
 typedef struct {

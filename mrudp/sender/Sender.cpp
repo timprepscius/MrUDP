@@ -174,7 +174,10 @@ ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 			(SendQueue::CoalesceMode)connection->options.coalesce_reliable.mode :
 			(SendQueue::CoalesceMode)connection->options.coalesce_unreliable.mode;
 
-		if (size > MAX_PACKET_DATA_SIZE && mode != MRUDP_COALESCE_STREAM)
+		if (size > MAX_PACKET_DATA_SIZE &&
+			mode != MRUDP_COALESCE_STREAM &&
+			mode != MRUDP_COALESCE_STREAM_COMPRESSED
+		)
 			return ERROR_PACKET_SIZE_TOO_LARGE;
 
 		enqueue(DATA, data, size, reliability, mode);

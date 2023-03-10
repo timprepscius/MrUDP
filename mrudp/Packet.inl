@@ -1,4 +1,5 @@
 #include <cstring>
+#include "base/Misc.h"
 
 namespace timprepscius {
 namespace mrudp {
@@ -30,7 +31,7 @@ bool popData(Packet &packet, u8 *data, size_t size)
 		return false;
 		
 	packet.dataSize -= (Packet::Size)size;
-	memcpy(data, packet.data + packet.dataSize, size);
+	mem_copy((char *)data, (char *)packet.data + packet.dataSize, size);
 
 	return true;
 }
@@ -59,7 +60,7 @@ bool peekData(Packet &packet, T &t)
 	if (packet.dataSize < sizeof(T))
 		return false;
 		
-	memcpy(&t, packet.data + packet.dataSize - sizeof(T), sizeof(T));
+	mem_copy((char *)&t, (char *)packet.data + packet.dataSize - sizeof(T), sizeof(T));
 
 	return true;
 }
@@ -73,7 +74,7 @@ bool pushData(Packet &packet, const u8 *data, size_t size)
 		return false;
 	}
 		
-	memcpy(packet.data + packet.dataSize, data, size);
+	mem_copy((char *)packet.data + packet.dataSize, (char *)data, size);
 	packet.dataSize += (Packet::Size)size;
 	
 	return true;

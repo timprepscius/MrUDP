@@ -35,9 +35,13 @@ struct SendQueue
 	
 	IDGenerator<FrameID> frameIDGenerator;
 	List<PacketPtr> queue;
+	SizedVector<char> compressionBuffers[2];
 
 	bool coalescePacket(FrameTypeID type, const u8 *data, size_t size);
 	bool coalesceStream(FrameTypeID type, const u8 *data, size_t size);
+	bool coalesceStreamCompressed(FrameTypeID type, const u8 *data, size_t size);
+	
+	void compress();
 
 	bool coalesce(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode);
 	void enqueue(FrameTypeID type, const u8 *data, size_t size, CoalesceMode mode);
