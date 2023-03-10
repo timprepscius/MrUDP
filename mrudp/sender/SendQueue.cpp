@@ -5,6 +5,11 @@
 namespace timprepscius {
 namespace mrudp {
 
+SendQueue::SendQueue(mrudp_coalesce_options_t *options_) :
+	options(options_)
+{
+}
+
 SendQueue::~SendQueue ()
 {
 	close();
@@ -124,7 +129,7 @@ void SendQueue::compress()
 	uLongf sourceLen = uncompressed.size();
 	Bytef *dest = (Bytef *)compressed_;
 	uLongf destLen = uncompressed.size();
-	int level = 9; // options.compression_level;
+	int level = options->compression_level;
 	
 	BufferSize outSize = 0;
 	outSize += sizeof(BufferSize);

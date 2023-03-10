@@ -14,12 +14,14 @@ mrudp_connection_options_t mrudp_default_connection_options()
 	return mrudp_connection_options_t {
 		.coalesce_reliable = {
 			.mode = -1,
-			.delay_ms = -1
+			.delay_ms = -1,
+			.compression_level = -1
 		},
 
 		.coalesce_unreliable = {
 			.mode = -1,
-			.delay_ms = -1
+			.delay_ms = -1,
+			.compression_level = -1
 		},
 		
 		.probe_delay_ms = -1,

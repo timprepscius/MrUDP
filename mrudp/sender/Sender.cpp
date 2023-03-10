@@ -9,7 +9,9 @@ namespace mrudp {
 
 Sender::Sender(Connection *connection_) :
 	connection(connection_),
-	retrier(this)
+	retrier(this),
+	dataQueue(&connection->options.coalesce_reliable),
+	unreliableDataQueue(&connection->options.coalesce_unreliable)
 {
 	connection->socket->service->scheduler->allocate(
 		schedules[0].timeout,

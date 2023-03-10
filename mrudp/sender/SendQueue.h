@@ -29,10 +29,12 @@ struct SendQueue
 	Status status = OPEN;
 	using CoalesceMode = mrudp_coalesce_mode_t;
 
+	SendQueue(mrudp_coalesce_options_t *options);
 	~SendQueue ();
 
 	Mutex mutex;
-	
+
+	mrudp_coalesce_options_t *options;
 	IDGenerator<FrameID> frameIDGenerator;
 	List<PacketPtr> queue;
 	SizedVector<char> compressionBuffers[2];

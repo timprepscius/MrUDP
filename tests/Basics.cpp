@@ -37,6 +37,7 @@ SCENARIO("basics")
 
 		auto options_coalesce_stream_compressed = options_;
 		options_coalesce_stream_compressed.connection.coalesce_reliable.mode = MRUDP_COALESCE_STREAM_COMPRESSED;
+		options_coalesce_stream_compressed.connection.coalesce_reliable.compression_level = 9;
 		options_coalesce_stream_compressed.connection.coalesce_unreliable.mode = MRUDP_COALESCE_PACKET;
 
 		List<std::tuple<String, mrudp_options_asio_t>> availableOptions = {

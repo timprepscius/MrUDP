@@ -68,6 +68,7 @@ typedef enum {
 typedef struct {
 	int8_t mode;
 	int32_t delay_ms;
+	int8_t compression_level;
 } mrudp_coalesce_options_t;
 
 typedef struct {
