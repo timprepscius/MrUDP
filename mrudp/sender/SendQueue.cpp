@@ -130,12 +130,15 @@ void SendQueue::compress()
 	Bytef *dest = (Bytef *)compressed_;
 	uLongf destLen = uncompressed.size();
 	int level = options->compression_level;
+	auto minimumSizeToAttemptCompression = 48;
 	
 	BufferSize outSize = 0;
 	outSize += sizeof(BufferSize);
 	outSize += sizeof(WasCompressed);
 
-	if (level > 0 && compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
+	if (level > 0 &&
+		sourceLen >= minimumSizeToAttemptCompression &&
+		compress2(dest, &destLen, source, sourceLen, level) == Z_OK)
 	{
 		BufferSize uncompressedSize__ = (BufferSize)sourceLen;
 
@@ -144,11 +147,11 @@ void SendQueue::compress()
 		outSize += sizeof(BufferSize);
 		outSize += destLen;
 
-		sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << logVar(destLen));
+		sLogRelease("mrudp::SendQueue::compress", logVar(sourceLen) << logVar(destLen));
 	}
 	else
 	{
-		sLogRelease("mrudp::proxy::compress", logVar(sourceLen) << "no compression");
+		sLogRelease("mrudp::SendQueue::compress", logVar(sourceLen) << "no compression");
 
 		*wasCompressed_ = 0;
 		

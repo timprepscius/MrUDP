@@ -17,13 +17,15 @@ ConnectionOptions getDefaultConnectionOptions ()
 {
 	return ConnectionOptions {
 		.coalesce_reliable = {
-			.mode = MRUDP_COALESCE_STREAM,
-			.delay_ms = 5
+			.mode = MRUDP_COALESCE_STREAM_COMPRESSED,
+			.delay_ms = 5,
+			.compression_level = 5
 		},
 
 		.coalesce_unreliable = {
 			.mode = MRUDP_COALESCE_PACKET,
-			.delay_ms = 5
+			.delay_ms = 5,
+			.compression_level = -1
 		},
 		
 		.probe_delay_ms = -1,

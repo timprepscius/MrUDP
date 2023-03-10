@@ -58,7 +58,10 @@ ConnectionOptions merge(const ConnectionOptions &lhs, const ConnectionOptions &r
 
 	if (merged.coalesce_unreliable.delay_ms == -1)
 		merged.coalesce_unreliable.delay_ms = rhs.coalesce_unreliable.delay_ms;
-		
+
+	if (merged.coalesce_unreliable.compression_level == -1)
+		merged.coalesce_unreliable.compression_level = rhs.coalesce_unreliable.compression_level;
+
 	if (merged.probe_delay_ms == -1)
 		merged.probe_delay_ms = rhs.probe_delay_ms;
 
