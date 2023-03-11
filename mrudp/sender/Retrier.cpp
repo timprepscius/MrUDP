@@ -211,6 +211,9 @@ void Retrier::onRetryTimeout()
 			}
 
 			sender->rtt.onAckFailure();
+			sender->windowSize.onSample(sender->rtt.duration);
+			sLogDebug("mrudp::ack_failure", logOfThis(this) << "ack failure " << logVar(retry->paths.front().packet->header.id));
+			
 			recalculateRetryTimeout();
 		}
 	}

@@ -182,6 +182,8 @@ void Socket::send(const PacketPtr &packet_, Connection *connection, const Addres
 	if (drop.shouldDrop())
 	{
 		xLogDebug(logOfThis(this) << logLabelVar("local", toString(getLocalAddress())) << logLabelVar("remote", (to ? toString(*to) : String())) << logVarV(packet->header.connection) << logVarV((char)packet->header.type) << logVarV(packet->header.id) << logLabel("DROPPING INTENTIONALLY"));
+		
+		return;
 	}
 	
 	imp->send(packet, connection, to);

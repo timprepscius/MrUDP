@@ -34,10 +34,24 @@ struct RealRandom {
 		return t;
 	}
 	
-	template<typename T>
-	float nextReal ()
+	template<typename T=int>
+	T nextInt (T l, T r)
 	{
-		return T(next<int>()) / std::numeric_limits<int>::max();
+		auto d = r - l + 1;
+		return (std::abs(next<T>()) % d) + l;
+	}
+
+	template<typename T>
+	float nextReal (T min=0, T max=1)
+	{
+		auto d = max - min;
+		
+		constexpr auto dmax = 1 << std::numeric_limits<T>::digits;
+		auto l = T(nextInt<uint64_t>(0, dmax));
+		auto r = T(dmax);
+		auto v = l/r * d + min;
+		
+		return v;
 	}
 } ;
 

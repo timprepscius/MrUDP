@@ -20,13 +20,16 @@ struct RTTConstant
 
 struct RTTSimple
 {
+	static constexpr float a = 0.9f;
+	static constexpr float b = 1 - a;
+
 	float maximum = 1.0f;
 	float duration = maximum;
 	float minimum = 0.005f;
 	
 	float calculate(float duration, float sample)
 	{
-		return std::min(maximum, std::max(minimum, 0.8f * duration + 0.2f * sample));
+		return std::min(maximum, std::max(minimum, a * duration + b * sample));
 	}
 	
 	// Recalculates the rtt duration given a new sample

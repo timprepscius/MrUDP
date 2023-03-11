@@ -12,6 +12,7 @@ int main( int argc, char* argv[] )
 {
 	xLogInitialize("mrudp-test.log");
 	xLogActivateStory("testing");
+	xLogActivateStory("debug");
 //	xLogActivateStory("com::closes");
 //	xLogActivateStory("mrudp::opens");
 //	xLogActivateStory("mrudp::receive");

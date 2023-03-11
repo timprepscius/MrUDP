@@ -31,7 +31,7 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       enableUBSanitizer = "YES"
@@ -57,10 +57,6 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "&quot;Scenario: lots_of_connections&quot;"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-b"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -70,11 +66,19 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: basics&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;Scenario: lots_of_connections&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: packet transmission rate&quot;"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;Scenario: stream_lots&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot;Scenario: one_connection&quot;"

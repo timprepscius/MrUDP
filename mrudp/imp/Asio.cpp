@@ -17,9 +17,9 @@ ConnectionOptions getDefaultConnectionOptions ()
 {
 	return ConnectionOptions {
 		.coalesce_reliable = {
-			.mode = MRUDP_COALESCE_STREAM_COMPRESSED,
+			.mode = MRUDP_COALESCE_STREAM,
 			.delay_ms = 5,
-			.compression_level = 5
+			.compression_level = 0
 		},
 
 		.coalesce_unreliable = {

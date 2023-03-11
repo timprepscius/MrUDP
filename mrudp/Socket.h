@@ -68,7 +68,7 @@ struct Socket : StrongThis<Socket>
 	void erase(Connection *connection);
 	StrongPtr<Connection> getConnection();
 
-	Drop drop;
+	[[no_unique_address]] Drop drop;
 	void send(const PacketPtr &packet, Connection *connection, const Address *to);
 	void receive(Packet &packet, const Address &from);
 	

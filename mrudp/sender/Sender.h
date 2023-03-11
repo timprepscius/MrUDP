@@ -83,7 +83,7 @@ struct Sender
 	
 	// scheduler for reliable and unreliable
 	Schedule schedules[2];
-	void scheduleDataQueueProcessing (Reliability reliability);
+	void scheduleDataQueueProcessing (Reliability reliability, bool immediate=false);
 };
 
 } // namespace

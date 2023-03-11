@@ -22,6 +22,22 @@ struct WindowSizeConstant
 	void onSample(float rtt) {}
 } ;
 
+struct WindowSizeMinMaxLinear
+{
+	size_t size = 3;
+	static constexpr size_t minimum = 3, maximum = 256;
+	static constexpr size_t maximumLength = maximum - minimum;
+	
+	static constexpr float maximumRtt = 1.0;
+	
+	void onSample(float rtt)
+	{
+		rtt = std::min(rtt, maximumRtt);
+		auto drtt = maximumRtt - rtt;
+		size = drtt / maximumRtt * maximumLength + minimum;
+	}
+} ;
+
 struct WindowSizeSimple
 {
 	size_t size = 3;
@@ -29,7 +45,7 @@ struct WindowSizeSimple
 	
 	void onSample(float rtt)
 	{
-		size = std::min(maximum, std::max(minimum, size_t(1 / rtt)));
+		size = std::min(maximum, std::max(minimum, size_t(2 / rtt)));
 	}
 } ;
 

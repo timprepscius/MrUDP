@@ -190,7 +190,7 @@ ErrorCode Sender::send(const u8 *data, size_t size, Reliability reliability)
 	return ERROR_CONNECTION_CLOSED;
 }
 
-void Sender::scheduleDataQueueProcessing (Reliability reliability)
+void Sender::scheduleDataQueueProcessing (Reliability reliability, bool immediate)
 {
 	auto &options = reliability ?
 		connection->options.coalesce_reliable :
@@ -206,7 +206,8 @@ void Sender::scheduleDataQueueProcessing (Reliability reliability)
 		
 	schedule.waiting = true;
 
-	auto sendQueueProcessingDelay = options.delay_ms;
+	auto sendQueueProcessingDelay =
+		immediate ? options.delay_ms : 0;
 	auto now = connection->socket->service->clock.now();
 	auto then = now + Duration(sendQueueProcessingDelay);
 	
@@ -250,13 +251,16 @@ void Sender::onAck(Packet &packet)
 	if (ackResult.contained)
 	{
 		rtt.onSample(ackResult.rtt);
+		
+		sLogDebug("mrudp::rtt_computation", logOfThis(this) << logVar(rtt.duration) << logVar(ackResult.rtt) << logVar(windowSize.size));
+		
 		windowSize.onSample(rtt.duration);
 		
 		if (ackResult.needsRetryTimeoutRecalculation)
 			retrier.recalculateRetryTimeout();
 	}
 
-	scheduleDataQueueProcessing(RELIABLE);
+	scheduleDataQueueProcessing(RELIABLE, true);
 	connection->possiblyClose();
 }
 
