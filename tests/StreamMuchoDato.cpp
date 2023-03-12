@@ -32,19 +32,15 @@ SCENARIO("stream_lots")
 		
 		auto remoteConnectionDispatch = Connection {
 			[&](auto data, auto size, auto isReliable) {
-				for (auto i=0; i<size; ++i)
+				for (auto *ptr = (u8 *)data; ptr != (u8 *)data + size; ++ptr)
 				{
-					debug_assert(nextRemoteReceive == ((u8*)data)[i]);
+					debug_assert(nextRemoteReceive == *ptr);
 					nextRemoteReceive++;
 				}
 				
-//				if (remote.packetsReceived % (1024) == 0)
-//				{
-//					std::cerr << "[" << remote.packetsReceived << "]" << std::endl;;
-//				}
-				
 				remote.bytesReceived += size;
-				return remote.packetsReceived++;
+				remote.packetsReceived++;
+				return MRUDP_OK;
 			},
 			[&](auto event) { return 0; }
 		} ;
