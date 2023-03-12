@@ -93,7 +93,7 @@ struct Retrier
 	// which causes the Retry to removed
 	// Returns AckResult, where .needsRetryTimeoutRecalculation signifies
 	// that recalculateRetryTimeout should be called
-	AckResult ack(PacketID, const Timepoint &now);
+	AckResult ack(PacketID, const Timepoint &now, u16 delayedMS);
 	
 	// returns the number of outstanding unacked packets
 	size_t numUnacked();

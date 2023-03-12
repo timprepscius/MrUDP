@@ -43,6 +43,7 @@ bool isAck(TypeID typeID)
 }
 
 enum FrameTypeID : uint8_t {
+	ACK_FRAME = 'A',
 	DATA = 'T',
 	CLOSE_WRITE = 'W',
 	DATA_COMPRESSED = 'Z'
@@ -85,6 +86,7 @@ PACK (
 		Size dataSize;
 	}
 );
+
 // --------------------------------------------------------------------------------
 // Packet
 //
@@ -121,6 +123,23 @@ enum PacketDiscard {
 	Keep,
 	Discard
 } ;
+
+// --------------------------------------------------------------------------------
+// Packet
+//
+// Packet contains a header area, a data array, and a size field.  The data array's
+// memory size is fixed to the maximum packet size.
+//
+// When a packet is read from the socket, the packet is read verbatim as a chunk
+// and the field dataSize is set to sizeof(IncomingPacketData) - sizeof(Header).
+// --------------------------------------------------------------------------------
+
+PACK(
+	struct Ack {
+		PacketID packetID;
+		u16 delayedMS;
+	}
+);
 
 // TODO: these constants, especially size constants should be located somewhere else
 const int MAX_ROUTE_SIZE = 0;

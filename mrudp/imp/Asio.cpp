@@ -139,25 +139,20 @@ SchedulerImp::SchedulerImp(io_service &io, const OptionsImp *options) :
 
 void SchedulerImp::update(const Timepoint &next, bool isRequired)
 {
-	auto duration = next.time_since_epoch();
-	uint64_t milliseconds =  std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+	timer.expires_at(next);
 	
-	auto roundAmount = 10 - (milliseconds % 10);
-	auto roundToCentisecond = milliseconds + roundAmount;
-	
-	if (isRequired || roundToCentisecond != nextExpiration)
-	{
-		nextExpiration = roundToCentisecond;
+	timer.async_wait([this](auto ec) {
+		auto begin = std::chrono::system_clock::now();
 		
-		auto when = next + std::chrono::milliseconds(roundAmount);
-		timer.expires_at(when);
+		if (!ec)
+		if (scheduler)
+			scheduler->process();
+			
+		auto end = std::chrono::system_clock::now();
 		
-		timer.async_wait([this](auto ec) {
-			if (!ec)
-			if (scheduler)
-				scheduler->process();
-		});
-	}
+		auto elapsed = std::chrono::duration_cast<Duration>(end - begin).count();
+		sLogReleaseIf(elapsed > 5, "debug", "timer long " << logVar(elapsed));
+	});
 }
 
 // --------------------------

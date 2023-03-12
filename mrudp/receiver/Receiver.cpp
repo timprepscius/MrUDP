@@ -62,6 +62,13 @@ void Receiver::fail ()
 
 void Receiver::processReceived(ReceiveQueue::Frame &frame, Reliability reliability)
 {
+	if (frame.header.type == ACK_FRAME)
+	{
+		Ack ack;
+		small_copy((char *)&ack, frame.data, sizeof(ack));
+		connection->sender.onAck(ack);
+	}
+	else
 	if (frame.header.type == DATA)
 	{
 		connection->receive(frame.data, frame.header.dataSize, reliability);
@@ -193,10 +200,7 @@ void Receiver::onReceive(Packet &packet)
 	auto type = packet.header.type;
 	if(requiresAck(type))
 	{
-		auto ack = strong<Packet>();
-		ack->header.type = ACK;
-		ack->header.id = packet.header.id;
-		connection->send(ack);
+		connection->sender.ack(packet.header.id);
 	}
 
 	if (packet.header.type == DATA_RELIABLE)

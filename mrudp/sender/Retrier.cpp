@@ -91,7 +91,7 @@ Retrier::InsertResult Retrier::insert(const MultiPacketPath &packetPaths, const 
 	return { wasEmpty };
 }
 
-Retrier::AckResult Retrier::ack(PacketID packetID, const Timepoint &now)
+Retrier::AckResult Retrier::ack(PacketID packetID, const Timepoint &now, u16 delayedMS)
 {
 	auto lock = lock_of(mutex);
 
@@ -108,7 +108,7 @@ Retrier::AckResult Retrier::ack(PacketID packetID, const Timepoint &now)
 		wasFirst = i == window.begin();
 		auto &retry = i->second;
 
-		auto duration = now - retry->sentAt;
+		auto duration = now - retry->sentAt - Duration(delayedMS);
 		rtt = std::chrono::duration_cast<std::chrono::duration<float>>(duration).count();
 
 		if (retry->priority)
@@ -121,6 +121,10 @@ Retrier::AckResult Retrier::ack(PacketID packetID, const Timepoint &now)
 		}
 
 		window.erase(i);
+	}
+	else
+	{
+		sLogRelease("debug", logOfThis(this) << "ack for nothing " << logVar(packetID));
 	}
 	
 	return {
@@ -145,7 +149,8 @@ bool Retrier::empty ()
 
 float Retrier::calculateRetryDuration(float rtt)
 {
-	return 2 * rtt;
+	auto delayedAckContribution = 30/1000.0f;
+	return 2 * rtt + delayedAckContribution;
 }
 
 void Retrier::recalculateRetryTimeout()
@@ -187,6 +192,12 @@ void Retrier::onRetryTimeout()
 		}
 		else
 		{
+			sLogRelease("mrudp::ack_failure",
+				logOfThis(this) << "ack failure " <<
+				logLabelVar("id", retry->paths.front().packet->header.id) <<
+				logLabelVar("duration", std::chrono::duration_cast<Duration>(now - retry->sentAt).count())
+			);
+
 			retry->attempts++;
 			retry->sentAt = connection->socket->service->clock.now();
 
@@ -212,7 +223,6 @@ void Retrier::onRetryTimeout()
 
 			sender->rtt.onAckFailure();
 			sender->windowSize.onSample(sender->rtt.duration);
-			sLogDebug("mrudp::ack_failure", logOfThis(this) << "ack failure " << logVar(retry->paths.front().packet->header.id));
 			
 			recalculateRetryTimeout();
 		}

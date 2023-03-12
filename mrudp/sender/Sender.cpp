@@ -16,18 +16,70 @@ Sender::Sender(Connection *connection_) :
 	connection->socket->service->scheduler->allocate(
 		schedules[0].timeout,
 		[this]() {
-			schedules[0].waiting = false;
-			processDataQueue(UNRELIABLE);
+			processSchedule(UNRELIABLE);
 		}
 	);
 	
 	connection->socket->service->scheduler->allocate(
 		schedules[1].timeout,
 		[this]() {
-			schedules[1].waiting = false;
-			processDataQueue(RELIABLE);
+			processSchedule(RELIABLE);
 		}
 	);
+}
+
+Timepoint Sender::now()
+{
+	return connection->socket->service->clock.now();
+}
+
+void Sender::processSchedule(Reliability mode)
+{
+	auto &schedule = schedules[(size_t)mode];
+
+//	auto time = now();
+//	Timepoint when;
+	
+	{
+		auto lock = lock_of(schedule.mutex);
+		if (schedule.running)
+			return;
+
+		debug_assert(!schedule.running);
+//		when = *schedule.when;
+		schedule.when.reset();
+		schedule.running = true;
+	}
+
+//	auto time1 = now();
+//	auto delay0 = std::chrono::duration_cast<Duration>(time1 - time).count();
+//	auto delay = std::chrono::duration_cast<Duration>(time - when).count();
+//
+//	sLogReleaseIf(delay > 20, "debug", logOfThis(this) << logVar(mode) << logVar(delay) << logVar(delay0));
+
+
+	processDataQueue(mode);
+
+//	auto after = std::chrono::duration_cast<Duration>(now() - when).count();
+//	sLogReleaseIf(after > 20, "debug", logOfThis(this) << logVar(mode)  << logVar(after));
+
+	{
+		auto lock = lock_of(schedule.mutex);
+		debug_assert(schedule.running);
+		schedule.running = false;
+		if (schedule.when)
+		{
+//			auto nexter = std::chrono::duration_cast<Duration>(*schedule.when - now()).count();
+//			sLogRelease("debug", logOfThis(this) << logVar(mode) << logVar(nexter));
+//
+//			if (nexter < 0)
+//			{
+//				xDebugLine();
+//			}
+
+			schedule.timeout.schedule(*schedule.when);
+		}
+	}
 }
 
 void Sender::processReliableDataQueue()
@@ -62,6 +114,8 @@ void Sender::processUnreliableDataQueue()
 	
 	if (isReadyToSend())
 	{
+		queueDelayedAcks();
+	
 		while (auto packet = unreliableDataQueue.dequeue())
 		{
 			packet->header.type = DATA_UNRELIABLE;
@@ -201,17 +255,32 @@ void Sender::scheduleDataQueueProcessing (Reliability reliability, bool immediat
 
 	debug_assert((size_t)reliability >= 0 && (size_t)reliability < 2);
 	auto &schedule = schedules[(size_t)reliability];
-	if (schedule.waiting)
-		return ;
-		
-	schedule.waiting = true;
-
+	
 	auto sendQueueProcessingDelay =
-		immediate ? options.delay_ms : 0;
+		immediate ? 0 : options.delay_ms;
 	auto now = connection->socket->service->clock.now();
 	auto then = now + Duration(sendQueueProcessingDelay);
 	
-	schedule.timeout.schedule(then);
+	
+	auto lock = lock_of(schedule.mutex);
+	
+//	auto locked = connection->socket->service->clock.now();
+//	auto timeItTookToLock = std::chrono::duration_cast<Duration>(locked - now).count();
+//	sLogReleaseIf(timeItTookToLock > 1, "debug", logVar(timeItTookToLock));
+	
+	if (!schedule.when || then < *schedule.when)
+	{
+		schedule.when = then;
+
+		if (!schedule.running)
+		{
+//			auto nextNow = std::chrono::duration_cast<Duration>(this->now() - now).count();
+//			auto nexter = std::chrono::duration_cast<Duration>(*schedule.when - this->now()).count();
+//			sLogRelease("debug", logOfThis(this) << logVar(reliability) << logVar(nexter) << logVar(nextNow) << logVar(sendQueueProcessingDelay));
+
+			schedule.timeout.schedule(then);
+		}
+	}
 }
 
 void Sender::processDataQueue(Reliability reliability)
@@ -241,12 +310,84 @@ void Sender::onReceive(Packet &packet)
 	}
 }
 
-void Sender::onAck(Packet &packet)
+void Sender::ack(PacketID packetID)
 {
-	auto packetID = packet.header.id;
+	{
+		auto lock = lock_of(delayedAcksMutex);
+		DelayedAck ack {
+			packetID,
+			connection->socket->service->clock.now()
+		};
+		delayedAcks[0].push_back(ack);
+	}
+	
+	scheduleDataQueueProcessing(UNRELIABLE);
+}
+
+void Sender::queueDelayedAcks()
+{
+	auto now = connection->socket->service->clock.now();
+	auto prev = lastDelayedAcksSend;
+	
+	while (true)
+	{
+		{
+			auto lock = lock_of(delayedAcksMutex);
+			if (delayedAcks[0].empty())
+				break;
+
+			lastDelayedAcksSend = now;
+			
+			debug_assert(delayedAcks[1].empty());
+			std::swap(delayedAcks[0], delayedAcks[1]);
+		}
+		
+		for (auto &delayedAck: delayedAcks[1])
+		{
+			auto delayedMS = std::chrono::duration_cast<Duration>(now - delayedAck.when).count();
+			Ack ack {
+				.packetID = delayedAck.packetID,
+				.delayedMS = (u16)delayedMS
+			} ;
+			
+			unreliableDataQueue.enqueue(
+				ACK_FRAME,
+				(u8 *)&ack, sizeof(ack),
+				SendQueue::CoalesceMode::MRUDP_COALESCE_PACKET
+			);
+		}
+		
+		delayedAcks[1].clear();
+	}
+	
+//	auto delayed = std::chrono::duration_cast<Duration>(now - prev).count();
+//	if (delayed > 100 && delayed < 1000000)
+//	{
+//		int x = 0;
+//		x++;
+//	}
+//
+//	sLogRelease("mrudp::ack_failure",
+//		logOfThis(this) << logLabelVar("delayed", std::chrono::duration_cast<Duration>(now - prev).count())
+//	);
+	
+}
+
+void Sender::onAck(const Packet &packet)
+{
+	onAck(Ack { packet.header.id, 0 });
+}
+
+void Sender::onAck(const Ack &ack)
+{
+	auto packetID = ack.packetID;
 	
 	auto now = connection->socket->service->clock.now();
-	auto ackResult = retrier.ack(packetID, now);
+	auto ackResult = retrier.ack(
+		packetID,
+		now,
+		ack.delayedMS
+	);
 
 	if (ackResult.contained)
 	{

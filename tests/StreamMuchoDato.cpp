@@ -12,7 +12,7 @@ namespace tests {
 SCENARIO("stream_lots")
 {
 	xLogActivateStory("mrudp::ack_failure");
-	xLogActivateStory("mrudp::rtt_computation");
+//	xLogActivateStory("mrudp::rtt_computation");
 
     GIVEN( "mrudp service, remote and local sockets paired" )
     {
@@ -135,8 +135,14 @@ SCENARIO("stream_lots")
 					
 					if (i % numPacketsToWaitAt == 0)
 					{
-						wait_until(std::chrono::seconds(100), [&]() { return remote.bytesReceived == bytesSent; });
+						mrudp_connection_state_t state;
+						wait_until(std::chrono::seconds(100), [&]() {
+							mrudp_connection_state(localConnection, &state);
+							return state.packets_awaiting_ack < 64;
+						});
 						
+						 wait_until(std::chrono::seconds(100), [&]() { return remote.bytesReceived == bytesSent; });
+
 						if (remote.bytesReceived != bytesSent)
 						{
 							xDebugLine();
@@ -148,7 +154,7 @@ SCENARIO("stream_lots")
 						auto diff = diff_.count();
 						from = then;
 						
-						std::cerr << "[" << i << "] " << numPacketsToWaitAt << " in " << diff << " = " << (numPacketsToWaitAt / diff) << std::endl;
+						std::cerr << "STAT [" << i << "] " << numPacketsToWaitAt << " in " << diff << " = " << (numPacketsToWaitAt / diff) << std::endl;
 					}
 				}
 				

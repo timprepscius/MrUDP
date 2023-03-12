@@ -63,7 +63,8 @@ struct Sender
 	void sendReliablyMultipath(MultiPacketPath &multipath, bool priority);
 	void sendReliably(const PacketPtr &packet, const Address *address = nullptr);
 	void onReceive (Packet &packet);
-	void onAck(Packet &packet);
+	void onAck(const Packet &packet);
+	void onAck(const Ack &packet);
 	void close ();
 	void fail ();
 	
@@ -71,19 +72,37 @@ struct Sender
 	
 	void enqueue(FrameTypeID type, const u8 *data, size_t size, Reliability reliability, SendQueue::CoalesceMode mode);
 	
+	void processSchedule(Reliability reliability);
 	void processDataQueue(Reliability reliability);
 	void processReliableDataQueue ();
 	void processUnreliableDataQueue ();
 	
 	struct Schedule
 	{
-		Atomic<bool> waiting = false;
+		Mutex mutex;
+		Optional<Timepoint> when;
+		bool running = false;
+		
 		Timeout timeout;
 	} ;
 	
 	// scheduler for reliable and unreliable
 	Schedule schedules[2];
 	void scheduleDataQueueProcessing (Reliability reliability, bool immediate=false);
+	
+	struct DelayedAck {
+		PacketID packetID;
+		Timepoint when;
+	} ;
+	
+	Mutex delayedAcksMutex;
+	Vector<DelayedAck> delayedAcks[2];
+	Timepoint lastDelayedAcksSend;
+
+	void ack(PacketID packetID);
+	void queueDelayedAcks();
+	
+	Timepoint now();
 };
 
 } // namespace

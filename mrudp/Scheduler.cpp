@@ -68,7 +68,7 @@ void Scheduler::free(Timeout &timeout)
 
 Tuple<bool, Timepoint> Scheduler::schedule_(Timeout &timeout, const Timepoint &then_)
 {
-	auto lock = lock_of(mutex);
+	debug_assert(mutex.locked_by_caller());
 	
 	bool changed = false;
 
@@ -80,13 +80,24 @@ Tuple<bool, Timepoint> Scheduler::schedule_(Timeout &timeout, const Timepoint &t
 		timeout.handle = queue.extract(timeout.where);
 	}
 	
+	auto ensureRuns = 0;
 	auto then = then_;
-	if (then < last)
+	if (then <= last)
+	{
+		ensureRuns = 1;
 		then = last;
+	}
+		
+	auto duration = then.time_since_epoch();
+	uint64_t milliseconds =  std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() + ensureRuns;
+	
+	auto roundAmount = 10 - (milliseconds % 10);
+	then = then + std::chrono::milliseconds(roundAmount);
 		
 	timeout.handle.value().when = then;
 	timeout.where = queue.insert(std::move(timeout.handle));
 	
+//	if (then == queue.begin()->when)
 	if (timeout.where == queue.begin())
 		changed = true;
 		
@@ -100,6 +111,8 @@ void Scheduler::schedule(
 {
 	PROFILE_FUNCTION(this);
 
+	auto lock = lock_of(mutex);
+	
 	auto [changed, next] = schedule_(timeout, then);
 	
 	if (changed)
@@ -110,12 +123,11 @@ Timepoint Scheduler::process_(const Timepoint &now)
 {
 	PROFILE_FUNCTION(this);
 
+	mutex.lock();
 	last = now;
 	
 	while (true)
 	{
-		mutex.lock();
-
 		if (queue.empty())
 			break;
 			
@@ -128,6 +140,8 @@ Timepoint Scheduler::process_(const Timepoint &now)
 		mutex.unlock();
 		
 		front.f();
+
+		mutex.lock();
 	}
 	
 	Timepoint next = Timepoint::min();
