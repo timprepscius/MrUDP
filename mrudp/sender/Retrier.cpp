@@ -194,8 +194,8 @@ void Retrier::onRetryTimeout()
 		{
 			sLogRelease("mrudp::ack_failure",
 				logOfThis(this) << "ack failure " <<
-				logLabelVar("id", retry->paths.front().packet->header.id) <<
-				logLabelVar("duration", std::chrono::duration_cast<Duration>(now - retry->sentAt).count())
+				logLabelVarV("id", retry->paths.front().packet->header.id) <<
+				logLabelVarV("duration", std::chrono::duration_cast<Duration>(now - retry->sentAt).count())
 			);
 
 			retry->attempts++;
